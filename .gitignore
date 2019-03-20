@@ -1,3 +1,9 @@
+# Directory needed for Koop that is created with the gradle installConnector task
+config
+
+# Created by VSCode for the Java Project
+.project
+
 # Created by https://www.gitignore.io/api/macos,gradle,windows,sublimetext,visualstudiocode,node
 # Edit at https://www.gitignore.io/?templates=macos,gradle,windows,sublimetext,visualstudiocode,node
 
