@@ -1,0 +1,5 @@
+{
+  "role-name": "geo-data-services-internal",
+  "description": "Internal role used for amping",
+  "role": ["geo-data-services-writer"]
+}

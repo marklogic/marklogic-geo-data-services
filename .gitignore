@@ -1,5 +1,7 @@
-# Directory needed for Koop that is created with the gradle installConnector task
-config
+
+# Directory used for storing results of the test task
+bin
+data
 
 # Created by VSCode for the Java Project
 .project

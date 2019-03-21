@@ -1,0 +1,5 @@
+{
+  "role-name": "geo-data-services-reader",
+  "description": "Can view documents, but not edit",
+  "role": ["rest-reader", "geo-data-services-nobody"]
+}

@@ -1,0 +1,9 @@
+{
+  "collection": "http://marklogic.com/feature-services",
+  "permission": [
+    {
+      "role-name": "geo-data-services-writer",
+      "capability": "update"
+    }
+  ]
+}

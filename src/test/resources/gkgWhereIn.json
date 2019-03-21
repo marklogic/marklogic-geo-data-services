@@ -1,0 +1,12 @@
+{
+  "params" : {
+    "id" : "GDeltGKG",
+    "layer" : 0,
+    "method" : "query"
+  },
+  "query" : {
+    "where": "OBJECTID IN (56577, 56576)",
+    "orderByFields": "OBJECTID DESC",
+    "returnCountOnly" : false
+  }
+}

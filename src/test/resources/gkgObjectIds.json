@@ -1,0 +1,11 @@
+{
+  "params" : {
+    "id" : "GDeltGKG",
+    "layer" : 0,
+    "method" : "query"
+  },
+  "query" : {
+    "objectIds" : "56577,56576",
+    "orderByFields": "OBJECTID DESC"
+  }
+}
