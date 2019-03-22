@@ -18,7 +18,7 @@
                      <scalar-type>long</scalar-type>
                      <val>id</val>
                   </column>
-				  <column>
+                  <column>
                      <name>format</name>
                      <scalar-type>string</scalar-type>
                      <val>type</val>
