@@ -11,19 +11,29 @@ buildscript {
         }
 
         dependencies {
-            classpath 'org.codehaus.groovy:groovy-json:2.4.15'
-            classpath 'org.codehaus.groovy.modules.http-builder:http-builder:0.5.2'
+            classpath "org.codehaus.groovy:groovy-json:2.4.15"
+            classpath "org.codehaus.groovy.modules.http-builder:http-builder:0.5.2"
             classpath "com.moowork.gradle:gradle-node-plugin:1.2.0"
             classpath "net.saliman:gradle-properties-plugin:1.4.6"
             classpath "com.marklogic:ml-gradle:3.3.0"
+           // classpath "org.apache.maven.plugins:maven-deploy-plugin:maven-plugin:3.0.0-M1"
+            classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+"
         }
+
+     
     }
 }
 
-apply plugin: 'java'
-apply plugin: 'net.saliman.properties'
+plugins {
+    id 'maven-publish'
+}
+
+apply plugin: "java"
+apply plugin: "net.saliman.properties"
 apply plugin: "com.moowork.node"
 apply plugin: "com.marklogic.ml-gradle"
+apply plugin: "maven-publish"
+apply plugin: "com.jfrog.bintray"
 
 configurations {
     mlcp
@@ -406,3 +416,67 @@ task testExampleService(type: com.marklogic.gradle.task.MarkLogicTask) {
   }
 }
 
+
+/*
+ * Tasks needed for deploying a gradle plugin to BinTray
+ */
+
+// Defines a configuration for the MarkLogic modules; used by the modulesZip task below
+configurations {
+	modules
+}
+task sourcesJar(type: Jar) {
+	description = "Create a jar of the modules to meet jcenter's requirements for publishing"
+	classifier "sources"
+	from "src/main/ml-modules"
+	destinationDir file("build/libs")
+}
+
+task modulesJar(type: Jar) {
+	description = "Jar up the marklogic-geo-data-services MarkLogic modules into a package that can be published"
+	from("src/main/ml-modules") {
+		into("marklogic-geo-data-services-modules/ml-modules")
+	}
+	destinationDir file("build/libs")
+	baseName "marklogic-geo-data-services-modules"
+}
+
+// Define the artifacts, in addition to the jar registered by the "java" plugin
+artifacts {
+	modules modulesJar
+}
+
+// Setup publishing of both a jar (containing the src/main/java code) and the modules zip
+// Can eventually include a test jar (containing some src/test/java code) if desired
+// Run "gradle publishtomavenlocal" to publish these locally
+publishing.publications {
+  sourcesJava(MavenPublication) {
+    groupId "com.marklogic"
+    artifactId "marklogic-geo-data-services-modules"
+    artifact sourcesJar
+  }
+  mainModules(MavenPublication) {
+    groupId "com.marklogic"
+    artifactId "marklogic-geo-data-services-modules"
+    artifact modulesJar
+  }
+}
+
+if (project.hasProperty("myBintrayUser")) {
+	bintray {
+		user = myBintrayUser
+		key = myBintrayKey
+		publications = ["sourcesJava", "mainModules"]
+		pkg {
+			repo = "marklogic-geo-data-services"
+			name = project.name
+			userOrg = 'preston-mcgowan'
+			licenses = ["Apache-2.0"]
+			//vcsUrl = "https://github.com/marklogic-community/" + project.name + ".git"
+			version {
+				name = project.version
+				released = new Date()
+			}
+		}
+	}
+}
