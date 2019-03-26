@@ -19,8 +19,6 @@ buildscript {
            // classpath "org.apache.maven.plugins:maven-deploy-plugin:maven-plugin:3.0.0-M1"
             classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+"
         }
-
-     
     }
 }
 
@@ -95,6 +93,7 @@ else {
         testImplementation 'io.rest-assured:json-path:3.0.6'
         testImplementation "com.googlecode.json-simple:json-simple:1.1.1"
         testImplementation "org.gradle:gradle-tooling-api:2.1"
+        testImplementation 'com.google.guava:guava:27.1-jre'
     }
 
     task copyProjectFiles(type: Copy, group: mlDeployerGroup) {

@@ -1,30 +1,34 @@
 import java.util.Map;
 import org.junit.*;
 
+import java.net.URL;
 import java.net.URLEncoder;
 import java.io.UnsupportedEncodingException;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 
 import static io.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.*;
-
 
 public abstract class AbstractFeatureServiceTest {
 
+    static String url = "/LATEST/resources/KoopProvider";
     static String port = System.getProperty("featureServer.port");
+    Log logger = null;
+
 
     @Before
     public void setupRestAssured() {
+        logger = getLogger();
+
         if (port == null) {
             port = "9080";
         }
         RestAssured.port = Integer.valueOf(port);
 
         String host = System.getProperty("featureServer.host");
-        if(host == null){
+        if (host == null) {
             host = "localhost";
         }
         RestAssured.baseURI = "http://" + host;
@@ -42,12 +46,19 @@ public abstract class AbstractFeatureServiceTest {
         RestAssured.urlEncodingEnabled = false; // we encode the URL parameters manually
     }
 
-    public static String request2path(String requestFile) {
-        return request2path(requestFile, true);
+	Log getLogger() {
+		return LogFactory.getLog(AbstractFeatureServiceTest.class);
+    }
+    
+    public JsonPath getJson(String requestFile) {
+        String pathToFile = "/" + getClass().getName() + "/" + requestFile;
+        logger.info("request2path -> pathToFile: " + pathToFile);
+        return new JsonPath(AbstractFeatureServiceTest.class.getResource(pathToFile));
     }
 
-    public static String request2path(String requestFile, boolean urlEncode) {
-        JsonPath jsonPath = new JsonPath(AbstractFeatureServiceTest.class.getResource("/" + requestFile));
+    public String request2path(String requestFile, boolean urlEncode) {
+        
+        JsonPath jsonPath = getJson(requestFile);
 
         String service = jsonPath.getString("params.id");
         String url = "/marklogic/" + service + "/FeatureServer";
@@ -72,7 +83,7 @@ public abstract class AbstractFeatureServiceTest {
                     if (urlEncode) {
                         try {
                             value = URLEncoder.encode(value.toString(), "UTF-8");
-                        } catch(UnsupportedEncodingException e) {
+                        } catch (UnsupportedEncodingException e) {
                             throw new RuntimeException(e);
                         }
                     }
