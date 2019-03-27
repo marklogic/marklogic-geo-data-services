@@ -1,22 +1,22 @@
-import static org.hamcrest.Matchers.is;
-
+import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
+import io.restassured.RestAssured;
 import org.junit.Test;
 
-import io.restassured.RestAssured;
+import static org.hamcrest.Matchers.is;
 
 public class CountLayerTest extends AbstractFeatureServiceTest{
 
-	@Test
+    @Test
     public void testGkgCountLayer0() {
-
-        String path = request2path("gkgCountLayer0.json");
-
+        JsonPath postBody = getJson("gkgCountLayer0.json");
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -24,18 +24,17 @@ public class CountLayerTest extends AbstractFeatureServiceTest{
                 .body("count", is(38765))
             ;
     }
-	
-	@Test
+
+    @Test
     public void testGkgCountLayer1() {
-
-        String path = request2path("gkgCountLayer1.json");
-
+        JsonPath postBody = getJson("gkgCountLayer1.json");
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -43,6 +42,4 @@ public class CountLayerTest extends AbstractFeatureServiceTest{
                 .body("count", is(3557))
             ;
     }
-	
-	
 }

@@ -18,7 +18,6 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .when()
                 .log().uri()
                 .post(url)
-
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -41,7 +40,6 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .when()
                 .log().uri()
                 .post(url)
-
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -64,7 +62,6 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .when()
                 .log().uri()
                 .post(url)
-
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -87,7 +84,6 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .when()
                 .log().uri()
                 .post(url)
-
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -111,10 +107,8 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .when()
                 .log().uri()
                 .post(url)
-
             .then()
                 .log().ifError()
-                .log().all()
                 .statusCode(200)
                 //TODO .body("statistics.classBreak[0].classMinValue", is(37))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(160.936078759448f))
@@ -136,7 +130,6 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .when()
                 .log().uri()
                 .post(url)
-
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -160,7 +153,6 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .when()
                 .log().uri()
                 .post(url)
-
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -183,7 +175,6 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .when()
                 .log().uri()
                 .post(url)
-
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -208,7 +199,6 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .when()
                 .log().uri()
                 .post(url)
-
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -232,7 +222,6 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .when()
                 .log().uri()
                 .post(url)
-
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -255,7 +244,6 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .when()
                 .log().uri()
                 .post(url)
-
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -280,7 +268,6 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .when()
                 .log().uri()
                 .post(url)
-
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -304,7 +291,6 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .when()
                 .log().uri()
                 .post(url)
-
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -328,7 +314,6 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .when()
                 .log().uri()
                 .post(url)
-
             .then()
                 .log().ifError()
                 .statusCode(200)
