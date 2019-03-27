@@ -201,6 +201,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	}
 
 	// Polygon4 ( No Features within Polygon) Expected : Zero results
+	//TODO: Looks like this might be related to the rouding of decimals
 	@Test
 	public void testPolygonWithin4() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonWithin4.json");

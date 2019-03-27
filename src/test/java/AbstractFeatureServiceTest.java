@@ -1,13 +1,13 @@
 import java.util.Map;
 import org.junit.*;
 
-import java.net.URL;
-import java.net.URLEncoder;
+import io.restassured.path.json.config.JsonPathConfig;
+import io.restassured.path.json.JsonPath;
+import io.restassured.RestAssured;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
 
 import static io.restassured.RestAssured.*;
 
@@ -53,7 +53,7 @@ public abstract class AbstractFeatureServiceTest {
     public JsonPath getJson(String requestFile) {
         String pathToFile = "/" + getClass().getName() + "/" + requestFile;
         logger.info("request2path -> pathToFile: " + pathToFile);
-        return new JsonPath(AbstractFeatureServiceTest.class.getResource(pathToFile));
+        return new JsonPath(AbstractFeatureServiceTest.class.getResource(pathToFile)).using(new JsonPathConfig(JsonPathConfig.NumberReturnType.BIG_DECIMAL));
     }
 
     public String request2path(String requestFile, boolean urlEncode) {

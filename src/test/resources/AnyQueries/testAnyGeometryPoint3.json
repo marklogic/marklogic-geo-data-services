@@ -1,0 +1,11 @@
+{
+  "params": { "id": "GeoLocation", "layer": "5", "method": "query" },
+  "query": {
+    "geometryType": "esriGeometryPoint",
+    "geometry": { "x": 84.803467, "y": 20.94092 },
+    "returnGeometry": 1,
+    "extension": {
+      "geometry": { "x": 84.803467, "y": 20.94092, "type": "Point", "coordinates": [84.803467, 20.94092] }
+    }
+  }
+}

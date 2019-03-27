@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://marklogic.com/extension/plugin">
+  <name>varianceplugin</name>
+  <id>varianceplugin</id>
+  <version>0.1</version>
+  <provider-name>MarkLogic</provider-name>
+  <description>variance native plugin</description>
+  <native>
+    <path>libvarianceplugin.dylib</path>
+  </native>
+</plugin>
