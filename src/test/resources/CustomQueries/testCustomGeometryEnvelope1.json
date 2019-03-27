@@ -1,0 +1,11 @@
+{
+  "params": { "id": "GeoLocation", "layer": "4", "method": "query" },
+  "query": {
+    "geometryType": "esriGeometryEnvelope",
+    "geometry": "-61,-170,85,180",
+    "returnGeometry": 1,
+    "extension": {
+      "geometry": { "type": "Polygon", "coordinates": [[[-61, -170], [85, -170], [85, 180], [-61, 180], [-61, -170]]] }
+    }
+  }
+}
