@@ -56,6 +56,10 @@ public abstract class AbstractFeatureServiceTest {
         return new JsonPath(AbstractFeatureServiceTest.class.getResource(pathToFile)).using(new JsonPathConfig(JsonPathConfig.NumberReturnType.BIG_DECIMAL));
     }
 
+    public String request2path(String requestFile) {
+        return request2path(requestFile, true);
+    }
+
     public String request2path(String requestFile, boolean urlEncode) {
         
         JsonPath jsonPath = getJson(requestFile);

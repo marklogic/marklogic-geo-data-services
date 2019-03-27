@@ -2,7 +2,6 @@ import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.RestAssured;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
