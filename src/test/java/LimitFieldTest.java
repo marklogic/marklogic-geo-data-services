@@ -29,28 +29,30 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 //TODO missing .body("hasZ", is(false))
                 //TODO missing .body("hasM", is(false))
 
-                .body("spatialReference.wkid", is(4326))
+                //TODO missing .body("spatialReference.wkid", is(4326))
 
-                .body("fields.size()", is(3))
-                .body("fields[0].name", is("OBJECTID"))
-                .body("fields[0].type", is("esriFieldTypeOID"))
-                .body("fields[2].name", is("domain"))
-                .body("fields[2].type", is("esriFieldTypeString"))
-                .body("fields[2].alias", is("domain"))
+                .body("metadata.fields.size()", is(3))
+                .body("metadata.fields[0].name", is("OBJECTID"))
+                .body("metadata.fields[0].type", is("Integer"))
+                .body("metadata.fields[1].name", is("name"))
+                .body("metadata.fields[1].type", is("String"))
+                .body("metadata.fields[2].name", is("domain"))
+                .body("metadata.fields[2].type", is("String"))
+                .body("metadata.fields[2].alias", IsNull.nullValue())
 
                 .body("features.size()", is(20))
 
-                .body("features[0].OBJECTID", is(1))
-                .body("features[0].name", is("United Kingdom"))
-                .body("features[0].domain", is("rtbf.be"))
-                .body("features[0].geometry.x", is(-2))
-                .body("features[0].geometry.y", is(54))
+                .body("features[0].properties.OBJECTID", is(1))
+                .body("features[0].properties.name", is("United Kingdom"))
+                .body("features[0].properties.domain", is("rtbf.be"))
+                .body("features[0].geometry.coordinates[0]", is(-2)) // x
+                .body("features[0].geometry.coordinates[1]", is(54)) // y
 
-                .body("features[19].OBJECTID", is(43))
-                .body("features[19].name", is("Greece"))
-                .body("features[19].domain", is("candianews.gr"))
-                .body("features[19].geometry.x", is(22))
-                .body("features[19].geometry.y", is(39))
+                .body("features[19].properties.OBJECTID", is(43))
+                .body("features[19].properties.name", is("Greece"))
+                .body("features[19].properties.domain", is("candianews.gr"))
+                .body("features[19].geometry.coordinates[0]", is(22)) // x
+                .body("features[19].geometry.coordinates[1]", is(39)) // y
         ;
     }
 
@@ -90,7 +92,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .log().all()
                 .statusCode(200)
                 .log().ifValidationFails()
-                .body("objectIds.size()", is(3500))
+                .body("features.size()", is(3500))
         ;
     }
 
@@ -110,7 +112,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .log().all()
                 .statusCode(200)
                 .log().ifValidationFails()
-                .body("objectIds.size()", is(7000))
+                .body("features.size()", is(7000))
         ;
     }
 
@@ -150,7 +152,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .log().all()
                 .statusCode(200)
                 .log().ifValidationFails()
-                .body("objectIds.size()", is(10))
+                .body("features.size()", is(10))
         ;
     }
 }

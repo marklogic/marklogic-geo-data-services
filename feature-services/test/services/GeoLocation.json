@@ -8,7 +8,7 @@
     {
       "id": 0,
       "name" : "GML",
-      "decription": "Points data in GML format",
+      "description": "Points data in GML format",
       "geometryType": "Point",
       "idField": "ID",
       "extent" : {
@@ -35,7 +35,7 @@
     {
       "id": 1,
       "name" : "KML",
-      "decription": "Points data in KML format",
+      "description": "Points data in KML format",
       "geometryType": "Point",
       "idField": "ID",
       "extent" : {
@@ -60,7 +60,7 @@
     {
       "id": 2,
       "name" : "RSS",
-      "decription": "Points data in GeoRSS format",
+      "description": "Points data in GeoRSS format",
       "geometryType": "Point",
       "idField": "ID",
       "extent" : {
@@ -85,7 +85,7 @@
     {
       "id": 3,
       "name" : "MCGM",
-      "decription": "Points data in MCGM format",
+      "description": "Points data in MCGM format",
       "geometryType": "Point",
       "idField": "ID",
       "extent" : {
@@ -110,7 +110,7 @@
     {
       "id": 4,
       "name" : "Custom",
-      "decription": "Points data in Custom format",
+      "description": "Points data in Custom format",
       "geometryType": "Point",
       "idField": "ID",
       "extent" : {
@@ -188,7 +188,7 @@
     {
       "id": 5,
       "name" : "Any",
-      "decription": "Points data in Any format (GML,KML,RSS)",
+      "description": "Points data in Any format (GML,KML,RSS)",
       "geometryType": "Point",
       "idField": "ID",
       "extent" : {
@@ -213,7 +213,7 @@
     {
       "id": 6,
       "name" : "WKT",
-      "decription": "Region data in WKT",
+      "description": "Region data in WKT",
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "extent" : {
@@ -240,7 +240,7 @@
     {
       "id": 7,
       "name" : "WKT",
-      "decription": "Region data in WKT",
+      "description": "Region data in WKT",
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "extent" : {
@@ -267,7 +267,7 @@
     {
       "id": 8,
       "name" : "GeoJSON 1",
-      "decription": "Region data in GeoJSON",
+      "description": "Region data in GeoJSON",
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "extent" : {
@@ -294,7 +294,7 @@
     {
       "id": 9,
       "name" : "GeoJSON 2",
-      "decription": "Region data in GeoJSON",
+      "description": "Region data in GeoJSON",
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "extent" : {
@@ -321,7 +321,7 @@
     {
       "id": 10,
       "name" : "GeoJSON 2",
-      "decription": "Region data in GeoJSON",
+      "description": "Region data in GeoJSON",
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "extent" : {

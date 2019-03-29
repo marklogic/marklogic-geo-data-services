@@ -20,7 +20,7 @@
     {
       "id": 0,
       "name" : "GKG level 1",
-      "decription": "GDelt GKG article data at geores 1 (country)",
+      "description": "GDelt GKG article data at geores 1 (country)",
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
@@ -54,7 +54,7 @@
     {
       "id": 1,
       "name" : "GKG level 2",
-      "decription": "GDelt GKG article data at geores 2 (US State / non-US ADM1)",
+      "description": "GDelt GKG article data at geores 2 (US State / non-US ADM1)",
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
@@ -82,7 +82,7 @@
     {
       "id": 2,
       "name" : "GKG level 3",
-      "decription": "GDelt GKG article data at geores 3 (city/landmark)",
+      "description": "GDelt GKG article data at geores 3 (city/landmark)",
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
@@ -110,7 +110,7 @@
     {
       "id": 3,
       "name" : "GKG level 4",
-      "decription": "GDelt GKG article data at geores 4 (city/landmark)",
+      "description": "GDelt GKG article data at geores 4 (city/landmark)",
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "displayField": "name",
@@ -138,7 +138,7 @@
     {
       "id": 4,
       "name" : "GKG level 1",
-      "decription": "GDelt GKG article data at geores 1 (country)",
+      "description": "GDelt GKG article data at geores 1 (country)",
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
@@ -185,7 +185,7 @@
     {
       "id": 5,
       "name" : "GKG level 4",
-      "decription": "GDelt GKG article data at geores 4 (city/landmark)",
+      "description": "GDelt GKG article data at geores 4 (city/landmark)",
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "displayField": "name",
