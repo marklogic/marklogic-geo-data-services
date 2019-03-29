@@ -1,13 +1,11 @@
-import static org.hamcrest.Matchers.*;
-
+import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
+import io.restassured.RestAssured;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-import org.hamcrest.core.IsNull;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
-import io.restassured.RestAssured;
+import static org.hamcrest.Matchers.*;
 
 public class WKTGeometry  extends AbstractFeatureServiceTest {
 
@@ -22,26 +20,24 @@ public class WKTGeometry  extends AbstractFeatureServiceTest {
 
     @Test
     public void testXPathExtraction() throws UnsupportedEncodingException, ParseException  {
-
-        String path = "/marklogic/GeoLocation/FeatureServer/{layer}/query?ids={ids}&returnGeometry={returnGeometry}";
+        JsonPath postBody = getJson("testXPathExtraction.json");
 
         RestAssured
             .given()
-              .pathParam("layer", 6)
-              .pathParam("ids", 900001)
-              .pathParam("returnGeometry", true)
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
                 .body("features.size()", is(1))
-                .body("features.geometry.rings.size()", is(1))
-                .body("features.geometry.rings[0][0].size()", is(5))
-                .body("features.geometry.rings[0][0][0].size()", is(2))
-                .body("features.geometry.rings[0][0][0]", hasItems(30, 10))
-            ;
+                .body("features[0].geometry.coordinates.size()", is(1))
+                .body("features[0].geometry.coordinates[0][0].size()", is(5))
+                .body("features[0].geometry.coordinates[0][0][0].size()", is(2))
+                .body("features[0].geometry.coordinates[0][0][0]", hasItems(30, 10))
+        ;
     }
 
     // "geometry" : {
@@ -54,26 +50,23 @@ public class WKTGeometry  extends AbstractFeatureServiceTest {
     // }
     @Test
     public void testColumnExtraction() throws UnsupportedEncodingException, ParseException  {
-
-        String path = "/marklogic/GeoLocation/FeatureServer/{layer}/query?ids={ids}&returnGeometry={returnGeometry}";
+        JsonPath postBody = getJson("testColumnExtraction.json");
 
         RestAssured
             .given()
-              .pathParam("layer", 7)
-              .pathParam("ids", 900001)
-              .pathParam("returnGeometry", true)
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
                 .body("features.size()", is(1))
-                .body("features.geometry.rings.size()", is(1))
-                .body("features.geometry.rings[0][0].size()", is(5))
-                .body("features.geometry.rings[0][0][0].size()", is(2))
-                .body("features.geometry.rings[0][0][0]", hasItems(30, 10))
-            ;
+                .body("features[0].geometry.coordinates.size()", is(1))
+                .body("features[0].geometry.coordinates[0][0].size()", is(5))
+                .body("features[0].geometry.coordinates[0][0][0].size()", is(2))
+                .body("features[0].geometry.coordinates[0][0][0]", hasItems(30, 10))
+        ;
     }
-
 }

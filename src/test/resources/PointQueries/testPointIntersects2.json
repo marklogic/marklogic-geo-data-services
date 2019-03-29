@@ -1,0 +1,15 @@
+{
+  "params": { "id": "GDeltGKG", "layer": "3", "method": "query" },
+  "query": {
+    "geometryType": "esriGeometryPoint",
+    "geometry": { "x": -122.24564552307129, "y": 37.513198107015064 },
+    "extension": {
+      "geometry": {
+        "x": -122.24564552307129,
+        "y": 37.513198107015064,
+        "type": "Point",
+        "coordinates": [-122.24564552307129, 37.513198107015064]
+      }
+    }
+  }
+}

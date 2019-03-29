@@ -1,7 +1,6 @@
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.RestAssured;
-import org.hamcrest.core.IsNull;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;

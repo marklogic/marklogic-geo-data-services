@@ -3,7 +3,6 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.RestAssured;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 
 public class GroupByTest extends AbstractFeatureServiceTest{
