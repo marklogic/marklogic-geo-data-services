@@ -1,71 +1,72 @@
-import static org.hamcrest.Matchers.is;
-
-import org.hamcrest.core.IsNull;
+import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
+import io.restassured.RestAssured;
 import org.junit.Test;
 
-import io.restassured.RestAssured;
+import static org.hamcrest.Matchers.is;
 
 public class OrderByTest extends AbstractFeatureServiceTest {
 
 	@Test
     public void testGkgOrderbyTop10() {
-
-        String path = request2path("gkgOrderbyTop10.json");
+        JsonPath postBody = getJson("testGkgOrderbyTop10.json");
 
         RestAssured
-        .given()
-        .when()
-            .log().uri()
-            .get(path)
+            .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
+            .when()
+                .log().uri()
+                .post(url)
+            .then()
+                .log().ifError()
+                .statusCode(200)
+                .log().ifValidationFails()
+                .body("features.size()", is(10))
 
-        .then()
-            .log().ifError()
-            .statusCode(200)
-            .log().ifValidationFails()
-            .body("features.size()", is(10))
+                .body("features[0].properties.OBJECTID", is(8991))
+                .body("features[0].properties.urlpubtimedate", is("2017-05-24T06:00:00Z"))
+                .body("features[0].properties.urlpubdate", is("2017-05-24Z"))
+                .body("features[0].properties.url", is("http://zz.diena.lv/kriminalzinas/vugd/maras-ielas-kapnutelpa-deg-atkritumi-229596"))
+                .body("features[0].properties.name", is("Latvia"))
+                .body("features[0].properties.urltone", is(-2.86f))
+                .body("features[0].properties.domain", is("zz.diena.lv"))
+                .body("features[0].properties.urllangcode", is("lav"))
+                .body("features[0].properties.geores", is(1))
 
-            .body("features[0].attributes.OBJECTID", is(8991))
-            .body("features[0].attributes.urlpubtimedate", is(1495605600000L))
-            .body("features[0].attributes.urlpubdate", is(1495584000000L))
-            .body("features[0].attributes.url", is("http://zz.diena.lv/kriminalzinas/vugd/maras-ielas-kapnutelpa-deg-atkritumi-229596"))
-            .body("features[0].attributes.name", is("Latvia"))
-            .body("features[0].attributes.urltone", is(-2.86f))
-            .body("features[0].attributes.domain", is("zz.diena.lv"))
-            .body("features[0].attributes.urllangcode", is("lav"))
-            .body("features[0].attributes.geores", is(1))
-
-            .body("features[9].attributes.OBJECTID", is(31999))
-            .body("features[9].attributes.urlpubtimedate", is(1495623600000L))
-            .body("features[9].attributes.urlpubdate", is(1495584000000L))
-            .body("features[9].attributes.url", is("http://zpravy.idnes.cz/cholera-cesko-nakaza-0la-/domaci.aspx"))
-            .body("features[9].attributes.name", is("Ukraine"))
-            .body("features[9].attributes.urltone", is(-0.57f))
-            .body("features[9].attributes.domain", is("zpravy.idnes.cz"))
-            .body("features[9].attributes.urllangcode", is("ces"))
-            .body("features[9].attributes.geores", is(1))
+                .body("features[9].properties.OBJECTID", is(31999))
+                .body("features[9].properties.urlpubtimedate", is("2017-05-24T11:00:00Z"))
+                .body("features[9].properties.urlpubdate", is("2017-05-24Z"))
+                .body("features[9].properties.url", is("http://zpravy.idnes.cz/cholera-cesko-nakaza-0la-/domaci.aspx"))
+                .body("features[9].properties.name", is("Ukraine"))
+                .body("features[9].properties.urltone", is(-0.57f))
+                .body("features[9].properties.domain", is("zpravy.idnes.cz"))
+                .body("features[9].properties.urllangcode", is("ces"))
+                .body("features[9].properties.geores", is(1))
         ;
     }
 
     @Test
     public void testGkgOrderbyLeadingWhitespace() {
-
-        String path = request2path("gkgOrderbyLeadingWhitespace.json");
+        JsonPath postBody = getJson("testGkgOrderbyLeadingWhitespace.json");
 
         RestAssured
-        .given()
-        .when()
-            .log().uri()
-            .get(path)
-        .then()
-            .log().ifError()
-            .statusCode(200)
-            .log().ifValidationFails()
-            .body("objectIdFieldName", is("OBJECTID"))
-            .body("globalIdFieldName", is(""))
-            .body("hasZ", is(false))
-            .body("hasM", is(false))
-            .body("spatialReference.wkid", is(4326))
-            .body("features.size()", is(10))
+            .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
+            .when()
+                .log().uri()
+                .post(url)
+            .then()
+                .log().ifError()
+                .statusCode(200)
+                .log().ifValidationFails()
+                //TODO missing .body("objectIdFieldName", is("OBJECTID"))
+                //TODO missing .body("globalIdFieldName", is(""))
+                //TODO missing .body("hasZ", is(false))
+                //TODO missing .body("hasM", is(false))
+                //TODO missing .body("spatialReference.wkid", is(4326))
+                .body("features.size()", is(10))
         ;
     }
 

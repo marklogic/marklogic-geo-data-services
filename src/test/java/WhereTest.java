@@ -1,9 +1,9 @@
-
-import org.hamcrest.core.IsNull;
-import org.junit.Test;
+import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
 import io.restassured.RestAssured;
-import static org.hamcrest.Matchers.*;
+import org.junit.Test;
 
+import static org.hamcrest.Matchers.*;
 
 public class WhereTest extends AbstractFeatureServiceTest{
 
@@ -12,12 +12,15 @@ public class WhereTest extends AbstractFeatureServiceTest{
 
         String path = request2path("gkgCountWhere.json");
 
+        JsonPath postBody = getJson("testGkgCountWhere.json");
+
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -29,14 +32,15 @@ public class WhereTest extends AbstractFeatureServiceTest{
 	@Test
     public void testGkgWhereISNOTNULL() {
 
-        String path = request2path("whereISNOTNULL.json");
+        JsonPath postBody = getJson("testGkgWhereISNOTNULL.json");
 
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -50,12 +54,15 @@ public class WhereTest extends AbstractFeatureServiceTest{
 
         String path = request2path("whereISNULL.json");
 
+        JsonPath postBody = getJson("gkgToneStandardDeviation0.json");
+
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -69,12 +76,15 @@ public class WhereTest extends AbstractFeatureServiceTest{
 
         String path = request2path("gkgWhereIn.json");
 
+        JsonPath postBody = getJson("gkgToneStandardDeviation0.json");
+
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -87,25 +97,25 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .body("spatialReference.wkid", is(4326))
 
                 .body("features.size()", is(2))
-                .body("features[1].attributes.OBJECTID", is(56576))
-                .body("features[1].attributes.urlpubtimedate", is(1495636200000L))
-                .body("features[1].attributes.urlpubdate", is(1495584000000L))
-                .body("features[1].attributes.url", is("http://www.bendigoadvertiser.com.au/story/4685559/meet-the-real-high-taxpayers-theyre-not-high-earners/"))
-                .body("features[1].attributes.name", is("Australia"))
-                .body("features[1].attributes.urltone", is(-3.91f))
-                .body("features[1].attributes.domain", is("bendigoadvertiser.com.au"))
-                .body("features[1].attributes.urllangcode", is("eng"))
-                .body("features[1].attributes.geores", is(1))
+                .body("features[1].OBJECTID", is(56576))
+                .body("features[1].urlpubtimedate", is(1495636200000L))
+                .body("features[1].urlpubdate", is(1495584000000L))
+                .body("features[1].url", is("http://www.bendigoadvertiser.com.au/story/4685559/meet-the-real-high-taxpayers-theyre-not-high-earners/"))
+                .body("features[1].name", is("Australia"))
+                .body("features[1].urltone", is(-3.91f))
+                .body("features[1].domain", is("bendigoadvertiser.com.au"))
+                .body("features[1].urllangcode", is("eng"))
+                .body("features[1].geores", is(1))
 
-                .body("features[0].attributes.OBJECTID", is(56577))
-                .body("features[0].attributes.urlpubtimedate", is(1495636200000L))
-                .body("features[0].attributes.urlpubdate", is(1495584000000L))
-                .body("features[0].attributes.url", is("http://www.bendigoadvertiser.com.au/story/4685559/meet-the-real-high-taxpayers-theyre-not-high-earners/"))
-                .body("features[0].attributes.name", is("Australia"))
-                .body("features[0].attributes.urltone", is(-3.91f))
-                .body("features[0].attributes.domain", is("bendigoadvertiser.com.au"))
-                .body("features[0].attributes.urllangcode", is("eng"))
-                .body("features[0].attributes.geores", is(1))
+                .body("features[0].OBJECTID", is(56577))
+                .body("features[0].urlpubtimedate", is(1495636200000L))
+                .body("features[0].urlpubdate", is(1495584000000L))
+                .body("features[0].url", is("http://www.bendigoadvertiser.com.au/story/4685559/meet-the-real-high-taxpayers-theyre-not-high-earners/"))
+                .body("features[0].name", is("Australia"))
+                .body("features[0].urltone", is(-3.91f))
+                .body("features[0].domain", is("bendigoadvertiser.com.au"))
+                .body("features[0].urllangcode", is("eng"))
+                .body("features[0].geores", is(1))
 
                 .body("exceededTransferLimit", is(false))
             ;
@@ -117,12 +127,15 @@ public class WhereTest extends AbstractFeatureServiceTest{
 
         String path = request2path("gkgWhereNotIn.json");
 
+        JsonPath postBody = getJson("gkgToneStandardDeviation0.json");
+
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -156,18 +169,21 @@ public class WhereTest extends AbstractFeatureServiceTest{
 
         String path = request2path("whereOneField.json");
 
+        JsonPath postBody = getJson("gkgToneStandardDeviation0.json");
+
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
                 .log().ifValidationFails()
                 .body("features.size()", is(29))
-                .body("features.attributes.domain", everyItem(isOneOf("nikkei.com")))
+                .body("features.domain", everyItem(isOneOf("nikkei.com")))
             ;
     }
 
@@ -176,18 +192,21 @@ public class WhereTest extends AbstractFeatureServiceTest{
 
         String path = request2path("whereOr.json");
 
+        JsonPath postBody = getJson("gkgToneStandardDeviation0.json");
+
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
                 .log().ifValidationFails()
                 .body("features.size()", is(177))
-                .body("features.attributes.domain", everyItem(isOneOf("livetradingnews.com", "nikkei.com")))
+                .body("features.domain", everyItem(isOneOf("livetradingnews.com", "nikkei.com")))
             ;
     }
 
@@ -233,12 +252,15 @@ public class WhereTest extends AbstractFeatureServiceTest{
 
         String path = request2path("whereBetweenDatesNoMatch.json");
 
+        JsonPath postBody = getJson("gkgToneStandardDeviation0.json");
+
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -252,12 +274,15 @@ public class WhereTest extends AbstractFeatureServiceTest{
 
         String path = request2path("whereGreaterThanDate.json");
 
+        JsonPath postBody = getJson("gkgToneStandardDeviation0.json");
+
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -271,12 +296,15 @@ public class WhereTest extends AbstractFeatureServiceTest{
 
         String path = request2path("whereGreaterThanTimestamp.json");
 
+        JsonPath postBody = getJson("gkgToneStandardDeviation0.json");
+
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -289,18 +317,21 @@ public class WhereTest extends AbstractFeatureServiceTest{
     public void testLike() {
         String path = request2path("whereLike.json");
 
+        JsonPath postBody = getJson("gkgToneStandardDeviation0.json");
+
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
                 .log().ifValidationFails()
                 .body("features.size()", is(227))
-                .body("features.attributes.domain", everyItem(containsString("journal")))
+                .body("features.domain", everyItem(containsString("journal")))
             ;
     }
 

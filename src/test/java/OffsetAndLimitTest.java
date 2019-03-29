@@ -1,49 +1,51 @@
-import static org.hamcrest.Matchers.is;
-
+import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
+import io.restassured.RestAssured;
 import org.hamcrest.core.IsNull;
 import org.junit.Test;
 
-import io.restassured.RestAssured;
+import static org.hamcrest.Matchers.is;
 
 public class OffsetAndLimitTest extends AbstractFeatureServiceTest {
 
 	@Test
     public void testGkgOffsetAndLimit() {
-
-        String path = request2path("gkgOffsetAndLimit.json");
+        JsonPath postBody = getJson("testGkgOffsetAndLimit.json");
 
         RestAssured
-        .given()
-        .when()
-            .log().uri()
-            .get(path)
+            .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
+            .when()
+                .log().uri()
+                .post(url)
+            .then()
+                .log().ifError()
+                .log().all()
+                .statusCode(200)
+                .log().ifValidationFails()
 
-        .then()
-            .log().ifError()
-            .statusCode(200)
-            .log().ifValidationFails()
+                .body("features.size()", is(10))
 
-            .body("features.size()", is(10))
+                .body("features[0].properties.OBJECTID", is(3728))
+                .body("features[0].properties.urlpubtimedate", is("2017-05-24T06:00:00Z"))
+                .body("features[0].properties.urlpubdate", is("2017-05-24Z"))
+                .body("features[0].properties.url", is("http://www.ziuanews.ro/stiri/cozmin-gu-dovedirea-fraud-rii-alegerilor-din-2009-este-important-pentru-democra-ia-noastr-704622"))
+                .body("features[0].properties.name", is("Romania"))
+                .body("features[0].properties.urltone", is(-1.43f))
+                .body("features[0].properties.domain", is("ziuanews.ro"))
+                .body("features[0].properties.urllangcode", is("ron"))
+                .body("features[0].properties.geores", is(1))
 
-            .body("features[0].attributes.OBJECTID", is(3728))
-            .body("features[0].attributes.urlpubtimedate", is(1495605600000L))
-            .body("features[0].attributes.urlpubdate", is(1495584000000L))
-            .body("features[0].attributes.url", is("http://www.ziuanews.ro/stiri/cozmin-gu-dovedirea-fraud-rii-alegerilor-din-2009-este-important-pentru-democra-ia-noastr-704622"))
-            .body("features[0].attributes.name", is("Romania"))
-            .body("features[0].attributes.urltone", is(-1.43f))
-            .body("features[0].attributes.domain", is("ziuanews.ro"))
-            .body("features[0].attributes.urllangcode", is("ron"))
-            .body("features[0].attributes.geores", is(1))
-
-            .body("features[9].attributes.OBJECTID", is(25653))
-            .body("features[9].attributes.urlpubtimedate", is(1495616400000L))
-            .body("features[9].attributes.urlpubdate", is(1495584000000L))
-            .body("features[9].attributes.url", is("http://www.zimbabwesituation.com/news/zimsit-m-govt-urged-to-export-transformers-to-raise-forex/"))
-            .body("features[9].attributes.name", is("Zimbabwe"))
-            .body("features[9].attributes.urltone", is(-2.99f))
-            .body("features[9].attributes.domain", is("zimbabwesituation.com"))
-            .body("features[9].attributes.urllangcode", is("eng"))
-            .body("features[9].attributes.geores", is(1))
+                .body("features[9].properties.OBJECTID", is(25653))
+                .body("features[9].properties.urlpubtimedate", is("2017-05-24T09:00:00Z"))
+                .body("features[9].properties.urlpubdate", is("2017-05-24Z"))
+                .body("features[9].properties.url", is("http://www.zimbabwesituation.com/news/zimsit-m-govt-urged-to-export-transformers-to-raise-forex/"))
+                .body("features[9].properties.name", is("Zimbabwe"))
+                .body("features[9].properties.urltone", is(-2.99f))
+                .body("features[9].properties.domain", is("zimbabwesituation.com"))
+                .body("features[9].properties.urllangcode", is("eng"))
+                .body("features[9].properties.geores", is(1))
         ;
     }
 

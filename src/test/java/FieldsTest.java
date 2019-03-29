@@ -1,39 +1,40 @@
+import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
+import io.restassured.RestAssured;
 import org.junit.*;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import static org.hamcrest.Matchers.*;
-
 
 public class FieldsTest extends AbstractFeatureServiceTest {
 
     @Test
     public void testAllFields() {
-
-        String path = request2path("gkgAllFields.json");
+        JsonPath postBody = getJson("testAllFields.json");
 
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .log().all()
                 .log().ifValidationFails()
                 .body("features.size()", is(5))
-                .body("features[0].attributes.OBJECTID", notNullValue())
-                .body("features[0].attributes.urlpubtimedate", notNullValue())
-                .body("features[0].attributes.urlpubdate", notNullValue())
-                .body("features[0].attributes.url", notNullValue())
-                .body("features[0].attributes.name", notNullValue())
-                .body("features[0].attributes.urltone", notNullValue())
-                .body("features[0].attributes.domain", notNullValue())
-                .body("features[0].attributes.urllangcode", notNullValue())
-                .body("features[0].attributes.geores", notNullValue())
-                .body("features[0].geometry.x", notNullValue())
-                .body("features[0].geometry.y", notNullValue())
+                .body("features[0].properties.OBJECTID", notNullValue())
+                .body("features[0].properties.urlpubtimedate", notNullValue())
+                .body("features[0].properties.urlpubdate", notNullValue())
+                .body("features[0].properties.url", notNullValue())
+                .body("features[0].properties.name", notNullValue())
+                .body("features[0].properties.urltone", notNullValue())
+                .body("features[0].properties.domain", notNullValue())
+                .body("features[0].properties.urllangcode", notNullValue())
+                .body("features[0].properties.geores", notNullValue())
+                .body("features[0].geometry.coordinates[0]", notNullValue()) // was x
+                .body("features[0].geometry.coordinates[1]", notNullValue()) // was y
             ;
     }
 }

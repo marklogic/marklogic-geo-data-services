@@ -1,10 +1,9 @@
-import org.junit.Test;
-
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import static org.hamcrest.Matchers.*;
-
+import io.restassured.path.json.JsonPath;
+import io.restassured.RestAssured;
 import org.hamcrest.core.IsNull;
+import org.junit.Test;
+import static org.hamcrest.Matchers.*;
 
 
 
@@ -12,14 +11,15 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
 
     @Test
     public void testServiceDescriptor() {
-        String path = request2path("featureService.json");
+        JsonPath postBody = getJson("testServiceDescriptor.json");
 
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -65,39 +65,41 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
 
     @Test
     public void testLayerDescriptor() {
-        String path = request2path("layer.json");
+        JsonPath postBody = getJson("testLayerDescriptor.json");
 
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
                 .log().ifValidationFails()
-                .body("id", is(0))
-                .body("name", is("GKG level 1"))
-                .body("type", is("Feature Layer"))
-                .body("description", notNullValue())
-                .body("geometryType", is("esriGeometryPoint"))
-                .body("copyrightText", is(" "))
-                .body("parentLayer", IsNull.nullValue())
-                .body("subLayers", IsNull.nullValue())
-                .body("minScale", is(0))
-                .body("maxScale", is(0))
-                .body("defaultVisibility", is(true))
-                .body("extent.xmin", is(-180))
-                .body("extent.ymin", is(-90))
-                .body("extent.xmax", is(180))
-                .body("extent.ymax", is(90))
-                .body("extent.spatialReference.wkid", is(4326))
-                .body("extent.spatialReference.latestWkid", is(4326))
+                .body("layers.metadata.id", is(0))
+                .body("layers.metadata.name", is("GKG level 1"))
+                .body("layers.metadata.type", is("Feature Layer"))
+                .body("layers.metadata.description", notNullValue())
+                .body("layers.metadata.geometry.type", is("Point"))
+                //TODO missing .body("layers.metadata.copyrightText", is(" "))
+                //TODO missing .body("layers.metadata.parentLayer", IsNull.nullValue())
+                //TODO missing .body("layers.metadata.subLayers", IsNull.nullValue())
+                //TODO missing .body("layers.metadata.minScale", is(0))
+                //TODO missing .body("layers.metadata.maxScale", is(0))
+                //TODO missing .body("layers.metadata.defaultVisibility", is(true))
+                .body("layers.metadata.extent.xmin", is(-180))
+                .body("layers.metadata.extent.ymin", is(-90))
+                .body("layers.metadata.extent.xmax", is(180))
+                .body("layers.metadata.extent.ymax", is(90))
+                .body("layers.metadata.extent.spatialReference.wkid", is(4326))
+                .body("layers.metadata.extent.spatialReference.latestWkid", is(4326))
 
-                .body("fields.size()", is(9))
-                .body("fields.name", hasItems("OBJECTID", "urlpubtimedate", "urlpubdate", "url", "name", "urltone", "domain", "urllangcode", "geores"))
-                .body("hasStaticData", is(false))
+                .body("layers.metadata.fields.size()", is(9))
+                .body("layers.metadata.fields.name", 
+                    hasItems("OBJECTID", "urlpubtimedate", "urlpubdate", "url", "name", "urltone", "domain", "urllangcode", "geores"))
+                //TODO missing .body("hasStaticData", is(false))
             ;
 
       // we should probably add more validation here or just add new tests if there are

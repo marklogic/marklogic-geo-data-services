@@ -1,74 +1,77 @@
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.hasItems;
-
+import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
+import io.restassured.RestAssured;
 import org.junit.Test;
 
-import io.restassured.RestAssured;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 
 public class GroupByTest extends AbstractFeatureServiceTest{
 
     @Test
     public void testGkgGroupBy() {
-
-        String path = request2path("gkgGroupBy.json");
+        JsonPath postBody = getJson("testGkgGroupBy.json");
 
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .log().all()
                 .log().ifValidationFails()
-                .body("displayFieldName", is(""))
-                .body("fieldAliases.domain", is("domain"))
-                .body("fieldAliases.domain_count", is("domain_count"))
+                //TODO missing .body("displayFieldName", is(""))
+                //TODO missing .body("fieldAliases.domain", is("domain"))
+                //TODO missing .body("fieldAliases.domain_count", is("domain_count"))
 
-                .body("fields.size()", is(2))
-                .body("fields.name", hasItems("domain", "domain_count"))
-                .body("fields.type", hasItems("esriFieldTypeString", "esriFieldTypeInteger"))
+                //TODO missing .body("fields.size()", is(2))
+                //TODO missing .body("fields.name", hasItems("domain", "domain_count"))
+                //TODO missing .body("fields.type", hasItems("esriFieldTypeString", "esriFieldTypeInteger"))
 
-                .body("features.size()", is(2455))
-                .body("features[0].attributes.domain", is("fax.al"))
-                .body("features[0].attributes.domain_count", is(1259))
+                .body("statistics.size()", is(2455))
+                .body("statistics[0].domain", is("fax.al"))
+                .body("statistics[0].domain_count", is(1259))
 
-                .body("features[9].attributes.domain", is("entornointeligente.com"))
-                .body("features[9].attributes.domain_count", is(199))
+                .body("statistics[9].domain", is("entornointeligente.com"))
+                .body("statistics[9].domain_count", is(199))
             ;
     }
 
     @Test
     public void testGroupByTwoFields() {
-
-        String path = request2path("groupByTwoFields.json");
+        JsonPath postBody = getJson("testGroupByTwoFields.json");
 
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .log().all()
                 .log().ifValidationFails()
-                .body("features.size()", is(9061))
+                .body("statistics.size()", is(9061))
                 .body(
-                    "features.attributes.find { it.domain == '1057fmthefan.com' & it.name == 'Chile' }.objectid_count",
+                    "statistics.find { it.domain == '1057fmthefan.com' & it.name == 'Chile' }.objectid_count",
                     is(5)
                 )
                 .body(
-                    "features.attributes.find { it.domain == '4-traders.com' & it.name == 'Japan' }.objectid_count",
+                    "statistics.find { it.domain == '4-traders.com' & it.name == 'Japan' }.objectid_count",
                     is(8)
                 )
                 .body(
-                    "features.attributes.find { it.domain == '9news.com.au' & it.name == 'Australia' }.objectid_count",
+                    "statistics.find { it.domain == '9news.com.au' & it.name == 'Australia' }.objectid_count",
                     is(12)
                 )
                 .body(
-                    "features.attributes.find { it.domain == '9news.com.au' & it.name == 'New Zealand' }.objectid_count",
+                    "statistics.find { it.domain == '9news.com.au' & it.name == 'New Zealand' }.objectid_count",
                     is(1)
                 )
             ;
@@ -76,45 +79,45 @@ public class GroupByTest extends AbstractFeatureServiceTest{
 
     @Test
     public void testGroupByOrderByCount() {
-
-        String path = request2path("groupByOrderByCount.json");
+        JsonPath postBody = getJson("testGroupByOrderByCount.json");
 
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .log().all()
                 .log().ifValidationFails()
-                .body("features.size()", is(2455))
-                .body("features[0].attributes.domain", is("fax.al"))
-                .body("features[0].attributes.objectid_count", is(1259))
+                .body("statistics.size()", is(2455))
+                .body("statistics[0].domain", is("fax.al"))
+                .body("statistics[0].objectid_count", is(1259))
             ;
     }
-
 
     @Test
     public void testGroupByWithFilter() {
-
-        String path = request2path("groupByWithFilter.json");
+        JsonPath postBody = getJson("testGroupByWithFilter.json");
 
         RestAssured
             .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .get(path)
-
+                .post(url)
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .log().all()
                 .log().ifValidationFails()
-                .body("features.size()", is(2))
-                .body("features.attributes.find { it.domain == '4-traders.com' }.objectid_count", is(178))
-                .body("features.attributes.find { it.domain == '9news.com.au' }.objectid_count", is(14))
+                .body("statistics.size()", is(2))
+                .body("statistics.find { it.domain == '4-traders.com' }.objectid_count", is(178))
+                .body("statistics.find { it.domain == '9news.com.au' }.objectid_count", is(14))
             ;
     }
-
 }
