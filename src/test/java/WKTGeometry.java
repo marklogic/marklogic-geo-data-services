@@ -19,7 +19,7 @@ public class WKTGeometry  extends AbstractFeatureServiceTest {
     // }
 
     @Test
-    public void testXPathExtraction() throws UnsupportedEncodingException, ParseException  {
+    public void testXPathExtraction() throws UnsupportedEncodingException, ParseException {
         JsonPath postBody = getJson("testXPathExtraction.json");
 
         RestAssured
@@ -49,7 +49,7 @@ public class WKTGeometry  extends AbstractFeatureServiceTest {
     //   }
     // }
     @Test
-    public void testColumnExtraction() throws UnsupportedEncodingException, ParseException  {
+    public void testColumnExtraction() throws UnsupportedEncodingException, ParseException {
         JsonPath postBody = getJson("testColumnExtraction.json");
 
         RestAssured

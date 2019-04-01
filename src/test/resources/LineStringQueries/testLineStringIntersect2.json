@@ -1,0 +1,18 @@
+{
+  "params": { "id": "GDeltGKG", "layer": "3", "method": "query" },
+  "query": {
+    "geometryType": "esriGeometryPolyline",
+    "geometry": {
+      "paths": [[[-122.24324226379393, 37.5124492009751], [-122.24710464477538, 37.51210878665452]]],
+      "spatialReference": { "wkid": 4326 }
+    },
+    "extension": {
+      "geometry": {
+        "paths": [[[-122.24324226379393, 37.5124492009751], [-122.24710464477538, 37.51210878665452]]],
+        "spatialReference": { "wkid": 4326 },
+        "type": "LineString",
+        "coordinates": [[-122.24324226379393, 37.5124492009751], [-122.24710464477538, 37.51210878665452]]
+      }
+    }
+  }
+}

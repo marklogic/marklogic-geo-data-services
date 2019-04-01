@@ -1,0 +1,21 @@
+{
+  "params": { "id": "GDeltGKG", "layer": "3", "method": "query" },
+  "query": {
+    "geometryType": "esriGeometryEnvelope",
+    "geometry": "-122.1237558,37.5503635,-122.1337558,37.565",
+    "extension": {
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-122.1237558, 37.5503635],
+            [-122.1337558, 37.5503635],
+            [-122.1337558, 37.565],
+            [-122.1237558, 37.565],
+            [-122.1237558, 37.5503635]
+          ]
+        ]
+      }
+    }
+  }
+}

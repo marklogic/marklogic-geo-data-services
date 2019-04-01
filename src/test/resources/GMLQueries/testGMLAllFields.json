@@ -1,0 +1,4 @@
+{
+  "params": { "id": "GeoLocation", "layer": "0", "method": "query" },
+  "query": { "outFields": "*" }
+}
