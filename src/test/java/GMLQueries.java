@@ -5,9 +5,11 @@ import java.io.UnsupportedEncodingException;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
-public class GMLQueries  extends AbstractFeatureServiceTest {
+public class GMLQueries extends AbstractFeatureServiceTest {
 
     @Test
     public void testGMLPolygon1() throws UnsupportedEncodingException, ParseException {

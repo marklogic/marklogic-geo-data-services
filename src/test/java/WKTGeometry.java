@@ -5,7 +5,7 @@ import java.io.UnsupportedEncodingException;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasItems; import static org.hamcrest.Matchers.is;
 
 public class WKTGeometry  extends AbstractFeatureServiceTest {
 

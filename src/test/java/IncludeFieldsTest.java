@@ -3,9 +3,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.RestAssured;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
 public class IncludeFieldsTest extends AbstractFeatureServiceTest {
 

@@ -3,7 +3,10 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.RestAssured;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isOneOf;
 
 public class WhereTest extends AbstractFeatureServiceTest{
 
