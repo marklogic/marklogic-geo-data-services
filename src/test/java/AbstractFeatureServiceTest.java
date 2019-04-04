@@ -1,20 +1,19 @@
-import java.util.Map;
-import org.junit.*;
-
 import io.restassured.path.json.config.JsonPathConfig;
 import io.restassured.path.json.JsonPath;
 import io.restassured.RestAssured;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.*;
 
 import static io.restassured.RestAssured.*;
 
 public abstract class AbstractFeatureServiceTest {
 
-    static String url = "/LATEST/resources/KoopProvider";
-    static String port = System.getProperty("featureServer.port");
+    static String url = "/LATEST/resources/" + System.getProperty("feature.service");
+    static String port = System.getProperty("feature.port");
     Log logger = null;
 
 
@@ -27,17 +26,17 @@ public abstract class AbstractFeatureServiceTest {
         }
         RestAssured.port = Integer.valueOf(port);
 
-        String host = System.getProperty("featureServer.host");
+        String host = System.getProperty("feature.host");
         if (host == null) {
             host = "localhost";
         }
         RestAssured.baseURI = "http://" + host;
 
-        String user = System.getProperty("featureServer.user");
+        String user = System.getProperty("feature.username");
         if (user == null) {
             user = "admin";
         }
-        String password = System.getProperty("featureServer.password");
+        String password = System.getProperty("feature.password");
         if (password == null) {
             password = "admin";
         }
@@ -46,8 +45,8 @@ public abstract class AbstractFeatureServiceTest {
         RestAssured.urlEncodingEnabled = false; // we encode the URL parameters manually
     }
 
-	Log getLogger() {
-		return LogFactory.getLog(AbstractFeatureServiceTest.class);
+    Log getLogger() {
+        return LogFactory.getLog(AbstractFeatureServiceTest.class);
     }
     
     public JsonPath getJson(String requestFile) {
