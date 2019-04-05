@@ -103,7 +103,9 @@ else {
 	]
 
         from "."
-        include "build.gradle", "gradle.properties", "gradle-example-app.properties", "gradlew", "gradlew.bat"
+        include "gradlew", "gradlew.bat"
+	include "*.gradle"
+	include "*.properties"
         include "gradle/**"
         include "src/main/**"
         include "build/variancenativeplugin/**"
