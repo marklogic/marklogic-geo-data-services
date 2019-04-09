@@ -1,7 +1,7 @@
 {
-  "info" : {
-    "name" : "DataSourceArrayExample",
-    "description" : "GDelt GKG data. Georesolution values are 1=country, 2=US State / non-US ADM1, 3=city/landmark."
+  "info": {
+    "name": "DataSourceArrayExample",
+    "description": "GDelt GKG data. Georesolution values are 1=country, 2=US State / non-US ADM1, 3=city/landmark."
   },
 
   "search": {
@@ -16,307 +16,323 @@
     }
   },
 
-  "layers" : [
+  "layers": [
     {
       "id": 0,
-      "name" : "GKG level 1",
+      "name": "GKG level 1",
       "description": "GDelt GKG article data at geores 1 (country)",
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
       "geometryPath": "/geometry",
-      "extent" : {
-        "xmin" : -180,
-        "ymin" : -90,
-        "xmax" : 180,
-        "ymax" : 90,
-        "spatialReference" : {
-          "wkid" : 4326,
-          "latestWkid" : 4326
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
         }
       },
       "schema": "GDeltGKG",
-      "view" : "Article",
-      "boundingQuery" : {
-        "jsonPropertyValueQuery" : {
-          "property" : ["geores"], "value" : [ 1 ],
-          "options" : ["lang=en"], "weight" : 0
+      "view": "Article",
+      "boundingQuery": {
+        "jsonPropertyValueQuery": {
+          "property": ["geores"],
+          "value": [1],
+          "options": ["lang=en"],
+          "weight": 0
         }
       },
       "readOnly": true
     },
     {
       "id": 1,
-      "name" : "GKG level 2",
+      "name": "GKG level 2",
       "description": "GDelt GKG article data at geores 2 (US State / non-US ADM1)",
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
       "geometryPath": "/geometry",
-      "extent" : {
-        "xmin" : -180,
-        "ymin" : -90,
-        "xmax" : 180,
-        "ymax" : 90,
-        "spatialReference" : {
-          "wkid" : 4326,
-          "latestWkid" : 4326
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
         }
       },
       "schema": "GDeltGKG",
-      "view" : "Article",
-      "boundingQuery" : {
-        "jsonPropertyValueQuery" : {
-          "property" : ["geores"], "value" : [ 2 ],
-          "options" : ["lang=en"], "weight" : 0
+      "view": "Article",
+      "boundingQuery": {
+        "jsonPropertyValueQuery": {
+          "property": ["geores"],
+          "value": [2],
+          "options": ["lang=en"],
+          "weight": 0
         }
       },
       "readOnly": true
     },
     {
       "id": 2,
-      "name" : "GKG level 3",
+      "name": "GKG level 3",
       "description": "GDelt GKG article data at geores 3 (city/landmark)",
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
       "geometryPath": "/geometry",
-      "extent" : {
-        "xmin" : -180,
-        "ymin" : -90,
-        "xmax" : 180,
-        "ymax" : 90,
-        "spatialReference" : {
-          "wkid" : 4326,
-          "latestWkid" : 4326
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
         }
       },
       "schema": "GDeltGKG",
-      "view" : "Article",
-      "boundingQuery" : {
-        "jsonPropertyValueQuery" : {
-          "property" : ["geores"], "value" : [ 3 ],
-          "options" : ["lang=en"], "weight" : 0
+      "view": "Article",
+      "boundingQuery": {
+        "jsonPropertyValueQuery": {
+          "property": ["geores"],
+          "value": [3],
+          "options": ["lang=en"],
+          "weight": 0
         }
       },
       "readOnly": true
     },
     {
       "id": 3,
-      "name" : "GKG level 4",
+      "name": "GKG level 4",
       "description": "GDelt GKG article data at geores 4 (city/landmark)",
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "displayField": "name",
       "geometryPath": "/geometry",
-      "extent" : {
-        "xmin" : -180,
-        "ymin" : -90,
-        "xmax" : 180,
-        "ymax" : 90,
-        "spatialReference" : {
-          "wkid" : 4326,
-          "latestWkid" : 4326
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
         }
       },
       "schema": "GDeltGKG",
-      "view" : "Region",
-      "boundingQuery" : {
-        "jsonPropertyValueQuery" : {
-          "property" : ["geores"], "value" : [ 4 ],
-          "options" : ["lang=en"], "weight" : 0
+      "view": "Region",
+      "boundingQuery": {
+        "jsonPropertyValueQuery": {
+          "property": ["geores"],
+          "value": [4],
+          "options": ["lang=en"],
+          "weight": 0
         }
       },
       "readOnly": true
     },
     {
       "id": 4,
-      "name" : "GKG level 1",
+      "name": "GKG level 1",
       "description": "GDelt GKG article data at geores 1 (country)",
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
       "geometryPath": "/geometry",
-      "extent" : {
-        "xmin" : -180,
-        "ymin" : -90,
-        "xmax" : 180,
-        "ymax" : 90,
-        "spatialReference" : {
-          "wkid" : 4326,
-          "latestWkid" : 4326
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
         }
       },
       "schema": "GDeltGKG",
-      "view" : "Article",
-      "joins" : [
+      "view": "Article",
+      "joins": [
         {
-          "source" : "sparql",
-          "query" : "select ?OBJECT_ID ?sparql_url WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . }",
-          "joinOn" : {
-            "left" : "url",
-            "right" : "sparql_url"
+          "source": "sparql",
+          "query": "select ?OBJECT_ID ?sparql_url WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . }",
+          "joinOn": {
+            "left": "url",
+            "right": "sparql_url"
           },
-          "fields" : {
-            "OBJECT_ID" : { "scalarType" : "string" },
-            "sparql_url" : { "scalarType" : "string" }
+          "fields": {
+            "OBJECT_ID": { "scalarType": "string" },
+            "sparql_url": { "scalarType": "string" }
           }
         }
       ],
-      "boundingQuery" : {
-        "jsonPropertyValueQuery" : {
-          "property" : ["geores"], "value" : [ 1 ],
-          "options" : ["lang=en"], "weight" : 0
+      "boundingQuery": {
+        "jsonPropertyValueQuery": {
+          "property": ["geores"],
+          "value": [1],
+          "options": ["lang=en"],
+          "weight": 0
         }
       },
       "readOnly": true
     },
     {
       "id": 5,
-      "name" : "GKG level 1",
+      "name": "GKG level 1",
       "description": "GDelt GKG article data at geores 1 (country)",
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
       "geometryPath": "/geometry",
-      "extent" : {
-        "xmin" : -180,
-        "ymin" : -90,
-        "xmax" : 180,
-        "ymax" : 90,
-        "spatialReference" : {
-          "wkid" : 4326,
-          "latestWkid" : 4326
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
         }
       },
       "schema": "GDeltGKG",
-      "view" : "Article",
-      "joins" : [
+      "view": "Article",
+      "joins": [
         {
-          "source" : "sparql",
-          "query" : "select ?OBJECT_ID ?sparql_url WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . }",
-          "joinOn" : {
-            "left" : "OBJECTID",
-            "right" : "OBJECT_ID"
+          "source": "sparql",
+          "query": "select ?OBJECT_ID ?sparql_url WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . }",
+          "joinOn": {
+            "left": "OBJECTID",
+            "right": "OBJECT_ID"
           },
-          "fields" : {
-            "OBJECT_ID" : { "scalarType" : "long" },
-            "sparql_url" : { "scalarType" : "string" }
+          "fields": {
+            "OBJECT_ID": { "scalarType": "long" },
+            "sparql_url": { "scalarType": "string" }
           }
         }
       ],
-      "boundingQuery" : {
-        "jsonPropertyValueQuery" : {
-          "property" : ["geores"], "value" : [ 1 ],
-          "options" : ["lang=en"], "weight" : 0
+      "boundingQuery": {
+        "jsonPropertyValueQuery": {
+          "property": ["geores"],
+          "value": [1],
+          "options": ["lang=en"],
+          "weight": 0
         }
       },
       "readOnly": true
     },
     {
       "id": 6,
-      "name" : "GKG level 1",
+      "name": "GKG level 1",
       "description": "GDelt GKG article data at geores 1 (country)",
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
       "geometryPath": "/geometry",
-      "extent" : {
-        "xmin" : -180,
-        "ymin" : -90,
-        "xmax" : 180,
-        "ymax" : 90,
-        "spatialReference" : {
-          "wkid" : 4326,
-          "latestWkid" : 4326
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
         }
       },
-      "dataSources" : [
+      "dataSources": [
         {
-          "source" : "view",
+          "source": "view",
           "schema": "GDeltGKG",
-          "view" : "Article"
+          "view": "Article"
         }
       ],
-      "boundingQuery" : {
-        "jsonPropertyValueQuery" : {
-          "property" : ["geores"], "value" : [ 1 ],
-          "options" : ["lang=en"], "weight" : 0
+      "boundingQuery": {
+        "jsonPropertyValueQuery": {
+          "property": ["geores"],
+          "value": [1],
+          "options": ["lang=en"],
+          "weight": 0
         }
       },
       "readOnly": true
     },
     {
       "id": 7,
-      "name" : "GKG level 1",
+      "name": "GKG level 1",
       "description": "GDelt GKG article data at geores 1 (country)",
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
       "geometryPath": "/geometry",
-      "extent" : {
-        "xmin" : -180,
-        "ymin" : -90,
-        "xmax" : 180,
-        "ymax" : 90,
-        "spatialReference" : {
-          "wkid" : 4326,
-          "latestWkid" : 4326
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
         }
       },
-      "dataSources" : [
+      "dataSources": [
         {
-          "source" : "view",
+          "source": "view",
           "schema": "GDeltGKG",
-          "view" : "Article"
+          "view": "Article"
         },
         {
-          "source" : "sparql",
-          "query" : "select ?OBJECT_ID ?sparql_url WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . }",
-          "joinOn" : {
-            "left" : "OBJECTID",
-            "right" : "OBJECT_ID"
+          "source": "sparql",
+          "query": "select ?OBJECT_ID ?sparql_url WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . }",
+          "joinOn": {
+            "left": "OBJECTID",
+            "right": "OBJECT_ID"
           },
-          "fields" : {
-            "OBJECT_ID" : { "scalarType" : "long" },
-            "sparql_url" : { "scalarType" : "string" }
+          "fields": {
+            "OBJECT_ID": { "scalarType": "long" },
+            "sparql_url": { "scalarType": "string" }
           }
         }
       ],
-      "boundingQuery" : {
-        "jsonPropertyValueQuery" : {
-          "property" : ["geores"], "value" : [ 1 ],
-          "options" : ["lang=en"], "weight" : 0
+      "boundingQuery": {
+        "jsonPropertyValueQuery": {
+          "property": ["geores"],
+          "value": [1],
+          "options": ["lang=en"],
+          "weight": 0
         }
       },
       "readOnly": true
     },
     {
       "id": 8,
-      "name" : "GKG level 1",
+      "name": "GKG level 1",
       "description": "GDelt GKG article data at geores 1 (country)",
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
       "geometryPath": "/geometry",
-      "extent" : {
-        "xmin" : -180,
-        "ymin" : -90,
-        "xmax" : 180,
-        "ymax" : 90,
-        "spatialReference" : {
-          "wkid" : 4326,
-          "latestWkid" : 4326
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
         }
       },
-      "dataSources" : [
+      "dataSources": [
         {
-          "source" : "sparql",
-          "query" : "select ?OBJECTID ?sparql_url ?DocId WHERE { ?OBJECTID <http://marklogic.com/objectid> ?sparql_url . ?OBJECTID <http://marklogic.com/uri> ?DocId }",
-          "fields" : {
-            "OBJECTID" : { "scalarType" : "long" },
-            "sparql_url" : { "scalarType" : "string" },
-            "DocId" : { "scalarType" : "string" }
+          "source": "sparql",
+          "query": "select ?OBJECTID ?sparql_url ?DocId WHERE { ?OBJECTID <http://marklogic.com/objectid> ?sparql_url . ?OBJECTID <http://marklogic.com/uri> ?DocId }",
+          "fields": {
+            "OBJECTID": { "scalarType": "long" },
+            "sparql_url": { "scalarType": "string" },
+            "DocId": { "scalarType": "string" }
           }
         }
       ],
@@ -324,30 +340,30 @@
     },
     {
       "id": 9,
-      "name" : "GKG level 1",
+      "name": "GKG level 1",
       "description": "GDelt GKG article data at geores 1 (country)",
       "geometryType": "Point",
       "idField": "OBJECT_ID",
       "displayField": "name",
       "geometryPath": "/geometry",
-      "extent" : {
-        "xmin" : -180,
-        "ymin" : -90,
-        "xmax" : 180,
-        "ymax" : 90,
-        "spatialReference" : {
-          "wkid" : 4326,
-          "latestWkid" : 4326
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
         }
       },
-      "dataSources" : [
+      "dataSources": [
         {
-          "source" : "sparql",
-          "query" : "select ?OBJECT_ID ?sparql_url ?DocId WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . ?OBJECT_ID <http://marklogic.com/uri> ?DocId }",
-          "fields" : {
-            "OBJECT_ID" : { "scalarType" : "long" },
-            "sparql_url" : { "scalarType" : "string" },
-            "DocId" : { "scalarType" : "string" }
+          "source": "sparql",
+          "query": "select ?OBJECT_ID ?sparql_url ?DocId WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . ?OBJECT_ID <http://marklogic.com/uri> ?DocId }",
+          "fields": {
+            "OBJECT_ID": { "scalarType": "long" },
+            "sparql_url": { "scalarType": "string" },
+            "DocId": { "scalarType": "string" }
           }
         },
         {
@@ -362,9 +378,9 @@
               "scalarType": "string"
             }
           },
-          "joinOn" : {
-            "left" : "OBJECT_ID",
-            "right" : "OBJECTID"
+          "joinOn": {
+            "left": "OBJECT_ID",
+            "right": "OBJECTID"
           }
         }
       ],
@@ -372,39 +388,39 @@
     },
     {
       "id": 10,
-      "name" : "GKG level 1",
+      "name": "GKG level 1",
       "description": "GDelt GKG article data at geores 1 (country)",
       "geometryType": "Point",
       "idField": "OBJECT_ID",
       "displayField": "name",
       "geometryPath": "/geometry",
-      "extent" : {
-        "xmin" : -180,
-        "ymin" : -90,
-        "xmax" : 180,
-        "ymax" : 90,
-        "spatialReference" : {
-          "wkid" : 4326,
-          "latestWkid" : 4326
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
         }
       },
-      "dataSources" : [
+      "dataSources": [
         {
-          "source" : "sparql",
-          "query" : "select ?OBJECT_ID ?sparql_url ?DocId WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . ?OBJECT_ID <http://marklogic.com/uri> ?DocId }",
-          "fields" : {
-            "OBJECT_ID" : { "scalarType" : "long" },
-            "sparql_url" : { "scalarType" : "string" },
-            "DocId" : { "scalarType" : "string" }
+          "source": "sparql",
+          "query": "select ?OBJECT_ID ?sparql_url ?DocId WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . ?OBJECT_ID <http://marklogic.com/uri> ?DocId }",
+          "fields": {
+            "OBJECT_ID": { "scalarType": "long" },
+            "sparql_url": { "scalarType": "string" },
+            "DocId": { "scalarType": "string" }
           }
         },
         {
-          "source" : "view",
+          "source": "view",
           "schema": "GDeltGKG",
-          "view" : "Article",
-          "joinOn" : {
-            "left" : "OBJECT_ID",
-            "right" : "OBJECTID"
+          "view": "Article",
+          "joinOn": {
+            "left": "OBJECT_ID",
+            "right": "OBJECTID"
           }
         }
       ],
@@ -412,46 +428,48 @@
     },
     {
       "id": 11,
-      "name" : "GKG level 4 Stats testing",
+      "name": "GKG level 4 Stats testing",
       "description": "GDelt GKG article data at geores 4 (city/landmark)",
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "displayField": "name",
       "geometryPath": "/geometry",
-      "extent" : {
-        "xmin" : -180,
-        "ymin" : -90,
-        "xmax" : 180,
-        "ymax" : 90,
-        "spatialReference" : {
-          "wkid" : 4326,
-          "latestWkid" : 4326
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
         }
       },
-      "dataSources" : [
+      "dataSources": [
         {
-          "source" : "sparql",
-          "query" : "select ?OBJECT_ID ?sparql_url ?DocId WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . ?OBJECT_ID <http://marklogic.com/uri> ?DocId }",
-          "fields" : {
-            "OBJECT_ID" : { "scalarType" : "long" },
-            "sparql_url" : { "scalarType" : "string" },
-            "DocId" : { "scalarType" : "string" }
+          "source": "sparql",
+          "query": "select ?OBJECT_ID ?sparql_url ?DocId WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . ?OBJECT_ID <http://marklogic.com/uri> ?DocId }",
+          "fields": {
+            "OBJECT_ID": { "scalarType": "long" },
+            "sparql_url": { "scalarType": "string" },
+            "DocId": { "scalarType": "string" }
           }
         },
         {
-          "source" : "view",
+          "source": "view",
           "schema": "GDeltGKG",
-          "view" : "Article",
-          "joinOn" : {
-            "left" : "OBJECT_ID",
-            "right" : "OBJECTID"
+          "view": "Article",
+          "joinOn": {
+            "left": "OBJECT_ID",
+            "right": "OBJECTID"
           }
         }
       ],
-      "boundingQuery" : {
-        "jsonPropertyValueQuery" : {
-          "property" : ["geores"], "value" : [ 4 ],
-          "options" : ["lang=en"], "weight" : 0
+      "boundingQuery": {
+        "jsonPropertyValueQuery": {
+          "property": ["geores"],
+          "value": [4],
+          "options": ["lang=en"],
+          "weight": 0
         }
       },
       "readOnly": true
