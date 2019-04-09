@@ -1,0 +1,14 @@
+Add the data services configuration in ml-data. See the marklogic-geo-data-services project for a sample.
+Make sure to add:
+- collections.properties
+```
+*=http://marklogic.com/feature-services
+```
+- permissions.properties
+```
+*=geo-data-services-reader,read,geo-data-services-admin,update,geo-data-services-writer,update
+```
+
+Additionally, place any data to be uploaded to the server here.
+See the ml-gradle documentation for usage information.
+

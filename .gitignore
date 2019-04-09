@@ -3,6 +3,7 @@
 bin
 
 # Created by VSCode for the Java Project
+.classpath
 .project
 
 # Created by https://www.gitignore.io/api/macos,gradle,windows,sublimetext,visualstudiocode,node

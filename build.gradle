@@ -119,9 +119,17 @@ task sourcesJar(type: Jar) {
 
 task modulesJar(type: Jar) {
     description = "Jar up the marklogic-geo-data-services MarkLogic modules into a package that can be published"
+    from("src/main/ml-config") {
+        into("marklogic-geo-data-services-modules/ml-config")
+    }
+    // Not including ml-data since the user will need to specify their own
     from("src/main/ml-modules") {
         into("marklogic-geo-data-services-modules/ml-modules")
     }
+    from("src/main/ml-plugins") {
+        into("marklogic-geo-data-services-modules/ml-plugins")
+    }
+    // Not including ml-schemas since the user will need to specify their own
     destinationDir file("build/libs")
     baseName "marklogic-geo-data-services-modules"
 }
@@ -153,11 +161,11 @@ if (project.hasProperty("myBintrayUser")) {
         key = myBintrayKey
         publications = ["sourcesJava", "mainModules"]
         pkg {
-            repo = "marklogic-geo-data-services"
+            repo = "maven"
             name = project.name
-            userOrg = "preston-mcgowan"
+            userOrg = "prestonmcgowan"
             licenses = ["Apache-2.0"]
-            //vcsUrl = "https://github.com/marklogic-community/" + project.name + ".git"
+            //vcsUrl = "https://github.com/marklogic-community/" + project.name + ".git"s
             version {
                 name = project.version
                 released = new Date()
