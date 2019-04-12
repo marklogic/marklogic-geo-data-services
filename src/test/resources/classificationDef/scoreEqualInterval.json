@@ -1,13 +1,11 @@
 {
-  "params" : {
-    "id" : "Restaurants",
-    "layer" : 0,
+  "params": {
+    "id": "Restaurants",
+    "layer": 0,
     "method": "generateRenderer"
   },
-  "query" : {
+  "query": {
     "classificationDef": "{\"type\":\"classBreaksDef\",\"classificationField\":\"Score\",\"classificationMethod\":\"esriClassifyEqualInterval\",\"breakCount\":5}",
-    "where": "1=1",
-    "f": "json",
-    "callback": "dojo.io.script.jsonp_dojoIoScript360._jsonpCallback"
+    "where": "1=1"
   }
 }

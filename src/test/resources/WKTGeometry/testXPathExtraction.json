@@ -1,13 +1,16 @@
 {
-  "params": { "id": "GeoLocation", "layer": "6", "method": "query" },
+  "params": {
+    "id": "GeoLocation",
+    "layer": "6",
+    "method": "query"
+  },
   "query": {
     "ids": 900001,
     "returnGeometry": 1,
     "params": { "id": "GDeltGKG", "layer": 2, "method": "generateRenderer" },
     "query": {
       "classificationDef": "{\"type\":\"classBreaksDef\",\"classificationField\":\"OBJECTID\",\"classificationMethod\":\"esriClassifyGeometricalInterval\",\"breakCount\":5}",
-      "where": "1=1",
-      "f": "json"
+      "where": "1=1"
     }
   }
 }

@@ -1,13 +1,11 @@
 {
-  "params" : {
-    "id" : "Restaurants",
-    "layer" : 0,
+  "params": {
+    "id": "Restaurants",
+    "layer": 0,
     "method": "generateRenderer"
   },
-  "query" : {
+  "query": {
     "classificationDef": "{\"type\":\"uniqueValueDef\",\"uniqueValueFields\":[\"Zip\", \"City\"],\"fieldDelimiter\":\",\"}",
-    "where": "Score >= 99",
-    "f": "json",
-    "callback": "dojo.io.script.jsonp_dojoIoScript360._jsonpCallback"
+    "where": "Score >= 99"
   }
 }

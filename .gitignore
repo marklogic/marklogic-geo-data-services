@@ -1,6 +1,10 @@
-
-# Directory used for storing results of the test task
-bin
+# Standard directories created by gradle
+/bin/
+.gradle
+.settings
+build
+.classpath
+.project
 
 # Created by VSCode for the Java Project
 .classpath
