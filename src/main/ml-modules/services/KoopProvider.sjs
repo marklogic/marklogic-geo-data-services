@@ -16,7 +16,9 @@ function post(context, params, input) {
   // assume the input is the request that was sent to the koop provider getData() function
 
   try {
-    return getData(fn.head(xdmp.fromJSON(input)));
+    const geoJson =  getData(fn.head(xdmp.fromJSON(input)));
+    xdmp.trace("KOOP-RESPONSE", JSON.stringify(geoJson));
+    return geoJson;
   } catch (err) {
     console.log(err.stack);
     console.trace(err);
@@ -37,7 +39,7 @@ function returnErrToClient(statusCode, statusMsg, body) {
 
 // the same as the koop provider function without the callback parameter
 function getData(req) {
-  console.log(req);
+  xdmp.trace("KOOP-REQUEST", JSON.stringify(req));
 
   if (req.params.method == "query") {
     return query(req);
@@ -506,7 +508,7 @@ function parseWhere(query) {
     whereQuery = sql2optic.where(where);
   }
 
-  console.log("where: " + whereQuery);
+  xdmp.trace("KOOP-OPTIC", "where: " + whereQuery);
 
   return whereQuery;
 }
@@ -539,7 +541,7 @@ function parseGeometry(query, layerModel) {
     geoQuery = cts.trueQuery();
   }
 
-  console.log("geometry: " + geoQuery);
+  xdmp.trace("KOOP-OPTIC", "geometry: " + geoQuery);
 
   return geoQuery;
 }
@@ -751,10 +753,10 @@ function getObjects(req) {
 
   const boundingQuery = cts.andQuery(boundingQueries);
 
-  console.log("bounding query: " + xdmp.toJsonString(boundingQuery));
+  xdmp.trace("KOOP-OPTIC", "bounding query: " + xdmp.toJsonString(boundingQuery));
 
   const offset = (!query.resultOffset ? 0 : Number(query.resultOffset));
-  console.log("offset: " + offset);
+  xdmp.trace("KOOP-OPTIC", "offset: " + offset);
 
   // what if the number of ids passed in is more than the max?
 
@@ -769,7 +771,7 @@ function getObjects(req) {
     limit = MAX_RECORD_COUNT
   }
 
-  console.log("limit: " + limit);
+  xdmp.trace("KOOP-OPTIC", "limit: " + limit);
   const bindParams = {
     "offset" : offset,
     "limit" : ((limit != Number.MAX_SAFE_INTEGER) ? (limit+1) : Number.MAX_SAFE_INTEGER),
@@ -909,12 +911,12 @@ function aggregate(req) {
   }
 
   const boundingQuery = cts.andQuery(boundingQueries);
-  console.log("bounding query: " + xdmp.toJsonString(boundingQuery));
+  xdmp.trace("KOOP-OPTIC", "bounding query: " + xdmp.toJsonString(boundingQuery));
 
   const whereQuery = parseWhere(query);
 
-  console.log("group by: " + groupByFields);
-  console.log("order by: " + orderByFields);
+  xdmp.trace("KOOP-OPTIC", "group by: " + groupByFields);
+  xdmp.trace("KOOP-OPTIC", "order by: " + orderByFields);
 
   // Hard code to 0 and max for now as these aren't technically supported for
   // the feature service aggregations but we may want to support limiting if there
