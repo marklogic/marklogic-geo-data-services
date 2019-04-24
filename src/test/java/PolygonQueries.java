@@ -200,7 +200,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	}
 
 	// Polygon4 ( No Features within Polygon) Expected : Zero results
-	//TODO: Looks like this might be related to the rouding of decimals
+	//TODO: Looks like this might be related to the rounding of decimals
 	@Test
 	public void testPolygonWithin4() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonWithin4.json");
@@ -217,7 +217,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.body("features.size()", is(0));
 	}
 
-	// Polygon5 (Features within Polygon - WIldLife refuge) Expected : WildLife
+	// Polygon5 (Features within Polygon - WildLife refuge) Expected : WildLife
 	// refuge
 	@Test
 	public void testPolygonWithin5() throws UnsupportedEncodingException, ParseException {

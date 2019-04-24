@@ -34,9 +34,9 @@ public class WKTGeometry  extends AbstractFeatureServiceTest {
                 .statusCode(200)
                 .body("features.size()", is(1))
                 .body("features[0].geometry.coordinates.size()", is(1))
-                .body("features[0].geometry.coordinates[0][0].size()", is(5))
-                .body("features[0].geometry.coordinates[0][0][0].size()", is(2))
-                .body("features[0].geometry.coordinates[0][0][0]", hasItems(30, 10))
+                .body("features[0].geometry.coordinates[0].size()", is(5))
+                .body("features[0].geometry.coordinates[0][0].size()", is(2))
+                .body("features[0].geometry.coordinates[0][0]", hasItems(30, 10))
         ;
     }
 
@@ -64,9 +64,9 @@ public class WKTGeometry  extends AbstractFeatureServiceTest {
                 .statusCode(200)
                 .body("features.size()", is(1))
                 .body("features[0].geometry.coordinates.size()", is(1))
-                .body("features[0].geometry.coordinates[0][0].size()", is(5))
-                .body("features[0].geometry.coordinates[0][0][0].size()", is(2))
-                .body("features[0].geometry.coordinates[0][0][0]", hasItems(30, 10))
+                .body("features[0].geometry.coordinates[0].size()", is(5))
+                .body("features[0].geometry.coordinates[0][0].size()", is(2))
+                .body("features[0].geometry.coordinates[0][0]", hasItems(30, 10))
         ;
     }
 }
