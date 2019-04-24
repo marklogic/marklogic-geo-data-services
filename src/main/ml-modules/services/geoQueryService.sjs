@@ -67,6 +67,7 @@ function getServiceModel(serviceName) {
 
   const collection = "http://marklogic.com/feature-services";
 
+  xdmp.trace("KOOP-DEBUG", "Searching for Service Model: " + serviceName);
   let model = fn.head(
     cts.search(cts.andQuery([
       cts.collectionQuery(collection),
@@ -75,8 +76,10 @@ function getServiceModel(serviceName) {
   );
 
   if (model) {
+    xdmp.trace("KOOP-DEBUG", "Found service: " + serviceName);
     return model.toObject();
   } else {
+    xdmp.trace("KOOP-DEBUG", "No service info found for: " + serviceName);
     throw "No service info found for: " + serviceName;
   }
 }
@@ -529,7 +532,7 @@ function parseWhere(query) {
     whereQuery = sql2optic.where(where);
   }
 
-  xdmp.trace("KOOP-OPTIC", "where: " + whereQuery);
+  xdmp.trace("KOOP-DEBUG", "where: " + whereQuery);
 
   return whereQuery;
 }
@@ -563,7 +566,7 @@ function parseGeometry(query, layerModel) {
     geoQuery = cts.trueQuery();
   }
 
-  xdmp.trace("KOOP-OPTIC", "geometry: " + geoQuery);
+  xdmp.trace("KOOP-DEBUG", "geometry: " + geoQuery);
 
   return geoQuery;
 }
@@ -741,6 +744,7 @@ function parseGroupByFields(query) {
 // returns a Sequence of documents
 function getObjects(req) {
   xdmp.trace("KOOP-DEBUG-FINE", "Starting getObjects");
+  xdmp.trace("KOOP-DEBUG", "getLayerModel(" + req.params.id + ", " + req.params.layer + ")" );
   const layerModel = getLayerModel(req.params.id, req.params.layer);
 
   const query = req.query;
@@ -758,6 +762,8 @@ function getObjects(req) {
 
   const returnGeometry = (query.returnGeometry || outFields[0] === "*") ? true : false;
   const geometrySource = layerModel.geometrySource;
+  xdmp.trace("KOOP-DEBUG", "geometrySource = " + geometrySource);
+  xdmp.trace("KOOP-DEBUG", "returnGeometry = " + returnGeometry);
 
   const boundingQueries = [ geoQuery ];
 
@@ -773,7 +779,7 @@ function getObjects(req) {
     // this assumes we are querying against the OBJECTID field as a number
     // should use a range index if we have one
     //const idsQuery = cts.jsonPropertyValueQuery("OBJECTID", ids.map(Number));
-    xdmp.trace("KOOP-DEBUG-FINE", "getting ids: " + ids);
+    xdmp.trace("KOOP-DEBUG", "getting ids: " + ids);
 
     //boundingQueries.push(idsQuery);
     //const idsQuery = op.sqlCondition("OBJECTID IN (" + query.objectIds + ")");
@@ -786,10 +792,10 @@ function getObjects(req) {
 
   const boundingQuery = cts.andQuery(boundingQueries);
 
-  xdmp.trace("KOOP-OPTIC", "bounding query: " + xdmp.toJsonString(boundingQuery));
+  xdmp.trace("KOOP-DEBUG", "bounding query: " + xdmp.toJsonString(boundingQuery));
 
   const offset = (!query.resultOffset ? 0 : Number(query.resultOffset));
-  xdmp.trace("KOOP-OPTIC", "offset: " + offset);
+  xdmp.trace("KOOP-DEBUG", "offset: " + offset);
 
   // what if the number of ids passed in is more than the max?
 
@@ -804,7 +810,7 @@ function getObjects(req) {
     limit = MAX_RECORD_COUNT
   }
 
-  xdmp.trace("KOOP-OPTIC", "limit: " + limit);
+  xdmp.trace("KOOP-DEBUG", "limit: " + limit);
   const bindParams = {
     "offset" : offset,
     "limit" : ((limit != Number.MAX_SAFE_INTEGER) ? (limit+1) : Number.MAX_SAFE_INTEGER),
@@ -948,12 +954,12 @@ function aggregate(req) {
   }
 
   const boundingQuery = cts.andQuery(boundingQueries);
-  xdmp.trace("KOOP-OPTIC", "bounding query: " + xdmp.toJsonString(boundingQuery));
+  xdmp.trace("KOOP-DEBUG", "bounding query: " + xdmp.toJsonString(boundingQuery));
 
   const whereQuery = parseWhere(query);
 
-  xdmp.trace("KOOP-OPTIC", "group by: " + groupByFields);
-  xdmp.trace("KOOP-OPTIC", "order by: " + orderByFields);
+  xdmp.trace("KOOP-DEBUG", "group by: " + groupByFields);
+  xdmp.trace("KOOP-DEBUG", "order by: " + orderByFields);
 
   // Hard code to 0 and max for now as these aren't technically supported for
   // the feature service aggregations but we may want to support limiting if there
@@ -1022,8 +1028,6 @@ function getSelectDef(outFields, columnDefs, returnGeometry = false, geometryExt
 
   // only include this if returnGeometry is true or outFields is *
   if (returnGeometry || outFields[0] === "*") {
-
-    xdmp.trace("KOOP-DEBUG-FINE", "geometry source: " + JSON.stringify(geometrySource));
 
     // if (geometrySource && geometrySource.fields) {
     //   // build the geomtery from fields in the row
