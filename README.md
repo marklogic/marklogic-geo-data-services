@@ -11,7 +11,6 @@ The MarkLogic Geo Data Services capability can be included in a ml-gradle projec
 buildscript {
   repositories {
     jcenter()
-    maven { url "https://dl.bintray.com/prestonmcgowan/maven" }
   }
   dependencies {
     classpath "com.marklogic:marklogic-geo-data-services-modules:0.0.3"
@@ -23,7 +22,6 @@ plugins {
 }
 repositories {
   jcenter()
-  maven { url "https://dl.bintray.com/prestonmcgowan/maven" }
 }
 
 dependencies {
@@ -43,3 +41,23 @@ Add, or create,  the following src/main/ml-config/databases/schemas-database.jso
 ```
 
 ### Configure your data service using the Feature Service Descriptor JSON format
+TODO
+
+### Deploy your application
+Make use of the gradle mlDeploy to deploy your application with MarkLogic Geo Data Services capability.
+## Stand Alone Testing
+You can make use of the koop-provider-marklogic project to test the MarkLogic Geo Data Services though the Koop connector. The koop-provider-marklogic project expects this repository to be deployed, the associated test data, and users & roles.
+### Deploy This Project for Testing
+1. Configure gradle.properties for your environment
+2. gradle mlDeploy
+3. gradle loadTestData
+4. gradle test
+### Test with Koop
+If you have deployed the application for testing, the koop-provider-marklogic configuration needs to match what was deployed, and then you can execute the following in two different command line sessions
+
+**Command Line 1**
+1. gradle installKoop
+2. gradle runKoop
+
+**Command Line 2**
+1. gradle test
