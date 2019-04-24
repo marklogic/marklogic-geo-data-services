@@ -13,7 +13,7 @@ const geoextractor = require('/ext/geo/extractor.sjs');
 const MAX_RECORD_COUNT = 5000;
 
 function post(context, params, input) {
-  xdmp.trace("KOOP-DEBUG", "Starting post");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting post");
   // assume the input is the request that was sent to the koop provider getData() function
 
   try {
@@ -30,7 +30,7 @@ function post(context, params, input) {
 }
 
 function returnErrToClient(statusCode, statusMsg, body) {
-  xdmp.trace("KOOP-DEBUG", "Starting returnErrToClient");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting returnErrToClient");
   fn.error(
     null,
     'RESTAPI-SRVEXERR',
@@ -40,9 +40,9 @@ function returnErrToClient(statusCode, statusMsg, body) {
 };
 
 // the same as the koop provider function without the callback parameter
-xdmp.trace("KOOP-DEBUG", "Starting without");
+xdmp.trace("KOOP-DEBUG-FINE", "Starting without");
 function getData(req) {
-  xdmp.trace("KOOP-DEBUG", "Starting getData");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting getData");
   xdmp.trace("KOOP-REQUEST", JSON.stringify(req));
 
   if (req.params.method == "query") {
@@ -62,7 +62,7 @@ function getData(req) {
 }
 
 function getServiceModel(serviceName) {
-  xdmp.trace("KOOP-DEBUG", "Starting getServiceModel");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting getServiceModel");
   // TODO: These should be cached
 
   const collection = "http://marklogic.com/feature-services";
@@ -82,7 +82,7 @@ function getServiceModel(serviceName) {
 }
 
 function getLayerModel(serviceName, layerId) {
-  xdmp.trace("KOOP-DEBUG", "Starting getLayerModel");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting getLayerModel");
   // TODO: These should be cached
 
   const serviceModel = getServiceModel(serviceName);
@@ -116,13 +116,13 @@ function getLayerModel(serviceName, layerId) {
 }
 
 function getSchema(layerDesc, serviceName) {
-  xdmp.trace("KOOP-DEBUG", "Starting getSchema");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting getSchema");
   return layerDesc.schema || serviceName;
 }
 
 function generateServiceDescriptor(serviceName) {
-  xdmp.trace("KOOP-DEBUG", "Starting generateServiceDescriptor");
-  xdmp.trace("KOOP-DEBUG", "generating service descriptor for " + serviceName);
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting generateServiceDescriptor");
+  xdmp.trace("KOOP-DEBUG-FINE", "generating service descriptor for " + serviceName);
 
   // TODO: we should cache this instead of generating it every time
 
@@ -162,7 +162,7 @@ function generateServiceDescriptor(serviceName) {
 }
 
 function generateFieldDescriptors(layerModel, serviceName) {
-  xdmp.trace("KOOP-DEBUG", "Starting generateFieldDescriptors");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting generateFieldDescriptors");
   if (layerModel.view === undefined) {
     return generateFieldDescriptorsFromDataSourcesArray(layerModel, serviceName);
   } else {
@@ -171,7 +171,7 @@ function generateFieldDescriptors(layerModel, serviceName) {
 }
 
 function generateFieldDescriptorsFromViewAndJoins(layerModel, serviceName) {
-  xdmp.trace("KOOP-DEBUG", "Starting generateFieldDescriptorsFromViewAndJoins");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting generateFieldDescriptorsFromViewAndJoins");
   const fields = [];
 
   const schema = getSchema(layerModel, serviceName);
@@ -187,7 +187,7 @@ function generateFieldDescriptorsFromViewAndJoins(layerModel, serviceName) {
 }
 
 function generateFieldDescriptorsFromDataSourcesArray(layerModel, serviceName) {
-  xdmp.trace("KOOP-DEBUG", "Starting generateFieldDescriptorsFromDataSourcesArray");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting generateFieldDescriptorsFromDataSourcesArray");
   const fields = [];
 
   const primaryDataSource = layerModel.dataSources[0];
@@ -216,7 +216,7 @@ function generateFieldDescriptorsFromDataSourcesArray(layerModel, serviceName) {
 }
 
 function generateJoinFieldDescriptorsFromViewAndJoins(layerModel) {
-  xdmp.trace("KOOP-DEBUG", "Starting generateJoinFieldDescriptorsFromViewAndJoins");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting generateJoinFieldDescriptorsFromViewAndJoins");
   const fields = [];
   layerModel.joins.forEach((dataSource) => {
     Object.keys(dataSource.fields).forEach((field) => {
@@ -229,7 +229,7 @@ function generateJoinFieldDescriptorsFromViewAndJoins(layerModel) {
 }
 
 function generateJoinFieldDescriptorsFromDataSource(dataSource) {
-  xdmp.trace("KOOP-DEBUG", "Starting generateJoinFieldDescriptorsFromDataSource");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting generateJoinFieldDescriptorsFromDataSource");
   const fields = [];
   Object.keys(dataSource.fields).forEach((field) => {
     if (dataSource.includeFields === undefined || dataSource.includeFields.includes(field.name)) {
@@ -240,7 +240,7 @@ function generateJoinFieldDescriptorsFromDataSource(dataSource) {
 }
 
 function generateFieldDescriptorsFromViewDef(viewDef, dataSource) {
-  xdmp.trace("KOOP-DEBUG", "Starting generateFieldDescriptorsFromViewDef");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting generateFieldDescriptorsFromViewDef");
   const fields = [];
   Object.keys(viewDef.view.columns).forEach((column) => {
     const field = viewDef.view.columns[column];
@@ -260,7 +260,7 @@ function generateFieldDescriptorsFromViewDef(viewDef, dataSource) {
 }
 
 function createFieldDescriptor(fieldName, scalarType, alias, includeFields) {
-  xdmp.trace("KOOP-DEBUG", "Starting createFieldDescriptor");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting createFieldDescriptor");
   const fieldDescriptor = {
     name : fieldName,
     type : getFieldType(scalarType)
@@ -275,8 +275,8 @@ function createFieldDescriptor(fieldName, scalarType, alias, includeFields) {
 }
 
 function generateLayerDescriptor(serviceName, layerNumber) {
-  xdmp.trace("KOOP-DEBUG", "Starting generateLayerDescriptor");
-  xdmp.trace("KOOP-DEBUG", "generating layer descriptor for " + serviceName + ":" + layerNumber);
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting generateLayerDescriptor");
+  xdmp.trace("KOOP-DEBUG-FINE", "generating layer descriptor for " + serviceName + ":" + layerNumber);
 
   const serviceDesc = generateServiceDescriptor(serviceName);
 
@@ -293,7 +293,7 @@ function generateLayerDescriptor(serviceName, layerNumber) {
 }
 
 function getFieldType(datatype) {
-  xdmp.trace("KOOP-DEBUG", "Starting getFieldType");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting getFieldType");
   switch(datatype) {
     case "anyURI":
     case "iri":
@@ -348,7 +348,7 @@ function getFieldType(datatype) {
 
 
 function query(req) {
-  xdmp.trace("KOOP-DEBUG", "Starting query");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting query");
   // always return a FeatureCollection for now
   const geojson = {
     type : 'FeatureCollection',
@@ -426,7 +426,7 @@ function query(req) {
  * @param {Object} req - The request from Koop
  */
 function queryClassificationValues(req) {
-  xdmp.trace("KOOP-DEBUG", "Starting queryClassificationValues");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting queryClassificationValues");
 
   const def = parseClassificationDef(req.query);
 
@@ -457,7 +457,7 @@ function queryClassificationValues(req) {
   }
 
   const result = query({ params : req.params, query : q });
-  xdmp.trace("KOOP-DEBUG", "queryClassificationValues calculating breaks for " + result.statistics.length + " values");
+  xdmp.trace("KOOP-DEBUG-FINE", "queryClassificationValues calculating breaks for " + result.statistics.length + " values");
 
   const classStatistics = {
     geometryType : getLayerModel(req.params.id, req.params.layer).geometryType
@@ -506,7 +506,7 @@ function queryClassificationValues(req) {
 }
 
 function valuesToRanges(values) {
-  xdmp.trace("KOOP-DEBUG", "Starting valuesToRanges");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting valuesToRanges");
   const ranges = Array(values.length - 1);
   for (let i = 0; i < ranges.length; i++) {
     ranges[i] = [values[i], values[i + 1]];
@@ -516,7 +516,7 @@ function valuesToRanges(values) {
 
 
 function parseWhere(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseWhere");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting parseWhere");
   // Any legal SQL where clause operating on the fields in the layer is allowed
   // Example: where=POP2000 > 350000
 
@@ -535,7 +535,7 @@ function parseWhere(query) {
 }
 
 function parseGeometry(query, layerModel) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseGeometry");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting parseGeometry");
   // the koop provider code will convert the ESRI geometry objects into GeoJSON
   // in WGS84 and place it in the query.extension.geometry property
   let geoQuery = null;
@@ -569,7 +569,7 @@ function parseGeometry(query, layerModel) {
 }
 
 function convertEnvelopPolygon(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting convertEnvelopPolygon");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting convertEnvelopPolygon");
   // the koop server converts ESRI envelopes to GeoJSON polygons
   // convert them to boxes for more efficient seach
   // TODO: file an issue about the winding order (they do not follow the right hand rule)
@@ -595,12 +595,12 @@ function convertEnvelopPolygon(query) {
 }
 
 function splitCtsBox(box) {
-  xdmp.trace("KOOP-DEBUG", "Starting splitCtsBox");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting splitCtsBox");
   return splitBox({ south : cts.boxSouth(box), west : cts.boxWest(box), north : cts.boxNorth(box), east : cts.boxEast(box) })
 }
 
 function splitBox(box) {
-  xdmp.trace("KOOP-DEBUG", "Starting splitBox");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting splitBox");
   if (Math.round(Math.abs(box.west - box.east)) >= 179) {
     // check east/west
     const middle = (box.west + box.east) / 2.0;
@@ -620,7 +620,7 @@ function splitBox(box) {
 }
 
 function parseRegionOperation(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseRegionOperation");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting parseRegionOperation");
   // cts region operators: contains, covered-by, covers, disjoint, intersects, overlaps, within
   // default to intersects
 
@@ -654,7 +654,7 @@ if (query.spatialRel) {
 }
 
 function parseOutStatistics(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseOutStatistics");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting parseOutStatistics");
   // outStatistics may be a JSON string of an array of stats definitions
   // or it may be converted already
   // see http://resources.arcgis.com/en/help/rest/apiref/fsquery.html
@@ -664,14 +664,14 @@ function parseOutStatistics(query) {
 }
 
 function parseClassificationDef(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseClassificationDef");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting parseClassificationDef");
   return (typeof query.classificationDef === "string") ?
     JSON.parse(query.classificationDef) : query.classificationDef;
 }
 
 
 function parseOrderByFields(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseOrderByFields");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting parseOrderByFields");
   // orderByFields is supported on only those layers / tables that indicate supportsAdvancedQueries is true.
   // orderByFields defaults to ASC (ascending order) if <ORDER> is unspecified.
 
@@ -693,7 +693,7 @@ function parseOrderByFields(query) {
 }
 
 function parseObjectIds(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseObjectIds");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting parseObjectIds");
   //Syntax: objectIds=<objectId1>, <objectId2>
   //Example: objectIds=37, 462
   let ids = null;
@@ -708,7 +708,7 @@ function parseObjectIds(query) {
 }
 
 function parseOutFields(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseOutFields");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting parseOutFields");
   // Description: The list of fields to be included in the returned resultset. This list is a comma delimited list of field names.
   // You can also specify the wildcard "*" as the value of this parameter. In this case, the query results include all the field values.
   // Note that the wildcard also implicitly implies returnGeometry=true and setting returnGeometry to false will have no effect.
@@ -724,7 +724,7 @@ function parseOutFields(query) {
 }
 
 function parseGroupByFields(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseGroupByFields");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting parseGroupByFields");
   // Description: One or more field names on which the values need to be grouped for calculating the statistics.
   // Note: groupByFieldsForStatistics is valid only when outStatistics parameter is used.
   // Syntax: groupByFieldsForStatistics=field1, field2
@@ -740,7 +740,7 @@ function parseGroupByFields(query) {
 
 // returns a Sequence of documents
 function getObjects(req) {
-  xdmp.trace("KOOP-DEBUG", "Starting getObjects");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting getObjects");
   const layerModel = getLayerModel(req.params.id, req.params.layer);
 
   const query = req.query;
@@ -773,7 +773,7 @@ function getObjects(req) {
     // this assumes we are querying against the OBJECTID field as a number
     // should use a range index if we have one
     //const idsQuery = cts.jsonPropertyValueQuery("OBJECTID", ids.map(Number));
-    xdmp.trace("KOOP-DEBUG", "getting ids: " + ids);
+    xdmp.trace("KOOP-DEBUG-FINE", "getting ids: " + ids);
 
     //boundingQueries.push(idsQuery);
     //const idsQuery = op.sqlCondition("OBJECTID IN (" + query.objectIds + ")");
@@ -883,7 +883,7 @@ function getObjects(req) {
 }
 
 function initializePipeline(viewPlan, boundingQuery, layerModel) {
-  xdmp.trace("KOOP-DEBUG", "Starting initializePipeline");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting initializePipeline");
   let pipeline = viewPlan.where(boundingQuery);
 
   if (layerModel.dataSources && layerModel.dataSources.length > 1) {
@@ -902,7 +902,7 @@ function initializePipeline(viewPlan, boundingQuery, layerModel) {
 }
 
 function addJoinToPipeline(dataSource, viewPlan, pipeline) {
-  xdmp.trace("KOOP-DEBUG", "Starting addJoinToPipeline");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting addJoinToPipeline");
   const dataSourcePlan = getPlanForDataSource(dataSource);
   const joinOn = dataSource.joinOn;
   pipeline = pipeline.joinInner(
@@ -912,8 +912,8 @@ function addJoinToPipeline(dataSource, viewPlan, pipeline) {
 }
 
 function getPlanForDataSource(dataSource) {
-  xdmp.trace("KOOP-DEBUG", "Starting getPlanForDataSource");
-  xdmp.trace("KOOP-DEBUG", "Data source: " + JSON.stringify(dataSource));
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting getPlanForDataSource");
+  xdmp.trace("KOOP-DEBUG-FINE", "Data source: " + JSON.stringify(dataSource));
 
   if (dataSource.source === "sparql") {
     return op.fromSPARQL(dataSource.query);
@@ -926,7 +926,7 @@ function getPlanForDataSource(dataSource) {
 
 // returns a Sequence of aggregated results
 function aggregate(req) {
-  xdmp.trace("KOOP-DEBUG", "Starting aggregate");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting aggregate");
   // When using outStatistics the only other parameters that will be used are
   // groupByFieldsForStatistics, orderByFields, time, and where.
 
@@ -1003,14 +1003,14 @@ function aggregate(req) {
 };
 
 function getAggregateFieldNames(aggregateDefs) {
-  xdmp.trace("KOOP-DEBUG", "Starting getAggregateFieldNames");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting getAggregateFieldNames");
   return aggregateDefs.map((def) => {
     return def._outCol._colName;
   });
 };
 
 function getSelectDef(outFields, columnDefs, returnGeometry = false, geometryExtractor) {
-  xdmp.trace("KOOP-DEBUG", "Starting getSelectDef");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting getSelectDef");
   // start with a GeoJSON feature with properties
   const defs = [
     op.as("type", "Feature"),
@@ -1023,7 +1023,7 @@ function getSelectDef(outFields, columnDefs, returnGeometry = false, geometryExt
   // only include this if returnGeometry is true or outFields is *
   if (returnGeometry || outFields[0] === "*") {
 
-    xdmp.trace("KOOP-DEBUG", "geometry source: " + JSON.stringify(geometrySource));
+    xdmp.trace("KOOP-DEBUG-FINE", "geometry source: " + JSON.stringify(geometrySource));
 
     // if (geometrySource && geometrySource.fields) {
     //   // build the geomtery from fields in the row
@@ -1050,7 +1050,7 @@ function getSelectDef(outFields, columnDefs, returnGeometry = false, geometryExt
 }
 
 function getPropDefs(outFields, columnDefs) {
-  xdmp.trace("KOOP-DEBUG", "Starting getPropDefs");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting getPropDefs");
   const props = [];
 
   if (outFields.length === 0 || outFields[0] === "*") {
@@ -1091,7 +1091,7 @@ function getPropDefs(outFields, columnDefs) {
 }
 
 function getValueConverter(col) {
-  xdmp.trace("KOOP-DEBUG", "Starting getValueConverter");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting getValueConverter");
   switch (col.scalarType) {
     case "date":
       return "";
@@ -1101,7 +1101,7 @@ function getValueConverter(col) {
 }
 
 function getOrderByDef(fields) {
-  xdmp.trace("KOOP-DEBUG", "Starting getOrderByDef");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting getOrderByDef");
   return fields.map((field) => {
     switch (field.order.toLowerCase()) {
       case "desc":
@@ -1116,7 +1116,7 @@ function getOrderByDef(fields) {
 
 // not used any more since we don't return aggregates in properties
 function getAggregatePropDefs(groupByFields, stats) {
-  xdmp.trace("KOOP-DEBUG", "Starting getAggregatePropDefs");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting getAggregatePropDefs");
   const props = [];
 
   groupByFields.map((f) => {
@@ -1134,12 +1134,12 @@ function getAggregatePropDefs(groupByFields, stats) {
 }
 
 function getAggregateGroupByDef(stats) {
-  xdmp.trace("KOOP-DEBUG", "Starting getAggregateGroupByDef");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting getAggregateGroupByDef");
   return stats.map(getAggregateStatDef);
 }
 
 function getAggregateStatDef(stat) {
-  xdmp.trace("KOOP-DEBUG", "Starting getAggregateStatDef");
+  xdmp.trace("KOOP-DEBUG-FINE", "Starting getAggregateStatDef");
   const statsType = stat.statisticType;
   const statsFieldName = stat.onStatisticField;
   const statsOutFieldName = stat.outStatisticFieldName || stat.onStatisticField + "_" + statsType;

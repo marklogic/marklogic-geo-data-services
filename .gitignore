@@ -1,3 +1,6 @@
+# Ignore gradle publish properties given it has a shared private key
+gradle-publish.properties
+
 # Standard directories created by gradle
 /bin/
 .gradle
