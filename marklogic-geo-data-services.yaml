@@ -4,6 +4,12 @@ info:
   description: 
     MarkLogic Geo Data Services enables feature service data queries against a MarkLogic Server and 
     supports the Esri Koop Provider and WFS (future).
+  contact:
+    name: MarkLogic Geo Data Services (github)
+    url: https://github.com/prestonmcgowan/marklogic-geo-data-services
+  license:
+    name: Apache 2.0
+    url: https://github.com/prestonmcgowan/marklogic-geo-data-services/blob/master/LICENSE.txt
   version: 0.0.4
 servers:
   - url: http://localhost:8095/LATEST/resources
@@ -27,7 +33,7 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/featureResponse'
-                
+
 components:
   schemas:
     featureRequest:
