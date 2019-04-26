@@ -1,7 +1,8 @@
 buildscript {
     repositories {
-        jcenter()
         maven { url "http://developer.marklogic.com/maven2/" }
+        jcenter()
+        mavenLocal()
     }
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
@@ -14,6 +15,7 @@ plugins {
     id "com.marklogic.ml-gradle" version "3.13.0"
 }
 
+apply plugin: "maven-publish"
 apply plugin: 'com.jfrog.bintray'
 
 
@@ -27,6 +29,7 @@ repositories {
     maven { url "http://developer.marklogic.com/maven2/" }
 
     jcenter()
+    mavenLocal()
 }
 configurations {
     mlcp {
@@ -157,14 +160,21 @@ publishing.publications {
 
 if (project.hasProperty("myBintrayUser")) {
     bintray {
-        user = myBintrayUser
-        key = myBintrayKey
+        println "Publishing to BinTray:"
+        println "myBintrayUser: " + project.myBintrayUser
+        println "myBintrayKey: " + project.myBintrayKey
+        println "name: " + project.name
+        println "version: " + project.version
+
+        user = project.myBintrayUser
+        key = project.myBintrayKey
         publications = ["sourcesJava", "mainModules"]
         pkg {
             repo = "maven"
             name = project.name
             userOrg = "prestonmcgowan"
             licenses = ["Apache-2.0"]
+            vcsUrl = "https://github.com/prestonmcgowan/marklogic-geo-data-services"
             //vcsUrl = "https://github.com/marklogic-community/" + project.name + ".git"s
             version {
                 name = project.version
