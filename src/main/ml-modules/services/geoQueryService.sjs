@@ -368,7 +368,7 @@ function query(req) {
   };
 
   if (req.query.returnCountOnly) {
-    console.debug("getting count");
+    xdmp.trace("KOOP-DEBUG", "getting count");
 
     req.query.outStatistics = [
       { outStatisticFieldName : "count", statisticType : "count" }
@@ -382,16 +382,16 @@ function query(req) {
     }
   } else if (req.query.outStatistics != null) {
 
-    console.debug("running aggregation");
+    xdmp.trace("KOOP-DEBUG", "running aggregation");
     geojson.statistics = Array.from(aggregate(req));
 
   } else {
 
-    console.debug("getting objects");
+    xdmp.trace("KOOP-DEBUG", "getting objects");
     const objects = getObjects(req);
     geojson.features = objects.result;
 
-    console.debug("limitExceeded flag :" + objects.limitExceeded);
+    xdmp.trace("KOOP-DEBUG", "limitExceeded flag :" + objects.limitExceeded);
 
     // we should only get this once in the process but do this for now to test
     const serviceId = req.params.id;

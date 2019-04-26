@@ -1,0 +1,199 @@
+openapi: 3.0.0
+info:
+  title: MarkLogic Geo Data Services
+  description: 
+    MarkLogic Geo Data Services enables feature service data queries against a MarkLogic Server and 
+    supports the Esri Koop Provider and WFS (future).
+  version: 0.0.4
+servers:
+  - url: http://localhost:8095/LATEST/resources
+    description: Default localhost deployment of the MarkLogic Geo Data Services
+paths:
+  /geoQueryService:
+    post:
+      summary: Feature Service response
+      description: 
+        Based on the composition of the request, the Feature Service response will
+        return values, coordinates, features, and aggregate counts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/featureRequest'
+      responses:
+        '200':
+          description: Feature Service Response
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/featureResponse'
+                
+components:
+  schemas:
+    featureRequest:
+      description: Feature Service Query
+      type: object
+      properties:
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+              description: 
+                The Feature Service you want to query. The Feature Service
+                must have a matching Feature Service configuration loaded 
+                into the MarkLogic Content Database with the http://
+            layer:
+              type: string
+            method:
+              type: string
+              description: |
+                If this parameter is not specified, a Layer Descriptor will be
+                generated if layer was provided. If method and layer are not
+                provided a Service Descriptor will be provided for a return.
+              enum:
+                - query
+                - generateRenderer
+        query:
+          type: object
+          description: Please refer to https://developers.arcgis.com/rest/services-reference/query-feature-service-layer-.htm
+          properties:
+            classificationDef:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - classBreaksDef
+                    - uniqueValueDef
+            classificationMethod:
+              type: string
+              enum:
+                - esriClassifyNaturalBreaks
+                - esriClassifyEqualInterval
+                - esriClassifyQuantile
+                - esriClassifyStandardDeviation
+                - esriClassifyGeometricalInterval
+            extension:
+              type: object
+              properties:
+                geometry:
+                  type: object
+                  description: https://gist.githubusercontent.com/bubbobne/fe5f2db65acf039be6a9fd92fc9c7233/raw/2ab0540c6ecdc487ea74855d24c45741f57abe7f/geometry_geojson.yaml#/definitions/Geometry
+            geometryType:
+              type: string
+              description: 
+                if a geopmetryType is not specified or is not set to
+                esriGeometryEnvelope, the query.extenstion.geometry
+                will be parsed as GeoJson for matching WKT shapes.
+              enum:
+                - esriGeometryEnvelope
+            groupByFieldsForStatistics: 
+              type: string
+              description: 
+                One or more field names on which the values 
+                need to be grouped for calculating the statistics.
+                Please note, groupByFieldsForStatistics is valid only when 
+                outStatistics parameter is used.
+              example: STATE_NAME, GENDER
+            objectIds:
+              type: string
+              description: 
+                The object IDs of this layer or table to be queried.
+                The objectIds should be comma and space delimited
+              example: 37, 462
+            orderByFields:
+              type: string
+              default: ASC
+              description: |
+                orderByFields is supported on only those layers / tables that indicate 
+                supportsAdvancedQueries is true.
+                orderByFields defaults to ASC (ascending order) if <ORDER> is unspecified.
+              example: STATE_NAME ASC, RACE DESC, GENDER
+            outFields:
+              type: string
+              description: |
+                The list of fields to be included in the returned resultset. This list is a 
+                comma delimited list of field names. You can also specify the wildcard %2A as
+                the value of this parameter. In this case, the query results include all the
+                field values.
+                Note that the wildcard also implicitly implies returnGeometry=true and setting
+                returnGeometry to false will have no effect.
+              example: AREANAME, ST, POP2000
+            outStatistics:
+              type: array
+              description: The definitions for one or more field-based statistics to be calculated.
+              items:
+                type: object
+                properties: 
+                  statisticType:
+                    type: string
+                    enum: [ count, sum, min, max, avg, stddev, var ]
+                  onStatisticField:
+                    type: string
+                    description: The field to use for the statistics
+                  outStatisticFieldName:
+                    type: string
+                    description: |
+                      If outStatisticFieldName is empty or missing, the map server assigns a field
+                      name to the returned statistic field. A valid field name can only contain
+                      alphanumeric characters and an underscore.
+            resultOffset:
+              type: number
+              format: integer
+              default: 0
+              description: |
+                This option can be used for fetching query results by skipping the specified number
+                of records and starting from the next record (that is, resultOffset + 1th).
+                You can use this option to fetch records that are beyond maxRecordCount.
+            resultRecordCount:
+              type: number
+              format: integer
+              default: 5000
+              description: |
+                This option can be used for fetching query results up to the resultRecordCount
+                specified. When resultOffset is specified but this parameter is not, the map service
+                defaults it to maxRecordCount. The maximum value for this parameter is the value of
+                the layer's maxRecordCount property.
+            returnCountOnly:
+              type: boolean
+              default: false
+              description: Return the count only and not the features
+            returnGeometry:
+              type: boolean
+              default: false
+              description: |
+                Return the geometry.
+                Note that the wildcarded outFields implicitly implies returnGeometry=true and setting
+                returnGeometry to false will have no effect.
+            returnIdsOnly:
+              type: boolean
+              default: false
+              description:  |
+                If true, the response only includes an array of object IDs. Otherwise, the response is 
+                a feature set.
+            spatialRel:
+              type: string
+              default: intersects
+              description: |
+                The spatial relationship to be applied to the input geometry while performing the query.
+                The supported spatial relationships include intersects, contains, envelope intersects,
+                within, and so on.
+                Note, the default is different than the Esri Query Feature Service Layer API's
+                esriSpatialRelIntersects value.
+            where:
+              type: string
+              default: 1=1
+              description: |
+                A WHERE clause for the query filter.
+                SQL 92 WHERE clause syntax on the fields in the layer is supported for most data sources.
+                Some data sources have restrictions on what is supported. Hosted feature services in ArcGIS
+                Enterprise running on a spatiotemporal data source have restrictions on what is supported;
+                they only support a subset of SQL 92. For example, spatiotemporal based feature services
+                support the like operator but do not support the not like operator or field equivalency
+                expressions like field1 = field2. 
+    featureResponse:
+      type: object
+      properties:
+        todo:
+          type: string
