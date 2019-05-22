@@ -60,7 +60,7 @@ See `config/example/services/example-gkg.json` for an example service descriptor
 ### TDE Templates
 The connector relies on MarkLogic TDE views to provide data to ESRI feature layers and tables. Follow the [MarkLogic documentation](https://docs.marklogic.com/guide/app-dev/TDE) and the GKG example provided `src/main/ml-schemas/tde/test-gkg.tdex` to create TDE templates to build views for the data you want to expose.
 
-TDE templates should be placed in the `src/main/ml-chemas/tde` directory. They will be automically installed when you run the `gradle mlDeploy` command.
+TDE templates should be placed in the `src/main/ml-schemas/tde` directory. They will be automically installed when you run the `gradle mlDeploy` command.
 
 ### Deploy your application
 Make use of the `gradle mlDeploy` to deploy your application with MarkLogic Geo Data Services capability.
