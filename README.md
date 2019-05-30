@@ -18,7 +18,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath "com.marklogic:marklogic-geo-data-services-modules:0.0.3"
+    classpath "com.marklogic:marklogic-geo-data-services-modules:0.0.4"
   }
 }
 plugins {
@@ -30,7 +30,7 @@ repositories {
 }
 
 dependencies {
-  mlBundle "com.marklogic:marklogic-geo-data-services-modules:0.0.3"
+  mlBundle "com.marklogic:marklogic-geo-data-services-modules:0.0.4"
 }
 ```
 
@@ -65,17 +65,15 @@ TDE templates should be placed in the `src/main/ml-schemas/tde` directory. They 
 ### Deploy your application
 Make use of the `gradle mlDeploy` to deploy your application with MarkLogic Geo Data Services capability.
 
-## Stand Alone Testing
-You can make use of the koop-provider-marklogic project to test the MarkLogic Geo Data Services though the MarkLogic Koop Connector. The [koop-provider-marklogic](https://github.com/koopjs/koop-provider-marklogic) project expects this repository to be deployed, the associated test data, and users & roles to be deployed.
-
-### Deploy This Project for Testing
+## Testing this Project
 1. Configure gradle.properties for your environment
 2. `gradle mlDeploy`
 3. `gradle loadTestData`
 4. `gradle test`
 
-### Test with MarkLogic Koop Provider
-If you have deployed the application for testing, the koop-provider-marklogic configuration needs to match what was deployed, and then you can execute the following in two different command line sessions
+## Testing with MarkLogic Koop Provider
+You can make use of the koop-provider-marklogic project to test the MarkLogic Geo Data Services though the MarkLogic Koop Connector. The [koop-provider-marklogic](https://github.com/koopjs/koop-provider-marklogic) project expects this repository to be deployed, the associated test data, and users & roles to be deployed.
+Deploy this application for testing and configure the koop-provider-marklogic to match what was deployed. You can execute the following in two different command line sessions to begin the tests.
 
 #### Command Line 1
 
