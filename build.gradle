@@ -104,8 +104,8 @@ else {
 
         from "."
         include "gradlew", "gradlew.bat"
-	include "*.gradle"
-	include "*.properties"
+        include "*.gradle"
+        include "*.properties"
         include "gradle/**"
         include "src/main/**"
         include "build/variancenativeplugin/**"
