@@ -22,6 +22,65 @@ Authorization: Digest admin admin
     }
 }
 ```
+
 ### query layer 0 for the first 5 features:
+```
+POST http://localhost:8040/LATEST/resources/geoQueryService
+Content-Type: application/json
+Authorization: Digest admin admin
+
+{
+  "params": { 
+    "id": "GDeltExample",
+    "layer": "0",
+    "method": "query" 
+  },
+  "query": { 
+    "resultRecordCount": 5,
+    "orderByFields": "name",
+    "nbspASC": 0,
+    "returnGeometry": true
+  }
+}
+```
+
+### query layer 0 for the first 5 features without geometry:
+```
+POST http://localhost:8040/LATEST/resources/geoQueryService
+Content-Type: application/json
+Authorization: Digest admin admin
+
+{
+  "params": { 
+    "id": "GDeltExample",
+    "layer": "0",
+    "method": "query" 
+  },
+  "query": { 
+    "resultRecordCount": 5,
+    "orderByFields": "name",
+    "nbspASC": 0,
+    "returnGeometry": false
+  }
+}
+```
 ### query layer 0 for the count of features:
+```
+POST http://localhost:8040/LATEST/resources/geoQueryService
+Content-Type: application/json
+Authorization: Digest admin admin
+
+{
+  "params": { 
+    "id": "GDeltExample",
+    "layer": "0",
+    "method": "query" 
+  },
+  "query": { 
+    "resultRecordCount": 5,
+    "nbspASC": 0,
+    "returnCountOnly": true
+  }
+}
+```
 ### query layer 0 for the features where the "domain" is "indiatimes.com": 

@@ -6,9 +6,8 @@ Make sure to add:
 ```
 - permissions.properties
 ```
-*=geo-data-services-reader,read,geo-data-services-admin,update,geo-data-services-writer,update
+*=geo-data-services-reader,read,geo-data-services-writer,update
 ```
 
 Additionally, place any data to be uploaded to the server here.
 See the ml-gradle documentation for usage information.
-

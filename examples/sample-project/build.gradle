@@ -3,12 +3,12 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath "com.marklogic:marklogic-geo-data-services-modules:0.0.4"
+    classpath "com.marklogic:marklogic-geo-data-services-modules:0.0.5"
   }
 }
 plugins {
   id "net.saliman.properties" version "1.4.6"
-  id "com.marklogic.ml-gradle" version "3.13.0"
+  id "com.marklogic.ml-gradle" version "3.14.0"
 }
 repositories {
   jcenter()
@@ -22,7 +22,7 @@ configurations {
 }
 
 dependencies {
-  mlBundle "com.marklogic:marklogic-geo-data-services-modules:0.0.4"
+  mlBundle "com.marklogic:marklogic-geo-data-services-modules:0.0.5"
   mlcp "com.marklogic:mlcp:9.0.9"
 
   /**

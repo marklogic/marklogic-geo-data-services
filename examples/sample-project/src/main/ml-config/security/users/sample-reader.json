@@ -1,0 +1,5 @@
+{
+  "user-name" : "sample-reader",
+  "password" : "sample-reader",
+  "role" : [ "geo-data-services-reader" ]
+}

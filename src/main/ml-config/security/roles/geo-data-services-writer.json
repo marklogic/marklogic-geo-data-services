@@ -1,6 +1,6 @@
 {
   "role-name": "geo-data-services-writer",
-  "description": "Can read and write documents",
+  "description": "Can read and write feature-services",
   "role": ["rest-writer", "geo-data-services-reader"],
   "privilege": [
     {
