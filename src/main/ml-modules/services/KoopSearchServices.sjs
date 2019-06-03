@@ -19,7 +19,13 @@ function get(context, params) {
 
 function getKoopConfig() {
   // could be cached
-  return cts.doc(koopConfigUri).toObject();
+  const config = cts.doc(koopConfigUri);
+  if (config) {
+    return config.toObject();
+  } else {
+    xdmp.trace("KOOP-REQUEST", "Missing Koop Config, returning empty object");
+    return {};
+  }
 }
 
 function getFeatureServiceUrl(serviceName) {
