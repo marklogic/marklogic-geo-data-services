@@ -1,5 +1,12 @@
-# marklogic-geo-data-services
+# marklogic-geo-data-services 
 MarkLogic Geo Data Services enables feature service data queries against a MarkLogic Server and supports the Esri Koop Provider and WFS (future).
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=social)](https://opensource.org/licenses/Apache-2.0)
+
+![GitHub release](https://img.shields.io/github/release/marklogic-community/marklogic-geo-data-services.svg?style=social)
+
+![Bintray](https://img.shields.io/bintray/v/prestonmcgowan/maven/marklogic-geo-data-services.svg?style=social)
+
 
 ## Gradle Dependency Installation
 The MarkLogic Geo Data Services capability can be included in a ml-gradle project using a mlBundle configuration. To add the services to your project you will need to update your build.gradle file, configure a schemas database, add the data services configuration, and add the corresponding indexes. The MarkLogic Geo Data Services modules will be deployed to your modules database when the mlDeploy gradle task is executed.
