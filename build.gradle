@@ -12,6 +12,7 @@ buildscript {
 plugins {
     id "java"
     id "maven-publish"
+    id "net.saliman.properties" version "1.5.1"
     id "com.marklogic.ml-gradle" version "3.14.0"
 }
 

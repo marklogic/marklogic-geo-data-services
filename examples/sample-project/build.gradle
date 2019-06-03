@@ -7,7 +7,7 @@ buildscript {
   }
 }
 plugins {
-  id "net.saliman.properties" version "1.4.6"
+  id "net.saliman.properties" version "1.5.1"
   id "com.marklogic.ml-gradle" version "3.14.0"
 }
 repositories {
