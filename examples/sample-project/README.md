@@ -7,7 +7,12 @@ To deploy this project, configure gradle.properties for your environment and run
 ## Accessing
 The configured feature-services are available at the following REST paths:
 
-###top-level service descriptor
+### top-level service descriptor
+```
+GET http://localhost:8040/LATEST/resources/KoopSearchServices
+Content-type: application/json
+Authorization: Digest admin admin
+```
 
 ### layer 0 descriptor:
 ```
