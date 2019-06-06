@@ -1,0 +1,5 @@
+{
+  "user-name": "test-geo-data-services-writer",
+  "password": "test-geo-data-services-writer",
+  "role": ["geo-data-services-writer"]
+}
