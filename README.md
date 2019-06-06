@@ -1,8 +1,14 @@
-# MarkKogic Geo Data Services
-MarkLogic Geo Data Services (GDS) enables a rich set of geospatial query capabilities enables against a MarkLogic databases. It is the backend behind the [MarkLogic Koop Provider](https://github.com/koopjs/koop-provider-marklogic) and a future release of the [MarkLogic GeoTools Plugin](https://github.com/marklogic-community/marklogic-geotools-plugin).
+# MarkLogic Geo Data Services
+MarkLogic Geo Data Services (GDS) enables a rich set of geospatial query capabilities enables against a MarkLogic database. It is the backend behind the [MarkLogic Koop Provider](https://github.com/koopjs/koop-provider-marklogic) and a future release of the [MarkLogic GeoTools Plugin](https://github.com/marklogic-community/marklogic-geotools-plugin).
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=social)](https://opensource.org/licenses/Apache-2.0)
+
+![GitHub release](https://img.shields.io/github/release/marklogic-community/marklogic-geo-data-services.svg?style=social)
+
+![Bintray](https://img.shields.io/bintray/v/prestonmcgowan/maven/marklogic-geo-data-services.svg?style=social)
 
 ## Installation
-The MarkLogic Geo Data Services capability can be included in a [ml-gradle](https://github.com/marklogic-community/ml-gradle) project using a [mlBundle](https://github.com/marklogic-community/ml-gradle/wiki/Bundles) configuration. To add the services to your project you will need to update your `build.gradle` file, configure a schemas database, add the data services configuration, and add any required indexes and TDE templates. The MarkLogic Geo Data Services modules will be deployed to your modules database when you run the `mlDeploy` gradle task in your project.
+The MarkLogic Geo Data Services capability can be included in a [ml-gradle](https://github.com/marklogic-community/ml-gradle) project using a [mlBundle](https://github.com/marklogic-community/ml-gradle/wiki/Bundles) configuration. To add the services to your project you will need to update your `build.gradle` file, configure a schemas database, add the data services configuration, TDE templates, and add any required indexes. The MarkLogic Geo Data Services modules will be deployed to your modules database when you run the `mlDeploy` gradle task in your project.
 
 Please see the _examples_ directory for sample projects making use of this project with ml-gradle's mlBundle capability.
 
