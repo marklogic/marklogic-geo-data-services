@@ -79,6 +79,7 @@ Geo Data Services is an open source project and we welcome contributions to impr
 
 ### Testing
 Use the following steps to install GDS as a standalone project and run the tests: 
+
 1. Configure `gradle-test.properties` for your environment
 2. Run `./gradlew -PenvironmentName=test mlDeploy`
 3. Run `./gradlew -PenvironmentName=test loadTestData`
