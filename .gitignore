@@ -1,3 +1,4 @@
+
 # Ignore gradle publish properties given it has a shared private key
 gradle-publish.properties
 
@@ -214,3 +215,4 @@ gradle-app.setting
 **/build/
 
 # End of https://www.gitignore.io/api/macos,gradle,windows,sublimetext,visualstudiocode,node
+.vscode/settings.json
