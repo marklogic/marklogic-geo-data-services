@@ -1,5 +1,12 @@
 {
   "role-name": "geo-data-services-reader",
   "description": "Can view feature-services, but not edit",
-  "role": ["rest-reader"]
+  "role": ["rest-reader"],
+  "privilege": [
+    {
+      "privilege-name":"xdmp:value",
+      "action": "http://marklogic.com/xdmp/privileges/xdmp-value",
+      "kind": "execute"
+    }
+  ]
 }
