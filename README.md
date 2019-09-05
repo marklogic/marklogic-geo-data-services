@@ -71,6 +71,15 @@ GDS can generate feature data from SPARQL queries, TDE views or a combination of
 
 TDE templates should be placed in the `src/main/ml-schemas/tde` directory of your project. They will be automically installed when you run the `./gradlew mlDeploy` task for your project.
 
+## Configuring Time Aware Feature Layers
+
+Time aware feature layers allow users to query specific time periods. ArcGIS supports this using a time slider. More info on configuring time settings in ArcGIS Online, https://doc.arcgis.com/en/arcgis-online/create-maps/configure-time.htm. Time aware layers have additional configuration properties, primarily a start and end date. A sample of the layer configuration is included in `src/test/ml-data/feature-services/test/GDeltGKG.json`, layer 6. You must have a dateTime property defined in your TDE. The layer configuration will reference this property name.
+
+### Limitations (TODO in another release)
+- This implementation only works for a start date. The end date configured in the layer and in your TDE will be ignored.
+- This implementation assumes that all server side dates are in UTC, there are no time zone conversions. The time zone and daylight savings indicator configured in your layer will be ignored.
+- The time extent configured in the layer is ignored
+
 ## Deploy your application
 Once you have added the required configuration to your build file, configured your service descriptors, TDE templates and indexes, use the `./gradlew mlDeploy` task in your project to deploy your application with MarkLogic Geo Data Services.
 

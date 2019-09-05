@@ -40,7 +40,7 @@ configurations {
     }
 }
 dependencies {
-    mlcp "com.marklogic:mlcp:9.0.3"
+    mlcp "com.marklogic:mlcp:9.0.8"
     mlcp "org.apache.commons:commons-csv:1.2"
     mlcp "com.marklogic:marklogic-mapreduce2:2.2.3"
     mlcp files("log")
