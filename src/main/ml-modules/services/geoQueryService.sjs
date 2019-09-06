@@ -756,25 +756,33 @@ function parseGroupByFields(query) {
  * @return {booleanExpression} result of optic expressions, input to op.where
 */
 function getTimeBoundingWhereQuery(layerModel, req) {
+  xdmp.trace("KOOP-DEBUG", "Starting getTimeBoundingWhereQuery");
   let startTimeField = layerModel.timeInfo.startTimeField;
   let endTimeField = layerModel.timeInfo.endTimeField;
 
   if(req.query.time.toString().indexOf(",") >= 0) {  //Handle Time range
+    xdmp.trace("KOOP-DEBUG", "Handle Time Range");
+
+    // "null" can be passed in as a parameter to the time array. 
     let timeRange = req.query.time.split(",");
-    let startTime = (timeRange[0]) ? new Date(parseInt(timeRange[0])) : new Date("0001-01-01T00:00:00");
-    let endTime = (timeRange[1]) ? new Date(parseInt(timeRange[1])) : new Date("9999-12-31T00:00:00");
+    let startTime = (timeRange[0] && timeRange[0].trim() != "null") ? new Date(parseInt(timeRange[0].trim())) : new Date("0001-01-01T00:00:00");
+    let endTime = (timeRange[1] && timeRange[1].trim() != "null") ? new Date(parseInt(timeRange[1].trim())) : new Date("9999-12-31T00:00:00");
     let utcStartTime = new Date(Date.UTC(startTime.getFullYear(), startTime.getMonth(), startTime.getDate()));
     let utcEndTime = new Date(Date.UTC(endTime.getFullYear(), endTime.getMonth(), endTime.getDate()));
 
+    xdmp.trace("KOOP-DEBUG", "Time Range " + utcStartTime.toISOString() + " - " + utcEndTime.toISOString());
     return op.and(
-      op.ge(op.viewCol(layerModel.view, startTimeField), utcStartTime.toISOString()),
-      op.lt(op.viewCol(layerModel.view, startTimeField), utcEndTime.toISOString())
+      op.ge(op.col(startTimeField), utcStartTime.toISOString()),
+      op.lt(op.col(startTimeField), utcEndTime.toISOString())
     );
   } else {  //Handle time instance
-    let startTime = new Date(parseInt(req.query.time));
+    xdmp.trace("KOOP-DEBUG", "Handle Time Instance");
+    let startTime = new Date(parseInt(req.query.time.trim()));
     let utcStartTime = new Date(Date.UTC(startTime.getFullYear(), startTime.getMonth(), startTime.getDate()));
 
-    return op.eq(op.viewCol(layerModel.view, startTimeField), utcStartTime.toISOString());
+    xdmp.trace("KOOP-DEBUG", "Time Instance " + utcStartTime.toISOString());
+
+    return op.eq(op.col(startTimeField), utcStartTime.toISOString());
   }
 }
 
@@ -826,15 +834,15 @@ function getObjects(req) {
 
     whereQuery = op.and(whereQuery, idsQuery);
   }
-  
+
   // Initial Time bounding query implementation, GitHub Issue #13
   if(req.query.time && layerModel.timeInfo && layerModel.timeInfo.startTimeField) {
     whereQuery = op.and(whereQuery, getTimeBoundingWhereQuery(layerModel, req));
   }
+  xdmp.trace("KOOP-DEBUG", "whereQuery: " + whereQuery);
 
   const boundingQuery = cts.andQuery(boundingQueries);
-
-  xdmp.trace("KOOP-DEBUG", "bounding query: " + xdmp.toJsonString(boundingQuery));
+  xdmp.trace("KOOP-DEBUG", "boundingQuery: " + xdmp.toJsonString(boundingQuery));
 
   const offset = (!query.resultOffset ? 0 : Number(query.resultOffset));
   xdmp.trace("KOOP-DEBUG", "offset: " + offset);
