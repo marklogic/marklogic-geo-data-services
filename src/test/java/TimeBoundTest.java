@@ -23,7 +23,7 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
                     .body(postBody.prettyPrint())
                 .when()
                     .log().uri()
-                    .get(url)
+                    .post(url)
                 .then()
                     .log().ifError()
                     .statusCode(200)
@@ -58,7 +58,7 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
                     .body(postBody.prettyPrint())
                 .when()
                     .log().uri()
-                    .get(url)
+                    .post(url)
                 .then()
                     .log().ifError()
                     .statusCode(200)
@@ -90,7 +90,7 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
                     .body(postBody.prettyPrint())
                 .when()
                     .log().uri()
-                    .get(url)
+                    .post(url)
                 .then()
                     .log().ifError()
                     .statusCode(200)
@@ -121,7 +121,7 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
                     .body(postBody.prettyPrint())
                 .when()
                     .log().uri()
-                    .get(url)
+                    .post(url)
                 .then()
                     .log().ifError()
                     .statusCode(200)
@@ -153,7 +153,7 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
                     .body(postBody.prettyPrint())
                 .when()
                     .log().uri()
-                    .get(url)
+                    .post(url)
                 .then()
                     .log().ifError()
                     .statusCode(200)
@@ -161,7 +161,7 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
                     .extract().response()
             ;
 
-        List<Long> jsonResponse = response.jsonPath().getList("features.attributes.urlpubtimedate");
+        List<Long> jsonResponse = response.jsonPath().getList("features");
 
         assertTrue(jsonResponse.size() >= 20);
     }
