@@ -3,7 +3,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath "com.marklogic:marklogic-geo-data-services-modules:0.0.6"
+    classpath "com.marklogic:marklogic-geo-data-services-modules:1.1.0"
   }
 }
 plugins {
@@ -12,7 +12,7 @@ plugins {
 }
 repositories {
   jcenter()
-  
+
   // Needed for some mlcp dependencies, such as commons-csv:1.5.1-marklogic
   maven { url "http://developer.marklogic.com/maven2/" }
 }
@@ -22,7 +22,7 @@ configurations {
 }
 
 dependencies {
-  mlBundle "com.marklogic:marklogic-geo-data-services-modules:0.0.6"
+  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.1.0"
   mlcp "com.marklogic:mlcp:9.0.9"
 
   /**

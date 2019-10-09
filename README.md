@@ -72,7 +72,7 @@ GDS can generate feature data from SPARQL queries, TDE views or a combination of
 TDE templates should be placed in the `src/main/ml-schemas/tde` directory of your project. They will be automically installed when you run the `./gradlew mlDeploy` task for your project.
 
 ### _OBJECTIDs_
-The features returned by the Koop provider service should contain a field named `OBJECTID` or a field that can be identified as the OBJECTID in to the Esri Feature Service clients. The OBJECTID must be an *unsigned integer*. In order to support pagination across large result sets, the OBJECTIDs need to be increasing numbers. They don't have to be continguous to but should be fairly evenly distributed between the minimum and maximum values.
+The features returned by the Koop provider service with an Esri client should contain a field named `OBJECTID` or a field that can be identified as the OBJECTID in to the Esri Feature Service clients. The OBJECTID must be an *unsigned integer*. In order to support pagination across large result sets, the OBJECTIDs need to be increasing numbers. They don't have to be continguous to but should be fairly evenly distributed between the minimum and maximum values.
 
 OBJECTIDs can either be added to the documents and then exposed as a column in a TDE view or computed by an expression in a TDE template column using using existing field(s) in the documents.
 
@@ -111,9 +111,12 @@ Once that is complete, configure the `gradle-test.properties` in koop-provider-m
 
 __Command Line 1__
 
-1. `./gradlew -PenvironmentName=test installKoop`
-2. `./gradlew -PenvironmentName=test runKoop`
+1. Configure `/config/<environment>.json`
+2. Install `npm install`
+3. Environment Setting `export NODE_ENV=<environment>`
+3. Start Koop `node server.js`
 
 __Command Line 2__
 
-1. `./gradlew -PenvironmentName=test test`
+1. `cd test`
+2. `../gradlew -PenvironmentName=test test`
