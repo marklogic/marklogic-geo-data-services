@@ -72,7 +72,7 @@ GDS can generate feature data from SPARQL queries, TDE views or a combination of
 TDE templates should be placed in the `src/main/ml-schemas/tde` directory of your project. They will be automically installed when you run the `./gradlew mlDeploy` task for your project.
 
 ### _OBJECTIDs_
-The features returned by the Koop provider service should contain a field named `OBJECTID` or a field that can be identified as the OBJECTID in to the ESRI Feature Service clients. The OBJECTID must be an *unsigned integer*. In order to support pagination across large result sets, the OBJECTIDs need to be increasing numbers. They don't have to be continguous to but should be fairly evenly distributed between the minimum and maximum values.
+The features returned by the Koop provider service should contain a field named `OBJECTID` or a field that can be identified as the OBJECTID in to the Esri Feature Service clients. The OBJECTID must be an *unsigned integer*. In order to support pagination across large result sets, the OBJECTIDs need to be increasing numbers. They don't have to be continguous to but should be fairly evenly distributed between the minimum and maximum values.
 
 OBJECTIDs can either be added to the documents and then exposed as a column in a TDE view or computed by an expression in a TDE template column using using existing field(s) in the documents.
 
@@ -98,7 +98,7 @@ Once you have added the required configuration to your build file, configured yo
 Geo Data Services is an open source project and we welcome contributions to improve it. Please submit issues for bugs or enhancement requests and, even better, fork it and submit PRs with changes!
 
 ### Testing
-Use the following steps to install GDS as a standalone project and run the tests: 
+Use the following steps to install GDS as a standalone project and run the tests:
 
 1. Configure `gradle-test.properties` for your environment
 2. Run `./gradlew -PenvironmentName=test mlDeploy`

@@ -567,7 +567,7 @@ function parseWhere(query) {
 
 function parseGeometry(query, layerModel) {
   xdmp.trace("KOOP-DEBUG", "Starting parseGeometry");
-  // the koop provider code will convert the ESRI geometry objects into GeoJSON
+  // the koop provider code will convert the Esri geometry objects into GeoJSON
   // in WGS84 and place it in the query.extension.geometry property
   let geoQuery = null;
   if (query.extension && query.extension.geometry) {
@@ -604,7 +604,7 @@ function clampPointArray(coord) {
   // clamps [lon, lat] array to maximum values
   if (coord[1] >= 90.0)       coord[1] = 90;
   else if (coord[1] <= -90.0) coord[1] = -90;
-  
+
   if (coord[0] >= 180.0)       coord[0] = 180;
   else if (coord[0] <= -180.0) coord[0] = -180;
 }
@@ -638,7 +638,7 @@ function adjustEsriPolygon(esriPolygon) {
 
 function convertEnvelopePolygon(query) {
   xdmp.trace("KOOP-DEBUG", "Starting convertEnvelopePolygon");
-  // the koop server converts ESRI envelopes to GeoJSON polygons
+  // the koop server converts Esri envelopes to GeoJSON polygons
   // convert them to boxes for more efficient seach
   // TODO: file an issue about the winding order (they do not follow the right hand rule)
   //{
@@ -693,8 +693,8 @@ function parseRegionOperation(query) {
   // cts region operators: contains, covered-by, covers, disjoint, intersects, overlaps, within
   // default to intersects
 
-  // TODO: verify mapping of ESRI spatial relations to MarkLogic operations
-  // can we implement the other ESRI relations with combinations of the MarkLogic
+  // TODO: verify mapping of Esri spatial relations to MarkLogic operations
+  // can we implement the other Esri relations with combinations of the MarkLogic
   // operations?
 
 if (query.spatialRel) {
@@ -817,7 +817,7 @@ function parseGroupByFields(query) {
  * TODO implement bounds for start AND end time
  * TODO get time zone info from layerModel.timeInfo.timeReference.timeZone
  *  and convert time to TZ setting, https://developers.arcgis.com/javascript/3/jsapi/timeinfo.html
- * 
+ *
  * @param {object} layerModel - the layer description json data
  * @param {object} req - the request parameters passed into the service (json)
  * @return {booleanExpression} result of optic expressions, input to op.where
@@ -830,7 +830,7 @@ function getTimeBoundingWhereQuery(layerModel, req) {
   if(req.query.time.toString().indexOf(",") >= 0) {  //Handle Time range
     xdmp.trace("KOOP-DEBUG", "Handle Time Range");
 
-    // "null" can be passed in as a parameter to the time array. 
+    // "null" can be passed in as a parameter to the time array.
     let timeRange = req.query.time.split(",");
     let startTime = (timeRange[0] && timeRange[0].trim() != "null") ? new Date(parseInt(timeRange[0].trim())) : new Date("0001-01-01T00:00:00");
     let endTime = (timeRange[1] && timeRange[1].trim() != "null") ? new Date(parseInt(timeRange[1].trim())) : new Date("9999-12-31T00:00:00");
@@ -1024,9 +1024,9 @@ function getObjects(req, exportPlan=false) {
 }
 
 function getTemporalQuery(temporalReference) {
-  if (temporalReference == null) 
+  if (temporalReference == null)
     return cts.trueQuery();
-  
+
   let geQuery = null;
   let leQuery = null;
   if (temporalReference.referenceType == "field") {
@@ -1044,13 +1044,13 @@ function getTemporalQuery(temporalReference) {
     }
   }
 
-  if (geQuery && leQuery) 
+  if (geQuery && leQuery)
     return cts.andQuery([geQuery, leQuery]);
-  else if (geQuery) 
+  else if (geQuery)
     return geQuery;
-  else if (leQuery) 
+  else if (leQuery)
     return leQuery;
-  else 
+  else
     return cts.trueQuery();
 };
 
@@ -1234,9 +1234,9 @@ function getSelectDef(outFields, columnDefs, returnGeometry = false, geometryExt
 
 function getExportPlanSelectDef(outFields, columnDefs) {
   xdmp.trace("KOOP-DEBUG", "Starting getExportPlanSelectDef");
-  xdmp.trace("KOOP-DEBUG", "outFields:"); 
+  xdmp.trace("KOOP-DEBUG", "outFields:");
   xdmp.trace("KOOP-DEBUG", outFields);
-  xdmp.trace("KOOP-DEBUG", "coluumnDefs"); 
+  xdmp.trace("KOOP-DEBUG", "coluumnDefs");
   xdmp.trace("KOOP-DEBUG", columnDefs);
 
   const props = [];
@@ -1253,8 +1253,8 @@ function getExportPlanSelectDef(outFields, columnDefs) {
     outFields.forEach((f) => {
       xdmp.trace("KOOP-DEBUG", "LOOKING FOR " + f)
       const col = columnDefs.find((c) => {
-        xdmp.trace("KOOP-DEBUG", Sequence.from(["looking at ", f, c])); 
-        return c.alias === f || c.name === f 
+        xdmp.trace("KOOP-DEBUG", Sequence.from(["looking at ", f, c]));
+        return c.alias === f || c.name === f
       });
       if (col) props.push(getSelectAs(col));
     });
