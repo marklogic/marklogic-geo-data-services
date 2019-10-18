@@ -71,6 +71,26 @@ GDS can generate feature data from SPARQL queries, TDE views or a combination of
 
 TDE templates should be placed in the `src/main/ml-schemas/tde` directory of your project. They will be automically installed when you run the `./gradlew mlDeploy` task for your project.
 
+### _OBJECTIDs_
+The features returned by the Koop provider service with an Esri client should contain a field named `OBJECTID` or a field that can be identified as the OBJECTID in to the Esri Feature Service clients. The OBJECTID must be an *unsigned integer*. In order to support pagination across large result sets, the OBJECTIDs need to be increasing numbers. They don't have to be continguous to but should be fairly evenly distributed between the minimum and maximum values.
+
+OBJECTIDs can either be added to the documents and then exposed as a column in a TDE view or computed by an expression in a TDE template column using using existing field(s) in the documents.
+
+For example, you can add the following to each JSON document for a reasonably likely unique id:
+```
+koopObjectId: xdmp.hash32(sem.uuidString())
+```
+
+
+## Configuring Time Aware Feature Layers
+
+Time aware feature layers allow users to query specific time periods. ArcGIS supports this using a time slider. More info on configuring time settings in ArcGIS Online, https://doc.arcgis.com/en/arcgis-online/create-maps/configure-time.htm. Time aware layers have additional configuration properties, primarily a start and end date. A sample of the layer configuration is included in `src/test/ml-data/feature-services/test/GDeltGKG.json`, layer 6. You must have a dateTime property defined in your TDE. The layer configuration will reference this property name.
+
+### Limitations (TODO in another release)
+- This implementation only works for a start date. The end date configured in the layer and in your TDE will be ignored.
+- This implementation assumes that all server side dates are in UTC, there are no time zone conversions. The time zone and daylight savings indicator configured in your layer will be ignored.
+- The time extent configured in the layer is ignored
+
 ## Deploy your application
 Once you have added the required configuration to your build file, configured your service descriptors, TDE templates and indexes, use the `./gradlew mlDeploy` task in your project to deploy your application with MarkLogic Geo Data Services.
 
@@ -78,7 +98,7 @@ Once you have added the required configuration to your build file, configured yo
 Geo Data Services is an open source project and we welcome contributions to improve it. Please submit issues for bugs or enhancement requests and, even better, fork it and submit PRs with changes!
 
 ### Testing
-Use the following steps to install GDS as a standalone project and run the tests: 
+Use the following steps to install GDS as a standalone project and run the tests:
 
 1. Configure `gradle-test.properties` for your environment
 2. Run `./gradlew -PenvironmentName=test mlDeploy`
@@ -91,9 +111,12 @@ Once that is complete, configure the `gradle-test.properties` in koop-provider-m
 
 __Command Line 1__
 
-1. `./gradlew -PenvironmentName=test installKoop`
-2. `./gradlew -PenvironmentName=test runKoop`
+1. Configure `/config/<environment>.json`
+2. Install `npm install`
+3. Environment Setting `export NODE_ENV=<environment>`
+3. Start Koop `node server.js`
 
 __Command Line 2__
 
-1. `./gradlew -PenvironmentName=test test`
+1. `cd test`
+2. `../gradlew -PenvironmentName=test test`

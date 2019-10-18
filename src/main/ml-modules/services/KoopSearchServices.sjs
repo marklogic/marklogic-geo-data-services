@@ -23,7 +23,7 @@ function getKoopConfig() {
   if (config) {
     return config.toObject();
   } else {
-    xdmp.trace("KOOP-REQUEST", "Missing Koop Config, returning empty object");
+    xdmp.trace("KOOP-DEBUG", "Missing Koop Config, returning empty object");
     return {};
   }
 }
