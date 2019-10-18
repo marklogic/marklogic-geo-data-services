@@ -375,6 +375,7 @@ function getFieldType(datatype) {
 }
 
 
+
 function query(req, exportPlan=false) {
   xdmp.trace("KOOP-DEBUG", "Starting query");
   // always return a FeatureCollection for now
@@ -415,9 +416,24 @@ function query(req, exportPlan=false) {
 
   } else  {
 
-    xdmp.trace("KOOP-DEBUG", "getting objects");
+    xdmp.trace("KOOP-DEBUG", "getting objects for geojson.features");
     const objects = getObjects(req);
+    xdmp.trace("KOOP-DEBUG", "Object Results found:");
+    xdmp.trace("KOOP-DEBUG", objects);
     geojson.features = objects.result;
+    if (geojson.features.geometry) {
+      const geometryType = typeof geojson.features.geometry;
+      switch(geometryType) {
+        case "object":
+            xdmp.trace("KOOP-DEBUG", "geojson.features.geometry is an object");
+            break;
+        case "string":
+            xdmp.trace("KOOP-DEBUG", "geojson.features.geometry is an string");
+            break;
+        default:
+            xdmp.trace("KOOP-DEBUG", "geojson.features.geometry is:" + typeof geojson.features.geometry);
+      }
+    }
 
     xdmp.trace("KOOP-DEBUG", "limitExceeded flag :" + objects.limitExceeded);
 
@@ -567,6 +583,7 @@ function parseWhere(query) {
 
 function parseGeometry(query, layerModel) {
   xdmp.trace("KOOP-DEBUG", "Starting parseGeometry");
+
   // the koop provider code will convert the Esri geometry objects into GeoJSON
   // in WGS84 and place it in the query.extension.geometry property
   let geoQuery = null;
@@ -587,6 +604,7 @@ function parseGeometry(query, layerModel) {
     const pointQuery = geoextractor.getPointQuery(regions, layerModel);
 
     const regionQuery = geoextractor.getRegionQuery(regions, operation, layerModel);
+    xdmp.trace("KOOP-DEBUG", "RegionQuery: " + JSON.stringify(regionQuery));
 
     geoQuery = cts.orQuery([ pointQuery, regionQuery ]);
   } else {
@@ -598,7 +616,6 @@ function parseGeometry(query, layerModel) {
 
   return geoQuery;
 }
-
 
 function clampPointArray(coord) {
   // clamps [lon, lat] array to maximum values
@@ -639,6 +656,7 @@ function adjustEsriPolygon(esriPolygon) {
 function convertEnvelopePolygon(query) {
   xdmp.trace("KOOP-DEBUG", "Starting convertEnvelopePolygon");
   // the koop server converts Esri envelopes to GeoJSON polygons
+
   // convert them to boxes for more efficient seach
   // TODO: file an issue about the winding order (they do not follow the right hand rule)
   //{
@@ -855,6 +873,7 @@ function getTimeBoundingWhereQuery(layerModel, req) {
 
 // returns a Sequence of documents
 function getObjects(req, exportPlan=false) {
+
   xdmp.trace("KOOP-DEBUG", "Starting getObjects");
   xdmp.trace("KOOP-DEBUG", "getLayerModel(" + req.params.id + ", " + req.params.layer + ")" );
   const layerModel = getLayerModel(req.params.id, req.params.layer);
@@ -922,13 +941,17 @@ function getObjects(req, exportPlan=false) {
 
   let limit = 0;
   if (query.resultRecordCount) {
-    limit = Number(query.resultRecordCount);
+
+    xdmp.trace("KOOP-DEBUG", "Setting to limit to resultRecordCount");
+    limit = Number(query.resultRecordCount)
   }
   else if ( query.returnIdsOnly ) {
-    limit = Number.MAX_SAFE_INTEGER;
+    xdmp.trace("KOOP-DEBUG", "Setting to limit to MAX_SAFE_INTEGER because we are only returning IDs");
+    limit = Number.MAX_SAFE_INTEGER
   }
   else {
-    limit = MAX_RECORD_COUNT;
+    xdmp.trace("KOOP-DEBUG", "Setting to limit to MAX_RECORD_COUNT");
+    limit = MAX_RECORD_COUNT
   }
 
   xdmp.trace("KOOP-DEBUG", "limit: " + limit);
@@ -940,11 +963,20 @@ function getObjects(req, exportPlan=false) {
   let pipeline;
   let columnDefs;
   if (layerModel.dataSources === undefined) {
+    xdmp.trace("KOOP-DEBUG", "layerModel.dataSources is undefined"); 
     const schema = layerModel.schema;
     const view = layerModel.view;
     columnDefs = generateFieldDescriptors(layerModel, schema);
 
+
     let viewPlan = op.fromView(schema, view, "", "DocId");
+    xdmp.trace("KOOP-DEBUG", "Pipeline[dataSources === undefined] Plan:");
+    xdmp.trace("KOOP-DEBUG", viewPlan); 
+    xdmp.trace("KOOP-DEBUG", "Pipeline[dataSources === undefined] boundingQuery:");
+    xdmp.trace("KOOP-DEBUG", boundingQuery);
+    xdmp.trace("KOOP-DEBUG", "Pipeline[dataSources === undefined] layerModel:");
+    xdmp.trace("KOOP-DEBUG", layerModel); 
+
 
     pipeline = initializePipeline(viewPlan, boundingQuery, layerModel);
 
@@ -957,12 +989,26 @@ function getObjects(req, exportPlan=false) {
       const view = primaryDataSource.view;
       columnDefs = generateFieldDescriptors(layerModel, schema);
 
+
       let viewPlan = op.fromView(schema, view, "", "DocId");
+      xdmp.trace("KOOP-DEBUG", "Pipeline[source === view] Plan:");
+      xdmp.trace("KOOP-DEBUG", viewPlan); 
+      xdmp.trace("KOOP-DEBUG", "Pipeline[source === view] boundingQuery:");
+      xdmp.trace("KOOP-DEBUG", boundingQuery);
+      xdmp.trace("KOOP-DEBUG", "Pipeline[source === view] layerModel:");
+      xdmp.trace("KOOP-DEBUG", layerModel); 
+
       pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
     } else if (primaryDataSource.source === "sparql") {
       columnDefs = generateFieldDescriptors(layerModel, null);
 
       let viewPlan = getPlanForDataSource(primaryDataSource);
+      xdmp.trace("KOOP-DEBUG", "Pipeline[source === sparql] Plan:");
+      xdmp.trace("KOOP-DEBUG", viewPlan); 
+      xdmp.trace("KOOP-DEBUG", "Pipeline[source === sparql] boundingQuery:");
+      xdmp.trace("KOOP-DEBUG", boundingQuery);
+      xdmp.trace("KOOP-DEBUG", "Pipeline[source === sparql] layerModel:");
+      xdmp.trace("KOOP-DEBUG", layerModel); 
       pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
     }
   }
@@ -984,18 +1030,25 @@ function getObjects(req, exportPlan=false) {
 
   // only join in the document if we need to get the geometry from the document
   if (returnGeometry) {
+    xdmp.trace("KOOP-DEBUG", "Returning Geometry"); 
     if (!geometrySource || geometrySource.xpath) {
-      pipeline = pipeline.joinDoc(op.col('doc'), op.fragmentIdCol('DocId'));
+
+      xdmp.trace("KOOP-DEBUG", "GeometrySource is null or is XPath"); 
+      pipeline = pipeline.joinDoc(op.col('doc'), op.fragmentIdCol('DocId'))
     }
   }
 
   const extractor = geoextractor.getExtractor(layerModel);
+  xdmp.trace("KOOP-DEBUG", "extractor:");
+  xdmp.trace("KOOP-DEBUG", extractor);
 
   // TODO: see if there is any benefit to pushing the column select earlier in the pipeline
   // transform the rows into GeoJSON
   pipeline = pipeline.select(getSelectDef(outFields, columnDefs, returnGeometry, extractor, exportPlan));
 
+
   if (returnGeometry && extractor.hasExtractFunction() && exportPlan) {
+    xdmp.trace("KOOP-DEBUG", "Getting Extractor function");
     pipeline = pipeline.map(extractor.extract);
   }
   if (exportPlan) {
@@ -1023,6 +1076,7 @@ function getObjects(req, exportPlan=false) {
   }
 }
 
+
 function getTemporalQuery(temporalReference) {
   if (temporalReference == null)
     return cts.trueQuery();
@@ -1035,6 +1089,7 @@ function getTemporalQuery(temporalReference) {
         temporalReference.fieldName,
         ">=",
         getDateTime(temporalReference.ge));
+
     }
     if (temporalReference.le) {
       leQuery = cts.fieldRangeQuery(
@@ -1189,6 +1244,7 @@ function getAggregateFieldNames(aggregateDefs) {
   });
 };
 
+
 function getSelectDef(outFields, columnDefs, returnGeometry = false, geometryExtractor, exportPlan = false) {
   xdmp.trace("KOOP-DEBUG", "Starting getSelectDef");
   if (exportPlan) {
@@ -1205,27 +1261,13 @@ function getSelectDef(outFields, columnDefs, returnGeometry = false, geometryExt
     )
   ];
 
+  xdmp.trace("KOOP-DEBUG", "defs before returnGeometry");
+  xdmp.trace("KOOP-DEBUG", defs);
+
   // only include this if returnGeometry is true or outFields is *
   if (returnGeometry || outFields[0] === "*") {
-
-    // if (geometrySource && geometrySource.fields) {
-    //   // build the geomtery from fields in the row
-    //   defs.push(
-    //     op.as(
-    //       "geometry",
-    //       op.jsonObject([
-    //         op.prop("type", "Point"),
-    //         op.prop("coordinates", op.jsonArray([
-    //           op.jsonNumber(op.col(geometrySource.fields.lon)),
-    //           op.jsonNumber(op.col(geometrySource.fields.lat))
-    //         ]))
-    //       ])
-    //     )
-    //   )
-    // } else {
-      // select from the document
-    //  defs.push(geoextractor.getSelector(layerModel));
-    //}
+    xdmp.trace("KOOP-DEBUG", "Returning geometry from the following selector: ");
+    xdmp.trace("KOOP-DEBUG", geometryExtractor.getSelector());
     defs.push(geometryExtractor.getSelector());
   }
 

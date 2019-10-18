@@ -8,18 +8,20 @@ const mcgm = require('/MarkLogic/geospatial/mcgm');
 const op = require('/MarkLogic/optic');
 
 
-function getPointQuery(regions, layerModel)
-{
+function getPointQuery(regions, layerModel) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor: getPointQuery");
   const pointQueries = [];
 
   switch(layerModel.geometry.format) {
     case "geojson" : {
+        xdmp.trace("KOOP-DEBUG", "getPointQuery geometry format: geojson");
         const coordinateSystem = layerModel.geometry.coordinateSystem;
         const pointOptions = [ "coordinate-system=" +coordinateSystem ]
         var localQuery =  geojson.geospatialQuery(regions,pointOptions)
         pointQueries.push(localQuery);
     }; break;
     case "gml" : {
+        xdmp.trace("KOOP-DEBUG", "getPointQuery geometry format: gml");
         const coordinateSystem = layerModel.geometry.coordinateSystem;
         const pointFormat = layerModel.geometry.pointFormat;
         const pointOptions = [ "type=" +pointFormat , "coordinate-system=" +coordinateSystem ]
@@ -27,35 +29,41 @@ function getPointQuery(regions, layerModel)
         pointQueries.push(localQuery);
     } break;
     case "kml" : {
+        xdmp.trace("KOOP-DEBUG", "getPointQuery geometry format: kml");
         const coordinateSystem = layerModel.geometry.coordinateSystem;
         const pointOptions = ["coordinate-system=" +coordinateSystem ]
         var localQuery = geokml.geospatialQuery(regions,pointOptions)
         pointQueries.push(localQuery);
     } break;
     case "rss" : {
+        xdmp.trace("KOOP-DEBUG", "getPointQuery geometry format: rss");
         const coordinateSystem = layerModel.geometry.coordinateSystem;
         const pointOptions = ["coordinate-system=" +coordinateSystem ]
         var localQuery = georss.geospatialQuery(regions,pointOptions)
         pointQueries.push(localQuery);
     } break;
     case "mcgm" : {
+        xdmp.trace("KOOP-DEBUG", "getPointQuery geometry format: mcgm");
         const coordinateSystem = layerModel.geometry.coordinateSystem;
         const pointOptions = ["coordinate-system=" +coordinateSystem ]
         const localQuery = cts.elementAttributePairGeospatialQuery(fn.QName("","Dot"), fn.QName("","Latitude"), fn.QName("","Longitude"), regions, pointOptions, 1)
         pointQueries.push(localQuery);
     } break;
     case "any" : {
+        xdmp.trace("KOOP-DEBUG", "getPointQuery geometry format: any");
         const coordinateSystem = layerModel.geometry.coordinateSystem;
         const pointOptions = ["coordinate-system=" +coordinateSystem ]
         const localQuery = geo.geospatialQuery(regions,pointOptions);
         pointQueries.push(localQuery);
     } break;
     case "custom" : {
+        xdmp.trace("KOOP-DEBUG", "getPointQuery geometry format: custom");
         const indexes = layerModel.geometry.indexes;
         for (const key of Object.keys(indexes)) {
           switch (key) {
                 case "element" :
                     {
+                          xdmp.trace("KOOP-DEBUG", "getPointQuery geometry format: custom->element");
                           const elementArray = layerModel.geometry.indexes.element
                           for(let i=0; i < elementArray.length ; i++)
                           {
@@ -72,6 +80,7 @@ function getPointQuery(regions, layerModel)
                     break;
                 case "elementChild" :
                     {
+                          xdmp.trace("KOOP-DEBUG", "getPointQuery geometry format: custom->elementChild");
                           const elementChildArray = layerModel.geometry.indexes.elementChild
                           for(let i=0; i < elementChildArray.length ; i++)
                           {
@@ -90,6 +99,7 @@ function getPointQuery(regions, layerModel)
                     break;
                 case "elementPair" :
                    {
+                          xdmp.trace("KOOP-DEBUG", "getPointQuery geometry format: custom->elementPair");
                           const elementPairArray = layerModel.geometry.indexes.elementPair
                           for(let i=0; i < elementPairArray.length ; i++)
                           {
@@ -109,6 +119,7 @@ function getPointQuery(regions, layerModel)
                   break;
                 case "elementAttributePair" :
                   {
+                        xdmp.trace("KOOP-DEBUG", "getPointQuery geometry format: custom->elementAttributePair");
                         const elementAttributePairArray = layerModel.geometry.indexes.elementAttributePair
                         for(let i=0; i < elementAttributePairArray.length ; i++)
                         {
@@ -128,6 +139,7 @@ function getPointQuery(regions, layerModel)
                   break;
                 case "path" :
                   {
+                        xdmp.trace("KOOP-DEBUG", "getPointQuery geometry format: custom->path");
                         const pathArray = layerModel.geometry.indexes.path;
                         for(let i=0; i < pathArray.length ; i++)
                         {
@@ -140,6 +152,8 @@ function getPointQuery(regions, layerModel)
                         }
                   }
                   break;
+                default:
+                    xdmp.trace("KOOP-DEBUG", "getPointQuery geometry format: custom TYPE NOT FOUND");
               }
           }
       }
@@ -149,14 +163,21 @@ function getPointQuery(regions, layerModel)
 }
 
 function getRegionQuery(regions, operation, layerModel) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor: getRegionQuery");
+  xdmp.trace("KOOP-DEBUG", "In getRegionQuery");
   const geometry = layerModel.geometry;
   let regionPaths;
 
+  xdmp.trace("KOOP-DEBUG", "geometry");
+  xdmp.trace("KOOP-DEBUG", geometry);
+
   if (geometry.indexType && geometry.indexType === "region" && geometry.indexes) {
+    xdmp.trace("KOOP-DEBUG", "In getRegionQuery if");
     // get the path references from the indexes configured for the layer
     // placeholder for this code
     // the conditions will probably need to be updated
   } else {
+    xdmp.trace("KOOP-DEBUG", "In getRegionQuery else");
     regionPaths = [
       cts.geospatialRegionPathReference(
         '/envelope/ctsRegion', ['coordinate-system=wgs84']
@@ -165,6 +186,14 @@ function getRegionQuery(regions, operation, layerModel) {
   }
 
   const regionOptions = [];
+  xdmp.trace("KOOP-DEBUG", "regionPaths:");
+  xdmp.trace("KOOP-DEBUG", regionPaths); 
+  xdmp.trace("KOOP-DEBUG", "operation:");
+  xdmp.trace("KOOP-DEBUG", operation);
+  xdmp.trace("KOOP-DEBUG", "regions:");
+  xdmp.trace("KOOP-DEBUG", regions);
+  xdmp.trace("KOOP-DEBUG", "regionOptions:");
+  xdmp.trace("KOOP-DEBUG", regionOptions); 
 
   return cts.geospatialRegionQuery(
     regionPaths,
@@ -175,6 +204,7 @@ function getRegionQuery(regions, operation, layerModel) {
 }
 
 function CtsExtractor(layer) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor: CtsExtractor");
   this.getSelector = function () {
     return op.as("geometry", op.fn.string(op.xpath('doc', layer.geometry.source.xpath)));
   }
@@ -190,13 +220,22 @@ function CtsExtractor(layer) {
 }
 
 function GeoJsonExtractor(layer) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor: GeoJsonExtractor");
   this.getSelector = function () {
     if (layer.geometry.source && layer.geometry.source.column) {
+      xdmp.trace("KOOP-DEBUG", "op.xpath('doc'), from layer.geometry.source.column");
+      xdmp.trace("KOOP-DEBUG", layer.geometry.source.column);
       return op.as("geometry", op.call('http://marklogic.com/xdmp', 'unquote', op.col(layer.geometry.source.column)));
     } else if (layer.geometry.source && layer.geometry.source.xpath) {
+      xdmp.trace("KOOP-DEBUG", "op.xpath('doc'), from layer.geometry.source.xpath");
+      xdmp.trace("KOOP-DEBUG", layer.geometry.source.xpath);
       return op.as("geometry", op.xpath('doc', layer.geometry.source.xpath));
     } else if (layer.geometry && layer.geometry.xpath) {
+      xdmp.trace("KOOP-DEBUG", "op.xpath('doc'), from layer.geometry.xpath");
+      xdmp.trace("KOOP-DEBUG", layer.geometry.xpath);
       return op.as("geometry", op.xpath('doc', layer.geometry.xpath));
+    } else {
+      xdmp.trace("KOOP-DEBUG", "WARNING: No GeoJSON configuration found");
     }
   }
 
@@ -206,6 +245,7 @@ function GeoJsonExtractor(layer) {
 }
 
 function WKTExtractor(layer) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor: WKTExtractor");
   this.getSelector = function () {
     if (layer.geometry.source && layer.geometry.source.column) {
       return op.as("geometry", op.col(layer.geometry.source.column));
@@ -227,6 +267,7 @@ function WKTExtractor(layer) {
 }
 
 function GMLExtractor(layer) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor: GMLExtractor");
   this.getSelector = function () {
     return op.as('geometry', op.jsonObject([
             op.prop("pointFormat", layer.geometry.pointFormat),
@@ -266,6 +307,7 @@ function GMLExtractor(layer) {
 }
 
 function KMLExtractor(layer) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor: KMLExtractor");
   this.getSelector = function () {
   const selector = op.jsonObject([
             op.prop("coordinateSystem", layer.geometry.coordinateSystem),
@@ -300,6 +342,7 @@ function KMLExtractor(layer) {
 }
 
 function RSSExtractor(layer) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor: RSSExtractor");
   this.getSelector = function () {
   const selector = op.jsonObject([
             op.prop("coordinateSystem", layer.geometry.coordinateSystem),
@@ -334,6 +377,7 @@ function RSSExtractor(layer) {
 }
 
 function McgmExtractor(layer) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor: McgmExtractor");
   const lonLat = (layer.geometry.pointFormat === "long-lat-point");
 
   this.getSelector = function () {
@@ -376,6 +420,7 @@ function McgmExtractor(layer) {
 }
 
 function AnyExtractor(layer) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor: AnyExtractor");
     this.getSelector = function () {
   const selector = op.jsonObject([
             op.prop("coordinateSystem", layer.geometry.coordinateSystem),
@@ -383,13 +428,13 @@ function AnyExtractor(layer) {
                                             op.prop("kml",op.jsonArray(op.xpath("doc", "//Q{http://www.opengis.net/kml/2.2}Point/Q{http://www.opengis.net/kml/2.2}coordinates/node()"))),
                                             op.prop("rss",op.jsonArray(op.xpath("doc", "//item/Q{http://www.georss.org/georss}point/node()"))),
                                             op.prop("mcgm",op.jsonObject([
-                                                                  op.prop('lats',
-                                                                    op.map.entry("list", op.xpath("doc", "//Dot/@Latitude"))
-                                                                  ),
-                                                                  op.prop('lons',
-                                                                    op.map.entry("list", op.xpath("doc", "//Dot/@Longitude"))
-                                                                  )
-                                                                ]))
+                                              op.prop('lats',
+                                                op.map.entry("list", op.xpath("doc", "//Dot/@Latitude"))
+                                              ),
+                                              op.prop('lons',
+                                                op.map.entry("list", op.xpath("doc", "//Dot/@Longitude"))
+                                              )
+                                            ]))
                                            ]))
           ])
     return op.as('geometry', selector)
@@ -444,13 +489,24 @@ function AnyExtractor(layer) {
 }
 
 function CustomExtractor(layer) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor: CustomExtractor");
   this.getSelector = function () {
     const indexes = layer.geometry.indexes;
     const selectors = [];
 
+    xdmp.trace("KOOP-DEBUG", "Using the following layer geometry index settings");
+    if (!indexes)
+      xdmp.trace("KOOP-DEBUG", "Indexes are not defined");
+    else
+    xdmp.trace("KOOP-DEBUG", indexes);
+
+
     // path indexes
     if (indexes.path && indexes.path.length > 0 ) {
+      xdmp.trace("KOOP-DEBUG", "Found path indexes to operate on.");
       for (const index of indexes.path) {
+        xdmp.trace("KOOP-DEBUG", "Processing Path Index:");
+        xdmp.trace("KOOP-DEBUG", index);
         selectors.push(
           op.jsonObject([
             op.prop("pointFormat", index.pointFormat),
@@ -463,7 +519,10 @@ function CustomExtractor(layer) {
 
     // element indexes
     if (indexes.element && indexes.element.length > 0 ) {
+      xdmp.trace("KOOP-DEBUG", "Found element indexes to operate on.");
       for (const index of indexes.element) {
+        xdmp.trace("KOOP-DEBUG", "Processing Element Index:");
+        xdmp.trace("KOOP-DEBUG", index);
         selectors.push(
           op.jsonObject([
             op.prop("pointFormat", index.pointFormat),
@@ -477,7 +536,10 @@ function CustomExtractor(layer) {
     // element child indexes
 
     if (indexes.elementChild && indexes.elementChild.length > 0 ) {
+      xdmp.trace("KOOP-DEBUG", "Found elementChild indexes to operate on.");
       for (const index of indexes.elementChild) {
+        xdmp.trace("KOOP-DEBUG", "Processing element child Index:");
+        xdmp.trace("KOOP-DEBUG", index);
         selectors.push(
           op.jsonObject([
             op.prop("pointFormat", index.pointFormat),
@@ -491,7 +553,10 @@ function CustomExtractor(layer) {
 
     // element pair indexes
     if (indexes.elementPair && indexes.elementPair.length > 0 ) {
+      xdmp.trace("KOOP-DEBUG", "Found elementPair indexes to operate on.");
       for (const index of indexes.elementPair) {
+        xdmp.trace("KOOP-DEBUG", "Processing element pair Index:");
+        xdmp.trace("KOOP-DEBUG", index);
         selectors.push(
           op.jsonObject([
             op.prop("coordinateSystem", index.coordinateSystem),
@@ -507,7 +572,10 @@ function CustomExtractor(layer) {
     }
 
     if (indexes.elementAttributePair && indexes.elementAttributePair.length > 0 ) {
+      xdmp.trace("KOOP-DEBUG", "Found elementAttributePair indexes to operate on.");
       for (const index of indexes.elementAttributePair) {
+        xdmp.trace("KOOP-DEBUG", "Processing element attribute pair Index:");
+        xdmp.trace("KOOP-DEBUG", index);
         selectors.push(
           op.jsonObject([
             op.prop("coordinateSystem", index.coordinateSystem),
@@ -521,7 +589,8 @@ function CustomExtractor(layer) {
         )
       }
     }
-
+    xdmp.trace("KOOP-DEBUG", "Built Selectors");
+    xdmp.trace("KOOP-DEBUG", selectors);
     return op.as('geometry', selectors);
   }
 
@@ -536,10 +605,24 @@ function CustomExtractor(layer) {
     }
 
   if (result.geometry) {
+    xdmp.trace("KOOP-DEBUG", "Processing result.geometry");
+    xdmp.trace("KOOP-DEBUG", result.geometry);
+    if (!Array.isArray(result.geometry)) {
+      xdmp.trace("KOOP-DEBUG", "ALERT: result.geometry is not an array, forcing it to an array");
+      const geometryArray = [result.geometry];
+      result.geometry = geometryArray;
+      xdmp.trace("KOOP-DEBUG", "New result.geometry");
+      xdmp.trace("KOOP-DEBUG", result.geometry);
+    }
     for (const geometry of result.geometry) {
       const extracted = geometry.toObject();
 
+      xdmp.trace("KOOP-DEBUG", "Extracted geometry");
+      xdmp.trace("KOOP-DEBUG", extracted);
+
       if (extracted.points) {
+        xdmp.trace("KOOP-DEBUG", "Processing points");
+        xdmp.trace("KOOP-DEBUG", extracted.points);
         let points = extracted.points;
         if (points.list) {
           points = Array.isArray(points.list) ? points.list : [ points.list ];
@@ -547,18 +630,22 @@ function CustomExtractor(layer) {
 
         const lonLat = (extracted.pointFormat === "long-lat-point");
         if (Array.isArray(points)){
-        for (const point of points) {
-          const parts = point.valueOf().trim().split(/\s*,\s*|\s+/, 2);
-          if (lonLat) {
-            resultGeometry.coordinates.push([ Number(parts[0]), Number(parts[1])]);
-          } else {
-            resultGeometry.coordinates.push([ Number(parts[1]), Number(parts[0])]);
+          for (const point of points) {
+            const parts = point.valueOf().trim().split(/\s*,\s*|\s+/, 2);
+            if (lonLat) {
+              resultGeometry.coordinates.push([ Number(parts[0]), Number(parts[1])]);
+            } else {
+              resultGeometry.coordinates.push([ Number(parts[1]), Number(parts[0])]);
+            }
           }
-        }
        }
       } else if (extracted.lats) {
         let lats = extracted.lats;
         let lons = extracted.lons;
+
+        xdmp.trace("KOOP-DEBUG", "Processing Lat/Lon");
+        xdmp.trace("KOOP-DEBUG", extracted.lats);
+        xdmp.trace("KOOP-DEBUG", extracted.lons);
 
         // use the "list" property as a workaround for bug 49815
         if (lats.list) {
@@ -580,6 +667,7 @@ function CustomExtractor(layer) {
 }
 
 function ns(uri) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor helper function: ns");
   if (uri) {
     return "Q{" + uri + "}";
   } else {
@@ -588,6 +676,7 @@ function ns(uri) {
 }
 
 function getPathXPath(index) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor helper function: getPathXPath");
   // check to see if the path returns an attribute
   // TODO: this likely needs to be exanded as it only does very basic detection
   // maybe we want the user to specify in the config that the path index selects an attribute?
@@ -595,39 +684,46 @@ function getPathXPath(index) {
 
   // TODO: we need to document inconsistencies between XPath supported by indexes and those that work here
   // e.g. don't end a path with node() or text() or something that returns a primitive
-  return isAttribute ? index.pathExpression : index.pathExpression + "/node()";
+  return isAttribute ? index.pathExpression : index.pathExpression;
 }
 
 function getElementXPath(index) {
-  return "//" + ns(index.namespaceUri) + index.localname + "/node()"
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor helper function: getElementXPath");
+  return "//" + ns(index.namespaceUri) + index.localname;
 }
 
 function getElementChildXPath(index) {
-  return "//" + ns(index.parentNamespaceUri) + index.parentLocalname + "/" + ns(index.namespaceUri) + index.localname + "/node()";
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor helper function: getElementChildXPath");
+  return "//" + ns(index.parentNamespaceUri) + index.parentLocalname + "/" + ns(index.namespaceUri) + index.localname;
 }
 
 function getElementPairLatXPath(index) {
-  return "//" + ns(index.parentNamespaceUri) + index.parentLocalname + "/" + ns(index.latitudeNamespaceUri) + index.latitudeLocalname + "/node()";
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor helper function: getElementPairLatXPath");
+  return "//" + ns(index.parentNamespaceUri) + index.parentLocalname + "/" + ns(index.latitudeNamespaceUri) + index.latitudeLocalname;
 }
 
 function getElementPairLonXPath(index) {
-  return "//" + ns(index.parentNamespaceUri) + index.parentLocalname + "/" + ns(index.longitudeNamespaceUri) + index.longitudeLocalname + "/node()";
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor helper function: getElementPairLonXPath");
+  return "//" + ns(index.parentNamespaceUri) + index.parentLocalname + "/" + ns(index.longitudeNamespaceUri) + index.longitudeLocalname;
 }
 
 function getElementPairLatXPath(index) {
-  return "//" + ns(index.parentNamespaceUri) + index.parentLocalname + "/" + ns(index.latitudeNamespaceUri) + index.latitudeLocalname + "/node()";
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor helper function: getElementPairLatXPath");
+  return "//" + ns(index.parentNamespaceUri) + index.parentLocalname + "/" + ns(index.latitudeNamespaceUri) + index.latitudeLocalname;
 }
 
 function getAttributePairLonXPath(index) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor helper function: getAttributePairLonXPath");
   return "//" + ns(index.parentNamespaceUri) + index.parentLocalname + "/@" + ns(index.longitudeNamespaceUri) + index.longitudeLocalname;
 }
 
 function getAttributePairLatXPath(index) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor helper function: getAttributePairLatXPath");
   return "//" + ns(index.parentNamespaceUri) + index.parentLocalname + "/@" + ns(index.latitudeNamespaceUri) + index.latitudeLocalname;
 }
 
-function getExtractFunction(layerModel)
-{
+function getExtractFunction(layerModel) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor helper function: getExtractFunction");
   let format = layerModel.geometry.format;
   if (layerModel.geometry.source && layerModel.geometry.source.format) {
     format = layerModel.geometry.source.format;
@@ -647,14 +743,17 @@ function getExtractFunction(layerModel)
 }
 
 function getExtractor(layerModel) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor: getExtractor");
   return getExtractFunction(layerModel);
 }
 
 function getSelector(layerModel) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor: getSelector");
   return getExtractFunction(layerModel).getSelector();
 }
 
 function getMapper(layerModel) {
+  xdmp.trace("KOOP-DEBUG", "Using the following extractor: getMapper");
   return getExtractFunction(layerModel).extract;
 }
 
