@@ -64,7 +64,7 @@
   "description": "Error definitions for Flora",
   "devDependencies": {
     "chai": "^3.4.1",
-    "eslint": "^3.11.0",
+    "eslint": "^6.5.1",
     "eslint-config-airbnb-base": "^11.0.0",
     "eslint-plugin-import": "^2.2.0",
     "grunt": "^1.0.1",
