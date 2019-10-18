@@ -59,7 +59,7 @@
   "devDependencies": {
     "@ljharb/eslint-config": "^2.1.0",
     "covert": "^1.1.0",
-    "eslint": "^2.0.0",
+    "eslint": "^6.5.1",
     "jscs": "^2.9.0",
     "tape": "^4.4.0"
   },
