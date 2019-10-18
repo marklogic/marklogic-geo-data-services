@@ -15,21 +15,21 @@
  */
 'use strict';
 
-/* IMPORTANT: Do not edit. This file is generated. */
 
 var deserializer = {
 qd:{
   query(query) {
+    // BUGTRACK: https://bugtrack.marklogic.com/52601
     // first test if it's really a serialized query; if it's a normal in-memory
     // query, just return it
     let funcName = query.constructor.name.substring(4);
  //   xdmp.log(deserializer.cts[funcName]);
-    
+
     if (deserializer.cts[funcName]) return query;
 
     let q = cts.query(query);
     let func = Object.keys(query)[0];
-    xdmp.log(func);
+    xdmp.trace("KOOP-DEBUG", func);
     return deserializer.cts[func](q);
   }
 },

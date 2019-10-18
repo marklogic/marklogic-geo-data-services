@@ -19,7 +19,7 @@ function post(context, params, input) {
 
   try {
     const geoJson =  getData(fn.head(xdmp.fromJSON(input)));
-    xdmp.trace("KOOP-RESPONSE", JSON.stringify(geoJson));
+    xdmp.trace("KOOP-DEBUG", JSON.stringify(geoJson));
     return geoJson;
   } catch (err) {
     console.log(err.stack);
