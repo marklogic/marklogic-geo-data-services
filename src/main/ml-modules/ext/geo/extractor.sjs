@@ -187,13 +187,13 @@ function getRegionQuery(regions, operation, layerModel) {
 
   const regionOptions = [];
   xdmp.trace("KOOP-DEBUG", "regionPaths:");
-  xdmp.trace("KOOP-DEBUG", regionPaths); 
+  xdmp.trace("KOOP-DEBUG", regionPaths);
   xdmp.trace("KOOP-DEBUG", "operation:");
   xdmp.trace("KOOP-DEBUG", operation);
   xdmp.trace("KOOP-DEBUG", "regions:");
   xdmp.trace("KOOP-DEBUG", regions);
   xdmp.trace("KOOP-DEBUG", "regionOptions:");
-  xdmp.trace("KOOP-DEBUG", regionOptions); 
+  xdmp.trace("KOOP-DEBUG", regionOptions);
 
   return cts.geospatialRegionQuery(
     regionPaths,
@@ -248,10 +248,13 @@ function WKTExtractor(layer) {
   xdmp.trace("KOOP-DEBUG", "Using the following extractor: WKTExtractor");
   this.getSelector = function () {
     if (layer.geometry.source && layer.geometry.source.column) {
+      xdmp.trace("KOOP-DEBUG", "WKTExtractor pulling data from layer.geometry.source.column");
       return op.as("geometry", op.col(layer.geometry.source.column));
     } else if (layer.geometry.source && layer.geometry.source.xpath) {
+      xdmp.trace("KOOP-DEBUG", "WKTExtractor pulling data from layer.geometry.source.xpath");
       return op.as("geometry", op.xpath('doc', layer.geometry.source.xpath));
     } else if (layer.geometry && layer.geometry.xpath) {
+      xdmp.trace("KOOP-DEBUG", "WKTExtractor pulling data from layer.geometry.xpath");
       return op.as("geometry", op.xpath('doc', layer.geometry.xpath));
     }
   }
@@ -607,14 +610,16 @@ function CustomExtractor(layer) {
   if (result.geometry) {
     xdmp.trace("KOOP-DEBUG", "Processing result.geometry");
     xdmp.trace("KOOP-DEBUG", result.geometry);
-    if (!Array.isArray(result.geometry)) {
-      xdmp.trace("KOOP-DEBUG", "ALERT: result.geometry is not an array, forcing it to an array");
-      const geometryArray = [result.geometry];
-      result.geometry = geometryArray;
-      xdmp.trace("KOOP-DEBUG", "New result.geometry");
-      xdmp.trace("KOOP-DEBUG", result.geometry);
-    }
-    for (const geometry of result.geometry) {
+    xdmp.trace("KOOP-DEBUG", "Processing result.geometry.toArray()");
+    xdmp.trace("KOOP-DEBUG", result.geometry.toArray());
+    // if (!Array.isArray(result.geometry)) {
+    //   xdmp.trace("KOOP-DEBUG", "ALERT: result.geometry is not an array, forcing it to an array");
+    //   const geometryArray = [result.geometry];
+    //   result.geometry = geometryArray;
+    //   xdmp.trace("KOOP-DEBUG", "New result.geometry");
+    //   xdmp.trace("KOOP-DEBUG", result.geometry);
+    // }
+    for (const geometry of result.geometry.toArray()) {
       const extracted = geometry.toObject();
 
       xdmp.trace("KOOP-DEBUG", "Extracted geometry");

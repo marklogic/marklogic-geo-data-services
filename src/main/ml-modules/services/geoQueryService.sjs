@@ -963,7 +963,7 @@ function getObjects(req, exportPlan=false) {
   let pipeline;
   let columnDefs;
   if (layerModel.dataSources === undefined) {
-    xdmp.trace("KOOP-DEBUG", "layerModel.dataSources is undefined"); 
+    xdmp.trace("KOOP-DEBUG", "layerModel.dataSources is undefined");
     const schema = layerModel.schema;
     const view = layerModel.view;
     columnDefs = generateFieldDescriptors(layerModel, schema);
@@ -971,11 +971,11 @@ function getObjects(req, exportPlan=false) {
 
     let viewPlan = op.fromView(schema, view, "", "DocId");
     xdmp.trace("KOOP-DEBUG", "Pipeline[dataSources === undefined] Plan:");
-    xdmp.trace("KOOP-DEBUG", viewPlan); 
+    xdmp.trace("KOOP-DEBUG", viewPlan);
     xdmp.trace("KOOP-DEBUG", "Pipeline[dataSources === undefined] boundingQuery:");
     xdmp.trace("KOOP-DEBUG", boundingQuery);
     xdmp.trace("KOOP-DEBUG", "Pipeline[dataSources === undefined] layerModel:");
-    xdmp.trace("KOOP-DEBUG", layerModel); 
+    xdmp.trace("KOOP-DEBUG", layerModel);
 
 
     pipeline = initializePipeline(viewPlan, boundingQuery, layerModel);
@@ -992,11 +992,11 @@ function getObjects(req, exportPlan=false) {
 
       let viewPlan = op.fromView(schema, view, "", "DocId");
       xdmp.trace("KOOP-DEBUG", "Pipeline[source === view] Plan:");
-      xdmp.trace("KOOP-DEBUG", viewPlan); 
+      xdmp.trace("KOOP-DEBUG", viewPlan);
       xdmp.trace("KOOP-DEBUG", "Pipeline[source === view] boundingQuery:");
       xdmp.trace("KOOP-DEBUG", boundingQuery);
       xdmp.trace("KOOP-DEBUG", "Pipeline[source === view] layerModel:");
-      xdmp.trace("KOOP-DEBUG", layerModel); 
+      xdmp.trace("KOOP-DEBUG", layerModel);
 
       pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
     } else if (primaryDataSource.source === "sparql") {
@@ -1004,11 +1004,11 @@ function getObjects(req, exportPlan=false) {
 
       let viewPlan = getPlanForDataSource(primaryDataSource);
       xdmp.trace("KOOP-DEBUG", "Pipeline[source === sparql] Plan:");
-      xdmp.trace("KOOP-DEBUG", viewPlan); 
+      xdmp.trace("KOOP-DEBUG", viewPlan);
       xdmp.trace("KOOP-DEBUG", "Pipeline[source === sparql] boundingQuery:");
       xdmp.trace("KOOP-DEBUG", boundingQuery);
       xdmp.trace("KOOP-DEBUG", "Pipeline[source === sparql] layerModel:");
-      xdmp.trace("KOOP-DEBUG", layerModel); 
+      xdmp.trace("KOOP-DEBUG", layerModel);
       pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
     }
   }
@@ -1030,10 +1030,10 @@ function getObjects(req, exportPlan=false) {
 
   // only join in the document if we need to get the geometry from the document
   if (returnGeometry) {
-    xdmp.trace("KOOP-DEBUG", "Returning Geometry"); 
+    xdmp.trace("KOOP-DEBUG", "Returning Geometry");
     if (!geometrySource || geometrySource.xpath) {
 
-      xdmp.trace("KOOP-DEBUG", "GeometrySource is null or is XPath"); 
+      xdmp.trace("KOOP-DEBUG", "GeometrySource is null or is XPath");
       pipeline = pipeline.joinDoc(op.col('doc'), op.fragmentIdCol('DocId'))
     }
   }
@@ -1047,10 +1047,6 @@ function getObjects(req, exportPlan=false) {
   pipeline = pipeline.select(getSelectDef(outFields, columnDefs, returnGeometry, extractor, exportPlan));
 
 
-  if (returnGeometry && extractor.hasExtractFunction() && exportPlan) {
-    xdmp.trace("KOOP-DEBUG", "Getting Extractor function");
-    pipeline = pipeline.map(extractor.extract);
-  }
   if (exportPlan) {
     let exported = pipeline.export();
     xdmp.trace("KOOP-DEBUG", "exported pipeline: ");
@@ -1058,8 +1054,18 @@ function getObjects(req, exportPlan=false) {
     return exported;
   }
   else {
-    const opticResult = Array.from(pipeline.result(null, bindParams))
-    const opticResultCount = opticResult.length
+    if (returnGeometry && extractor.hasExtractFunction()) {
+      xdmp.trace("KOOP-DEBUG", "Getting Extractor function");
+      pipeline = pipeline.map(extractor.extract);
+    }
+    xdmp.trace("KOOP-DEBUG", "Now to pull results from the pipeline with the following bindParams");
+    xdmp.trace("KOOP-DEBUG", bindParams);
+    const opticResult = Array.from(pipeline.result("object", bindParams));
+
+    xdmp.trace("KOOP-DEBUG", `Results pulled from Pipeline. Found ${opticResult.length} results.`);
+    const opticResultCount = opticResult.length;
+
+
 
     if(opticResultCount >= (limit + 1) ){
       opticResult.pop();
@@ -1234,7 +1240,7 @@ function aggregate(req) {
     .offset(op.param("offset"))
     .limit(op.param("limit"));
 
-  return pipeline.result(null, bindParams);
+  return pipeline.result("object", bindParams);
 };
 
 function getAggregateFieldNames(aggregateDefs) {
