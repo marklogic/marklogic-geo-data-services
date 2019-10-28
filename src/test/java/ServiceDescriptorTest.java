@@ -62,7 +62,7 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
                 //TODO missing .body("units", is("esriDecimalDegrees"))
                 //TODO missing .body("syncEnabled", is(false))
 
-                .body("layers.size()", is(6))
+                .body("layers.size()", is(7))
                 .body("layers.metadata.name", hasItems("GKG level 1", "GKG level 2", "GKG level 3"))
             ;
 
@@ -104,7 +104,7 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
                 .body("metadata.extent.spatialReference.latestWkid", is(4326))
 
                 .body("metadata.fields.size()", is(9))
-                .body("metadata.fields.name", 
+                .body("metadata.fields.name",
                     hasItems("OBJECTID", "urlpubtimedate", "urlpubdate", "url", "name", "urltone", "domain", "urllangcode", "geores"))
                 //TODO missing .body("hasStaticData", is(false))
             ;
@@ -128,7 +128,7 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
                 .log().ifError()
                 .statusCode(200)
                 .log().ifValidationFails()
-                .body("layers.size()", is(6))
+                .body("layers.size()", is(7))
                 .body("layers.metadata.name", hasItems("GKG level 1", "GKG level 2", "GKG level 3","GKG level 4"))
             ;
 
