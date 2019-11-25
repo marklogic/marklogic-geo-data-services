@@ -46,7 +46,10 @@ function getData(req) {
   xdmp.trace("KOOP-DEBUG", "Starting getData");
   xdmp.trace("KOOP-REQUEST", JSON.stringify(req));
 
-  if (req.params.method == "query") {
+  if (req.geoserver) {
+    getGeoServerData(req);
+  }
+  else if (req.params.method == "query") {
     xdmp.trace("KOOP-DEBUG", "Method 'query'");
     return query(req);
   } else if (req.params.method == "exportPlan") {
@@ -66,6 +69,17 @@ function getData(req) {
 
   // return an unsupported error
   returnErrToClient(501, 'Request parameters not supported', xdmp.quote(req));
+}
+
+function getGeoServerData(req) {
+  if (req.geoserver.method == "getLayerNames") {
+    return getGeoServerLayerNames();
+  }
+}
+
+function getGeoServerLayerNames() {
+  const collection = "http://marklogic.com/feature-services";
+  return cts.fieldValues("geoServerLayerName", null, null, cts.collectionQuery(collection)).toArray();
 }
 
 function getServiceModel(serviceName) {
