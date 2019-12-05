@@ -79,7 +79,13 @@ function getGeoServerData(req) {
 
 function getGeoServerLayerNames() {
   const collection = "http://marklogic.com/feature-services";
-  return cts.fieldValues("geoServerLayerName", null, null, cts.collectionQuery(collection)).toArray();
+  let layerNames = [];
+  for (let descriptor of cts.collectionQuery(collection)) {
+    for (let layer of descriptor.root.layers) {
+      layerNames.push(layer.geoServerMetadata);
+    }
+  }
+  return layerNames;
 }
 
 function getServiceModel(serviceName) {
