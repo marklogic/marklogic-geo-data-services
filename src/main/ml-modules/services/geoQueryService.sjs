@@ -85,8 +85,8 @@ function getGeoServerLayerNames() {
     xdmp.log("layers:"); xdmp.log(descriptor.layers);
 
     for (let layer of descriptor.layers) {
-      if (layer.geoServerMetadata)
-        layerNames.push(layer.geoServerMetadata);
+      if (layer.geoServerMetadata && layer.geoServerMetadata.geoServerLayerName)
+        layerNames.push(layer.geoServerMetadata.geoServerLayerName);
     }
   }
   return layerNames;
