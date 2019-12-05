@@ -47,7 +47,7 @@ function getData(req) {
   xdmp.trace("KOOP-REQUEST", JSON.stringify(req));
 
   if (req.geoserver) {
-    getGeoServerData(req);
+    return getGeoServerData(req);
   }
   else if (req.params.method == "query") {
     xdmp.trace("KOOP-DEBUG", "Method 'query'");
@@ -80,9 +80,13 @@ function getGeoServerData(req) {
 function getGeoServerLayerNames() {
   const collection = "http://marklogic.com/feature-services";
   let layerNames = [];
-  for (let descriptor of cts.collectionQuery(collection)) {
-    for (let layer of descriptor.root.layers) {
-      layerNames.push(layer.geoServerMetadata);
+  for (let descriptorDoc of cts.search(cts.collectionQuery(collection))) {
+    let descriptor = descriptorDoc.toObject();
+    xdmp.log("layers:"); xdmp.log(descriptor.layers);
+
+    for (let layer of descriptor.layers) {
+      if (layer.geoServerMetadata)
+        layerNames.push(layer.geoServerMetadata);
     }
   }
   return layerNames;
