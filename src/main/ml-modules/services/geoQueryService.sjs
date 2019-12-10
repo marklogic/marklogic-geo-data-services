@@ -75,6 +75,9 @@ function getGeoServerData(req) {
   if (req.geoserver.method == "getLayerNames") {
     return getGeoServerLayerNames();
   }
+  else if (req.geoserver.method == "getLayerSchema") {
+    return getGeoServerLayerSchema(req.geoserver.layerName);
+  }
 }
 
 function getGeoServerLayerNames() {
@@ -82,7 +85,6 @@ function getGeoServerLayerNames() {
   let layerNames = [];
   for (let descriptorDoc of cts.search(cts.collectionQuery(collection))) {
     let descriptor = descriptorDoc.toObject();
-    xdmp.log("layers:"); xdmp.log(descriptor.layers);
 
     for (let layer of descriptor.layers) {
       if (layer.geoServerMetadata && layer.geoServerMetadata.geoServerLayerName)
@@ -92,17 +94,41 @@ function getGeoServerLayerNames() {
   return layerNames;
 }
 
-function getServiceModel(serviceName) {
+function getGeoServerLayerSchema(layerName) {
+  
+  let model = getServiceModel(null, layerName);
+  let serviceDesc = transformServiceModelToDescriptor(model, model.info.name);
+
+
+  let layer = null;
+  if (serviceDesc) {
+    xdmp.trace("KOOP-DEBUG", "Found layer: " + layerName);
+    layer =
+      serviceDesc.layers.find((l) => {
+        return l.metadata && l.metadata.geoServerMetadata && l.metadata.geoServerMetadata.geoServerLayerName == layerName;
+      });
+    layer.serviceName = model.info.name;
+  } else {
+    xdmp.trace("KOOP-DEBUG", "No layer info found for: " + layerName);
+    throw "No layer info found for: " + layerName;
+  }
+  return layer;
+}
+
+function getServiceModel(serviceName, geoServerLayerName = null) {
   xdmp.trace("KOOP-DEBUG", "Starting getServiceModel");
   // TODO: These should be cached
 
   const collection = "http://marklogic.com/feature-services";
 
+  let propertyNames = ["name"];
+  if (geoServerLayerName) propertyNames.push("geoServerLayerName");
+
   xdmp.trace("KOOP-DEBUG", "Searching for Service Model: " + serviceName);
   let model = fn.head(
     cts.search(cts.andQuery([
       cts.collectionQuery(collection),
-      cts.jsonPropertyValueQuery("name", serviceName)
+      cts.jsonPropertyValueQuery(propertyNames, [serviceName, geoServerLayerName])
     ]))
   );
 
@@ -178,7 +204,11 @@ function generateServiceDescriptor(serviceName) {
   // TODO: we should cache this instead of generating it every time
 
   const model = getServiceModel(serviceName);
+  let desc = transformServiceModelToDescriptor(model, serviceName);
+  return desc;
+}
 
+function transformServiceModelToDescriptor(model, serviceName) {
   const desc = {
     description: model.info.description,
     maxRecordCount: MAX_RECORD_COUNT
@@ -208,7 +238,6 @@ function generateServiceDescriptor(serviceName) {
 
     desc.layers.push(layer);
   }
-
   return desc;
 }
 
@@ -271,7 +300,7 @@ function generateJoinFieldDescriptorsFromViewAndJoins(layerModel) {
   const fields = [];
   layerModel.joins.forEach((dataSource) => {
     Object.keys(dataSource.fields).forEach((field) => {
-      if (layerModel.includeFields === undefined || layerModel.includeFields.includes(field.name)) {
+      if (layerModel.includeFields === undefined || layerModel.includeFields.includes(field)) {
         fields.push(createFieldDescriptor(field, dataSource.fields[field].scalarType, dataSource.fields[field].alias));
       }
     });
@@ -283,7 +312,7 @@ function generateJoinFieldDescriptorsFromDataSource(dataSource) {
   xdmp.trace("KOOP-DEBUG", "Starting generateJoinFieldDescriptorsFromDataSource");
   const fields = [];
   Object.keys(dataSource.fields).forEach((field) => {
-    if (dataSource.includeFields === undefined || dataSource.includeFields.includes(field.name)) {
+    if (dataSource.includeFields === undefined || dataSource.includeFields.includes(field)) {
       fields.push(createFieldDescriptor(field, dataSource.fields[field].scalarType, dataSource.fields[field].alias, dataSource.includeFields));
     }
   });
@@ -916,7 +945,7 @@ function getObjects(req, exportPlan=false) {
   }
 
   const returnGeometry = (query.returnGeometry || outFields[0] === "*") ? true : false;
-  const geometrySource = layerModel.geometrySource;  // Should this be geometry or geometrySource?
+  const geometrySource = layerModel.geometry;  // Should this be geometry or geometrySource?  TJD--"geometry"
   xdmp.trace("KOOP-DEBUG", "geometrySource = " + geometrySource);
   xdmp.trace("KOOP-DEBUG", "returnGeometry = " + returnGeometry);
 
@@ -992,7 +1021,7 @@ function getObjects(req, exportPlan=false) {
     const view = layerModel.view;
     columnDefs = generateFieldDescriptors(layerModel, schema);
 
-
+    xdmp.trace("KOOP-DEBUG", "getObjects(): layerModel.dataSources === undefined, using DocId as fragment id column");
     let viewPlan = op.fromView(schema, view, "", "DocId");
     xdmp.trace("KOOP-DEBUG", "Pipeline[dataSources === undefined] Plan:");
     xdmp.trace("KOOP-DEBUG", viewPlan);
@@ -1014,7 +1043,9 @@ function getObjects(req, exportPlan=false) {
       columnDefs = generateFieldDescriptors(layerModel, schema);
 
 
-      let viewPlan = op.fromView(schema, view, "", "DocId");
+      const fragmentIdColumn = primaryDataSource.fragmentIdColumn ? primaryDataSource.fragmentIdColumn : "DocId";
+      xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + fragmentIdColumn);
+      let viewPlan = op.fromView(schema, view, null, fragmentIdColumn);
       xdmp.trace("KOOP-DEBUG", "Pipeline[source === view] Plan:");
       xdmp.trace("KOOP-DEBUG", viewPlan);
       xdmp.trace("KOOP-DEBUG", "Pipeline[source === view] boundingQuery:");
@@ -1068,7 +1099,7 @@ function getObjects(req, exportPlan=false) {
 
   // TODO: see if there is any benefit to pushing the column select earlier in the pipeline
   // transform the rows into GeoJSON
-  pipeline = pipeline.select(getSelectDef(outFields, columnDefs, returnGeometry, extractor, exportPlan));
+  pipeline = pipeline.select(getSelectDef(outFields, columnDefs, returnGeometry, extractor, exportPlan, layerModel.idField));
 
 
   if (exportPlan) {
@@ -1179,7 +1210,9 @@ function getPlanForDataSource(dataSource) {
     }
     return plan;
   } else if (dataSource.source === "view") {
-    return op.fromView(dataSource.schema, dataSource.view, "")
+    let fragmentIdColumn = dataSource.fragmentIdColumn ? dataSource.fragmentIdColumn : "DocId";
+    xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + fragmentIdColumn);
+    return op.fromView(dataSource.schema, dataSource.view, null, fragmentIdColumn)
   } else {
     returnErrToClient(500, 'Error handling request', "dataSource objects must specify a valid source ('view' or 'sparql')");
   }
@@ -1236,6 +1269,7 @@ function aggregate(req) {
     const schema = layerModel.schema;
     const view = layerModel.view;
 
+    xdmp.trace("KOOP-DEBUG", "layerModel.dataSources === undefined, using DocId as fragment id column");
     let viewPlan = op.fromView(schema, view, "", "DocId");
 
     pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
@@ -1245,7 +1279,9 @@ function aggregate(req) {
       const schema = primaryDataSource.schema;
       const view = primaryDataSource.view;
 
-      let viewPlan = op.fromView(schema, view, "", "DocId");
+      const fragmentIdColumn = primaryDataSource.fragmentIdColumn ? primaryDataSource.fragmentIdColumn : "DocId";
+      xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + fragmentIdColumn);
+      let viewPlan = op.fromView(schema, view, null, fragmentIdColumn);
       pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
     } else if (primaryDataSource.source === "sparql") {
       let viewPlan = getPlanForDataSource(primaryDataSource);
@@ -1275,7 +1311,7 @@ function getAggregateFieldNames(aggregateDefs) {
 };
 
 
-function getSelectDef(outFields, columnDefs, returnGeometry = false, geometryExtractor, exportPlan = false) {
+function getSelectDef(outFields, columnDefs, returnGeometry = false, geometryExtractor, exportPlan = false, idField="OBJECTID") {
   xdmp.trace("KOOP-DEBUG", "Starting getSelectDef");
   if (exportPlan) {
     xdmp.trace("KOOP-DEBUG", "Exporting Plan");
@@ -1285,6 +1321,7 @@ function getSelectDef(outFields, columnDefs, returnGeometry = false, geometryExt
   // start with a GeoJSON feature with properties
   const defs = [
     op.as("type", "Feature"),
+    op.as("id", op.col(idField)),
     op.as(
       "properties",
       op.jsonObject(getPropDefs(outFields, columnDefs))
@@ -1378,7 +1415,7 @@ function getPropDefs(outFields, columnDefs) {
             op.when(op.isDefined(op.col(colName)), op.col(colName)), op.jsonNull()
           )
         )
-      )
+      );
     });
   } else {
     outFields.forEach((f) => {
