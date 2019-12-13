@@ -2,13 +2,26 @@
 'use strict';
 
 const gslib = require('/lib/geoserverLib.sjs');
-const geoserverProfile = xdmp.fromJsonString('%%geoserverProfile%%')
+const geoserverUrl = '%%geoserverUrl%%'
 
 function post(context, params, input) {
     xdmp.trace("GEOSERVER-DEBUG", "Starting post");
+    xdmp.trace("GEOSERVER_DEBUG", geoserverUrl);
+
+    const auth = {
+        "method":"basic",
+        "username":params.geoserverUser,
+        "password":params.geoserverPassword
+    }
 
     try {
-        return gslib.geoserverPublisher(geoserverProfile,params.serviceDescriptorUri)
+        return gslib.geoserverPublisher(
+            geoserverUrl,
+            params.geoserverWorkspace,
+            params.geoserverDatastore,
+            auth,
+            params.serviceDescriptorUri
+        )
     } catch (err) {
         console.log(err.stack);
         console.trace(err);

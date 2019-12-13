@@ -19,13 +19,10 @@
  */
 
 
-function publishLayersInGroup(geoserverProfile, serviceDescriptorURI) {
-    const workspace = geoserverProfile.workspace;
-    const datastore = geoserverProfile.datastore;
-    const geoserverUrl = geoserverProfile.url;
+function publishLayersInGroup(geoserverUrl, workspace, datastore, authenticationJson, serviceDescriptorURI) {
     const restNewFeatureType = "\/rest\/workspaces\/"+workspace+"\/datastores\/"+datastore+"\/featuretypes.json"
     const httpOptions = {
-        "authentication" : geoserverProfile.auth,
+        "authentication" : authenticationJson,
         "headers" : { "content-type":"application/json"}
     }
 
@@ -35,11 +32,13 @@ function publishLayersInGroup(geoserverProfile, serviceDescriptorURI) {
         let published = [];
         for (const layer of serviceDescriptor.layers) {
             const json = generateLayerJson(layer,workspace,datastore,geoserverUrl);
-            xdmp.httpPost(geoserverUrl+restNewFeatureType, httpOptions, json)
+            //TODO: TRAP 400/500 errors
+            xdmp.httpPost(geoserverUrl+restNewFeatureType, httpOptions, json);
+            //TODO: TRAP 400/500 errors
             published.push(xdmp.httpGet(geoserverUrl+"\/rest\/layers\/"+workspace+":"+layer.geoServerMetadata.geoServerLayerName+".json", httpOptions).toObject()[1])
         }
 
-        const lgJson = generateLayerGroupJson(workspace,serviceDescriptor.info, published)
+        const lgJson = generateLayerGroupJson(workspace,serviceDescriptor.info, published);
 
         return xdmp.httpPost(geoserverUrl+"\/rest\/layergroups", httpOptions, lgJson)
 
@@ -74,6 +73,9 @@ function generateLayerGroupJson(workspace, layerInfo, published) {
     }
 
     for (const player of published) {
+
+        xdmp.trace("GEOSERVER-DEBUG", "Published: " + player);
+
         const layer = player.toObject().layer
         let publishDetails =  {
             "@type":"layer",
@@ -96,6 +98,7 @@ function generateLayerGroupJson(workspace, layerInfo, published) {
 }
 
 function generateLayerJson(layer, workspace, datastore, geoserverUrl) {
+    //TODO: VERIFY ATTRIBUTES ARE CORRECT
     return {
         "featureType": {
             "name": layer.geoServerMetadata.geoServerLayerName,
