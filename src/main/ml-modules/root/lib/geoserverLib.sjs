@@ -134,7 +134,7 @@ function generateLayerJson(layer, workspace, datastore, geoserverUrl) {
                 "maxy": 90,
                 "crs": "EPSG:4326"
             },
-            "projectionPolicy": "FORCE_DECLARED",
+            "projectionPolicy": "NONE",
             "enabled": true,
             "store": {
                 "@class": "dataStore",
