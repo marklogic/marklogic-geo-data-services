@@ -148,18 +148,7 @@ function generateLayerJson(layer, workspace, datastore, geoserverUrl) {
             "forcedDecimal": false,
             "overridingServiceSRS": false,
             "skipNumberMatched": false,
-            "circularArcPresent": false,
-            "attributes": {
-                "attribute": [
-                    {
-                        "name": "geometry",
-                        "minOccurs": 0,
-                        "maxOccurs": 1,
-                        "nillable": true,
-                        "binding": "org.locationtech.jts.geom.Point"
-                    }
-                ]
-            }
+            "circularArcPresent": false
         }
     }
 }
