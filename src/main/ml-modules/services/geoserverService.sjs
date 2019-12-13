@@ -2,14 +2,15 @@
 'use strict';
 
 const gslib = require('/lib/geoserverLib.sjs');
-const geoserverUrl = '%%geoserverUrl%%'
+const geoserverUrl = '%%geoserverUrl%%';
+const geoserverAuthType = '%%geoserverAuthType%%';
 
 function post(context, params, input) {
     xdmp.trace("GEOSERVER-DEBUG", "Starting post");
     xdmp.trace("GEOSERVER_DEBUG", geoserverUrl);
 
     const auth = {
-        "method":"basic",
+        "method":geoserverAuthType,
         "username":params.geoserverUser,
         "password":params.geoserverPassword
     }
