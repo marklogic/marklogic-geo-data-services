@@ -33,17 +33,31 @@ function publishLayersInGroup(geoserverUrl, workspace, datastore, authentication
         for (const layer of serviceDescriptor.layers) {
             const json = generateLayerJson(layer,workspace,datastore,geoserverUrl);
             //TODO: TRAP 400/500 errors
-            xdmp.httpPost(geoserverUrl+restNewFeatureType, httpOptions, json);
+            xdmp.trace("GEOSERVER-DEBUG", "Trying... " + geoserverUrl+restNewFeatureType);
+            const response = checkResponse(xdmp.httpPost(geoserverUrl+restNewFeatureType, httpOptions, json));
+            xdmp.trace("GEOSERVER-DEBUG", "Response was: " + response);
             //TODO: TRAP 400/500 errors
-            published.push(xdmp.httpGet(geoserverUrl+"\/rest\/layers\/"+workspace+":"+layer.geoServerMetadata.geoServerLayerName+".json", httpOptions).toObject()[1])
+            published.push(checkResponse(xdmp.httpGet(geoserverUrl+"\/rest\/layers\/"+workspace+":"+layer.geoServerMetadata.geoServerLayerName+".json", httpOptions)).toObject()[1])
         }
 
         const lgJson = generateLayerGroupJson(workspace,serviceDescriptor.info, published);
 
-        return xdmp.httpPost(geoserverUrl+"\/rest\/layergroups", httpOptions, lgJson)
+        const groupResponse = checkResponse(xdmp.httpPost(geoserverUrl+"\/rest\/layergroups", httpOptions, lgJson)).toObject();
+        xdmp.trace("GEOSERVER-DEBUG", "Group Response: " + groupResponse);
+        return groupResponse;
+
 
     } else {
-        fn.error("No Service Descriptor found at " + serviceDescriptorURI);
+        fn.error(null, 'RESTAPI-SRVEXERR', "No Service Descriptor found at " + serviceDescriptorURI);
+    }
+}
+
+function checkResponse(response) {
+    let code = response.toObject()[0].code
+    if (code > 299 || code < 200) {
+        fn.error(null, 'RESTAPI-SRVEXERR', response);
+    } else {
+        return response;
     }
 }
 
