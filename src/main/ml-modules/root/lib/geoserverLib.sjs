@@ -30,18 +30,29 @@ function publishLayersInGroup(geoserverUrl, workspace, datastore, authentication
 
     if (serviceDescriptor) {
         let published = [];
+        let layerGroupBounds = {
+            "minx": 0,
+            "maxx": 0,
+            "miny": 0,
+            "maxy": 0,
+            "crs": "EPSG:4326"
+        }
         for (const layer of serviceDescriptor.layers) {
             const json = generateLayerJson(layer,workspace,datastore,geoserverUrl);
-            //TODO: TRAP 400/500 errors
             xdmp.trace("GEOSERVER-DEBUG", "Trying... " + geoserverUrl+restNewFeatureType);
             const response = checkResponse(xdmp.httpPost(geoserverUrl+restNewFeatureType, httpOptions, json));
             xdmp.trace("GEOSERVER-DEBUG", "Response was: " + response);
-            //TODO: TRAP 400/500 errors
+
+            // Dynamically generating the layergroup bounds... maybe correctly?
+            if (layerGroupBounds.minx > layer.extent.xmin) { layerGroupBounds.minx = layer.extent.xmin;}
+            if (layerGroupBounds.miny > layer.extent.ymin) { layerGroupBounds.miny = layer.extent.ymin;}
+            if (layerGroupBounds.maxx < layer.extent.xmax) { layerGroupBounds.maxx = layer.extent.xmax;}
+            if (layerGroupBounds.maxy < layer.extent.ymax) { layerGroupBounds.maxy = layer.extent.ymax;}
+
             published.push(checkResponse(xdmp.httpGet(geoserverUrl+"\/rest\/layers\/"+workspace+":"+layer.geoServerMetadata.geoServerLayerName+".json", httpOptions)).toObject()[1])
         }
 
-        const lgJson = generateLayerGroupJson(workspace,serviceDescriptor.info, published);
-
+        const lgJson = generateLayerGroupJson(workspace,serviceDescriptor.info, published, layerGroupBounds);
         const groupResponse = checkResponse(xdmp.httpPost(geoserverUrl+"\/rest\/layergroups", httpOptions, lgJson)).toObject();
         xdmp.trace("GEOSERVER-DEBUG", "Group Response: " + groupResponse);
         return groupResponse;
@@ -61,7 +72,7 @@ function checkResponse(response) {
     }
 }
 
-function generateLayerGroupJson(workspace, layerInfo, published) {
+function generateLayerGroupJson(workspace, layerInfo, published, bounds) {
     const template = {
         "layerGroup": {
             "name": layerInfo.name,
@@ -76,15 +87,11 @@ function generateLayerGroupJson(workspace, layerInfo, published) {
             "styles": {
                 "style": []
             },
-            "bounds": {
-                "minx": -180,
-                "maxx": 180,
-                "miny": -90,
-                "maxy": 90,
-                "crs": "EPSG:4326"
-            }
+            "bounds": bounds
         }
     }
+
+    xdmp.trace("GEOSERVER-DEBUG", "Bounds: " + template.layerGroup.bounds);
 
     for (const player of published) {
 
@@ -122,16 +129,16 @@ function generateLayerJson(layer, workspace, datastore, geoserverUrl) {
             "srs": "EPSG:4326",
             "nativeBoundingBox": {
                 "minx": layer.extent.xmin,
-                "maxx": layer.extent.xmin,
+                "maxx": layer.extent.xmax,
                 "miny": layer.extent.ymin,
                 "maxy": layer.extent.ymax,
                 "crs": "EPSG:4326"
             },
             "latLonBoundingBox": {
-                "minx": -180,
-                "maxx": 180,
-                "miny": -90,
-                "maxy": 90,
+                "minx": layer.extent.xmin,
+                "maxx": layer.extent.xmax,
+                "miny": layer.extent.ymin,
+                "maxy": layer.extent.ymax,
                 "crs": "EPSG:4326"
             },
             "projectionPolicy": "NONE",
