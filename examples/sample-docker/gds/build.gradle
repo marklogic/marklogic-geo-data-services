@@ -1,0 +1,127 @@
+import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
+
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath "com.marklogic:marklogic-geo-data-services-modules:1.1.0"
+  }
+}
+plugins {
+  id "net.saliman.properties" version "1.5.1"
+  id "com.marklogic.ml-gradle" version "3.15.2"
+}
+repositories {
+  jcenter()
+
+  // Needed for some mlcp dependencies, such as commons-csv:1.5.1-marklogic
+  maven { url "http://developer.marklogic.com/maven2/" }
+}
+
+configurations {
+  mlcp
+}
+
+dependencies {
+  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.1.0"
+  mlcp "com.marklogic:mlcp:9.0.9"
+
+  /**
+    * mlcp uses Log4j for logging, and if Log4j can't find a configuration file, it will complain and you'll
+    * get none of mlcp's usually-useful logging. It is recommended then that your Gradle configuration for
+    * mlcp include a directory or some other resource that provides a log4j.properties file.
+    */
+  mlcp files("lib")
+}
+
+// We are not using the ml-data capability of ml-gradle because we are loading from zip files.
+// Prior to running this command, please execute `gradle mlDeploy`.
+task loadExampleData(dependsOn: [
+  "loadGDeltExampleData",
+  "loadZipCodeBoundaryExampleData"
+])
+
+task loadGDeltExampleData(type: com.marklogic.gradle.task.MlcpTask) {
+  classpath = configurations.mlcp
+  command = "IMPORT"
+  port = mlAppConfig.restPort
+  database = mlAppConfig.contentDatabaseName
+  input_file_path = "data/gkg_geojson"
+  input_compressed = "true"
+  output_collections = "example-gkg,test-data"
+  output_permissions = "rest-reader,read,rest-writer,update,geo-data-services-reader,read,geo-data-services-writer,update"
+  output_uri_replace = ".*/data/,'/'"
+}
+
+task loadZipCodeBoundaryExampleData(type: com.marklogic.gradle.task.MlcpTask) {
+  classpath = configurations.mlcp
+  command = "IMPORT"
+  port = mlAppConfig.restPort
+  database = mlAppConfig.contentDatabaseName
+  input_file_path = "data/zipcodes"
+  transform_module = "/transform/wrap-geojson.sjs"
+  batch_size = 1
+  transaction_size = 1
+  output_collections = "zipcodes,test-data"
+  output_permissions = "rest-reader,read,rest-writer,update,geo-data-services-reader,read,geo-data-services-writer,update"
+  output_uri_replace = ".*/data/,'/'"
+}
+
+// tasks to automate downloading of sample data
+task downloadExampleData(dependsOn: [
+  "downloadGDeltExampleData",
+  "downloadZipCodeBoundaryExampleData"
+])
+
+task downloadGDeltExampleData(type: Exec) {
+  // IMPORTANT: set this to a value greater than other OBJECTIDs you have in your data already
+  def startObjectID = 6000;
+
+  def url = "http://api.gdeltproject.org/api/v1/gkg_geojson?TIMESPAN=1440&MAXROWS=250000&OUTPUTFIELDS=name,geores,url,domain,sharingimage,lang,themes,names,tone,wordcount,numcounts,urlpubtimedate"
+  commandLine "curl", "-s", url
+  standardOutput = new ByteArrayOutputStream()
+  def responseAsJson = {
+    return new JsonSlurper().parseText(standardOutput.toString())
+  }
+  doLast {
+    def id = startObjectID
+    def response = responseAsJson()
+    assert response instanceof Map
+    assert response.features instanceof List
+
+    //def path = "${projectDir}/${outputFilePath}"
+    //println path
+    def tempFile = File.createTempFile("gkg_geojson_", ".zip")
+    def fs = new FileOutputStream(tempFile)
+    def zs = new ZipOutputStream(fs)
+
+    for (feature in response.features) {
+      feature.properties.OBJECTID = id++
+      def json = JsonOutput.toJson(feature)
+      def filename = "gkg_geojson_" + feature.properties.OBJECTID + ".json"
+      def entry = new ZipEntry(filename)
+      zs.putNextEntry(entry)
+      zs.write(json.getBytes())
+      zs.closeEntry()
+    }
+
+    zs.close()
+
+    copy {
+      from tempFile
+      into file("data/gkg_geojson")
+    }
+    delete {
+      tempFile
+    }
+  }
+}
+
+task downloadZipCodeBoundaryExampleData(type: Exec) {
+  executable "git"
+  args "clone", "https://github.com/OpenDataDE/State-zip-code-GeoJSON", "data/zipcodes"
+}
