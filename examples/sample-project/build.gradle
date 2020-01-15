@@ -1,3 +1,8 @@
+import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
+
 buildscript {
   repositories {
     jcenter()
@@ -47,8 +52,8 @@ task loadGDeltExampleData(type: com.marklogic.gradle.task.MlcpTask) {
   database = mlAppConfig.contentDatabaseName
   input_file_path = "data/gkg_geojson"
   input_compressed = "true"
-  output_collections = "example-gkg"
-  output_permissions = "rest-reader,read,rest-writer,update"
+  output_collections = "example-gkg,test-data"
+  output_permissions = "rest-reader,read,rest-writer,update,geo-data-services-reader,read,geo-data-services-writer,update"
   output_uri_replace = ".*/data/,'/'"
 }
 
@@ -59,10 +64,64 @@ task loadZipCodeBoundaryExampleData(type: com.marklogic.gradle.task.MlcpTask) {
   database = mlAppConfig.contentDatabaseName
   input_file_path = "data/zipcodes"
   transform_module = "/transform/wrap-geojson.sjs"
-  input_compressed = "true"
   batch_size = 1
   transaction_size = 1
   output_collections = "zipcodes,test-data"
-  output_permissions = "rest-reader,read,rest-writer,update"
+  output_permissions = "rest-reader,read,rest-writer,update,geo-data-services-reader,read,geo-data-services-writer,update"
   output_uri_replace = ".*/data/,'/'"
+}
+
+// tasks to automate downloading of sample data
+task downloadExampleData(dependsOn: [
+  "downloadGDeltExampleData",
+  "downloadZipCodeBoundaryExampleData"
+])
+
+task downloadGDeltExampleData(type: Exec) {
+  // IMPORTANT: set this to a value greater than other OBJECTIDs you have in your data already
+  def startObjectID = 6000;
+
+  def url = "http://api.gdeltproject.org/api/v1/gkg_geojson?TIMESPAN=1440&MAXROWS=250000&OUTPUTFIELDS=name,geores,url,domain,sharingimage,lang,themes,names,tone,wordcount,numcounts,urlpubtimedate"
+  commandLine "curl", "-s", url
+  standardOutput = new ByteArrayOutputStream()
+  def responseAsJson = {
+    return new JsonSlurper().parseText(standardOutput.toString())
+  }
+  doLast {
+    def id = startObjectID
+    def response = responseAsJson()
+    assert response instanceof Map
+    assert response.features instanceof List
+
+    //def path = "${projectDir}/${outputFilePath}"
+    //println path
+    def tempFile = File.createTempFile("gkg_geojson_", ".zip")
+    def fs = new FileOutputStream(tempFile)
+    def zs = new ZipOutputStream(fs)
+
+    for (feature in response.features) {
+      feature.properties.OBJECTID = id++
+      def json = JsonOutput.toJson(feature)
+      def filename = "gkg_geojson_" + feature.properties.OBJECTID + ".json"
+      def entry = new ZipEntry(filename)
+      zs.putNextEntry(entry)
+      zs.write(json.getBytes())
+      zs.closeEntry()
+    }
+
+    zs.close()
+
+    copy {
+      from tempFile
+      into file("data/gkg_geojson")
+    }
+    delete {
+      tempFile
+    }
+  }
+}
+
+task downloadZipCodeBoundaryExampleData(type: Exec) {
+  executable "git"
+  args "clone", "https://github.com/OpenDataDE/State-zip-code-GeoJSON", "data/zipcodes"
 }
