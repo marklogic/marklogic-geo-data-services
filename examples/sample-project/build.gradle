@@ -1,7 +1,11 @@
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
+import groovy.json.JsonParserType
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
+import org.apache.commons.io.FilenameUtils
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken; 
 
 buildscript {
   repositories {
@@ -36,6 +40,8 @@ dependencies {
     * mlcp include a directory or some other resource that provides a log4j.properties file.
     */
   mlcp files("lib")
+
+  implementation 'com.google.code.gson:gson:2.8.6'
 }
 
 // We are not using the ml-data capability of ml-gradle because we are loading from zip files.
@@ -79,22 +85,26 @@ task downloadExampleData(dependsOn: [
 
 task downloadGDeltExampleData(type: Exec) {
   // IMPORTANT: set this to a value greater than other OBJECTIDs you have in your data already
-  def startObjectID = 6000;
-
+  def startObjectID = 6000
   def url = "http://api.gdeltproject.org/api/v1/gkg_geojson?TIMESPAN=1440&MAXROWS=250000&OUTPUTFIELDS=name,geores,url,domain,sharingimage,lang,themes,names,tone,wordcount,numcounts,urlpubtimedate"
+
+  doFirst {
+    println "Downloading sample data from " + url
+  }
+
   commandLine "curl", "-s", url
   standardOutput = new ByteArrayOutputStream()
+  
   def responseAsJson = {
     return new JsonSlurper().parseText(standardOutput.toString())
   }
+  
   doLast {
     def id = startObjectID
     def response = responseAsJson()
     assert response instanceof Map
     assert response.features instanceof List
 
-    //def path = "${projectDir}/${outputFilePath}"
-    //println path
     def tempFile = File.createTempFile("gkg_geojson_", ".zip")
     def fs = new FileOutputStream(tempFile)
     def zs = new ZipOutputStream(fs)
@@ -122,6 +132,74 @@ task downloadGDeltExampleData(type: Exec) {
 }
 
 task downloadZipCodeBoundaryExampleData(type: Exec) {
-  executable "git"
-  args "clone", "https://github.com/OpenDataDE/State-zip-code-GeoJSON", "data/zipcodes"
+  // IMPORTANT: set this to a value greater than other OBJECTIDs you have in your data already
+  def startObjectID = 20000;
+  def tempCloneDir = ".tmp/data/zipcodes"
+
+  //doFirst {
+  //  println "Cleaning up ${tempCloneDir}..."
+  //  delete tempCloneDir
+  //}
+
+  executable "echo"
+  args "Skipping git clone"
+  //executable "git"
+  //args "clone", "https://github.com/OpenDataDE/State-zip-code-GeoJSON", tempCloneDir
+  
+  doLast {
+    def id = startObjectID
+    def srcFiles = fileTree(tempCloneDir).matching({
+      include "*.json"
+    })
+    for (srcFile in srcFiles) {
+      def srcFilename = FilenameUtils.removeExtension(srcFile.getName())
+      println "Processing ${srcFilename}..."
+
+      def fs = new FileOutputStream(tempFile)
+      def zs = new ZipOutputStream(fs)
+      def tempFile = File.createTempFile(srcFilename + "_", ".zip")
+
+      def is = srcFile.newInputStream()
+      def reader = new JsonReader(srcInputStream)
+      reader.beginObject()
+      assert reader.nextName() == "type"
+      assert reader.nextString() == "FeatureCollection"
+      assert reader.nextName() == "features"
+      reader.beginArray()
+      while(reader.hasNext()) { // for every feature
+        reader.beginObject()
+        
+        def writer = new JsonWriter()
+
+        feature.properties.OBJECTID = id++
+        def json = JsonOutput.toJson(feature)
+        def filename = srcFilename + "_" + feature.properties.OBJECTID + ".json"
+        def entry = new ZipEntry(filename)
+        zs.putNextEntry(entry)
+        zs.write(json.getBytes())
+        zs.closeEntry()
+
+        reader.endObject()
+      }
+      reader.endArray()
+      reader.endObject()
+      reader.close()
+
+      is.close()
+      zs.close()
+      fs.close()
+
+      copy {
+        from tempFile
+        into file("data/zipcodes")
+      }
+      delete {
+        tempFile
+      }
+    }
+    
+    delete {
+      tempCloneDir
+    }
+  }
 }
