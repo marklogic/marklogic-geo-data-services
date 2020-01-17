@@ -1,11 +1,12 @@
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
 import groovy.json.JsonParserType
+import java.nio.file.Files
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import org.apache.commons.io.FilenameUtils
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken; 
+import com.google.gson.JsonParser
+import com.google.gson.stream.JsonReader
 
 buildscript {
   repositories {
@@ -13,12 +14,15 @@ buildscript {
   }
   dependencies {
     classpath "com.marklogic:marklogic-geo-data-services-modules:1.1.0"
+    classpath "com.google.code.gson:gson:2.8.6"
   }
 }
+
 plugins {
   id "net.saliman.properties" version "1.5.1"
   id "com.marklogic.ml-gradle" version "3.15.2"
 }
+
 repositories {
   jcenter()
 
@@ -40,8 +44,6 @@ dependencies {
     * mlcp include a directory or some other resource that provides a log4j.properties file.
     */
   mlcp files("lib")
-
-  implementation 'com.google.code.gson:gson:2.8.6'
 }
 
 // We are not using the ml-data capability of ml-gradle because we are loading from zip files.
@@ -69,9 +71,7 @@ task loadZipCodeBoundaryExampleData(type: com.marklogic.gradle.task.MlcpTask) {
   port = mlAppConfig.restPort
   database = mlAppConfig.contentDatabaseName
   input_file_path = "data/zipcodes"
-  transform_module = "/transform/wrap-geojson.sjs"
-  batch_size = 1
-  transaction_size = 1
+  input_compressed = "true"
   output_collections = "zipcodes,test-data"
   output_permissions = "rest-reader,read,rest-writer,update,geo-data-services-reader,read,geo-data-services-writer,update"
   output_uri_replace = ".*/data/,'/'"
@@ -82,6 +82,14 @@ task downloadExampleData(dependsOn: [
   "downloadGDeltExampleData",
   "downloadZipCodeBoundaryExampleData"
 ])
+
+task clearExampleData(type: Delete) {
+  def dirs = ["data/gkg_geojson", "data/zipcodes"]
+  doFirst {
+    dirs.each { println "Deleting ${it}..." }
+  }
+  delete dirs
+}
 
 task downloadGDeltExampleData(type: Exec) {
   // IMPORTANT: set this to a value greater than other OBJECTIDs you have in your data already
@@ -134,17 +142,10 @@ task downloadGDeltExampleData(type: Exec) {
 task downloadZipCodeBoundaryExampleData(type: Exec) {
   // IMPORTANT: set this to a value greater than other OBJECTIDs you have in your data already
   def startObjectID = 20000;
-  def tempCloneDir = ".tmp/data/zipcodes"
-
-  //doFirst {
-  //  println "Cleaning up ${tempCloneDir}..."
-  //  delete tempCloneDir
-  //}
-
-  executable "echo"
-  args "Skipping git clone"
-  //executable "git"
-  //args "clone", "https://github.com/OpenDataDE/State-zip-code-GeoJSON", tempCloneDir
+  def tempCloneDir = ".tmp/zipcodes"
+  
+  executable "git"
+  args "clone", "https://github.com/OpenDataDE/State-zip-code-GeoJSON", tempCloneDir
   
   doLast {
     def id = startObjectID
@@ -153,33 +154,34 @@ task downloadZipCodeBoundaryExampleData(type: Exec) {
     })
     for (srcFile in srcFiles) {
       def srcFilename = FilenameUtils.removeExtension(srcFile.getName())
-      println "Processing ${srcFilename}..."
+      println "Processing ${srcFile.getName()}..."
 
+      def tempFile = File.createTempFile(srcFilename + "_", ".zip")
       def fs = new FileOutputStream(tempFile)
       def zs = new ZipOutputStream(fs)
-      def tempFile = File.createTempFile(srcFilename + "_", ".zip")
-
+      
       def is = srcFile.newInputStream()
-      def reader = new JsonReader(srcInputStream)
+      def reader = new JsonReader(new FileReader(srcFile))
+      def parser = new JsonParser()
+
       reader.beginObject()
       assert reader.nextName() == "type"
       assert reader.nextString() == "FeatureCollection"
       assert reader.nextName() == "features"
       reader.beginArray()
       while(reader.hasNext()) { // for every feature
-        reader.beginObject()
-        
-        def writer = new JsonWriter()
+        def featureElem = parser.parse(reader)
+        assert featureElem.isJsonObject()
+        def feature = featureElem.getAsJsonObject()
+        def objectID = id++
+        feature.getAsJsonObject("properties").addProperty("OBJECTID", objectID)
 
-        feature.properties.OBJECTID = id++
-        def json = JsonOutput.toJson(feature)
-        def filename = srcFilename + "_" + feature.properties.OBJECTID + ".json"
+        def json = feature.toString()
+        def filename = "${srcFilename}_${objectID}.json"
         def entry = new ZipEntry(filename)
         zs.putNextEntry(entry)
         zs.write(json.getBytes())
         zs.closeEntry()
-
-        reader.endObject()
       }
       reader.endArray()
       reader.endObject()
@@ -192,14 +194,12 @@ task downloadZipCodeBoundaryExampleData(type: Exec) {
       copy {
         from tempFile
         into file("data/zipcodes")
+        rename { "${srcFilename}.zip" }
       }
-      delete {
-        tempFile
-      }
+      delete tempFile
     }
     
-    delete {
-      tempCloneDir
-    }
+    println "Cleaning up..."
+    delete tempCloneDir
   }
 }
