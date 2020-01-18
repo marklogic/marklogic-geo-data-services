@@ -1,6 +1,3 @@
-import groovy.json.JsonSlurper
-import groovy.json.JsonOutput
-import groovy.json.JsonParserType
 import java.nio.file.Files
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -83,7 +80,7 @@ task downloadExampleData(dependsOn: [
   "downloadZipCodeBoundaryExampleData"
 ])
 
-task clearExampleData(type: Delete) {
+task cleanExampleData(type: Delete) {
   def dirs = ["data/gkg_geojson", "data/zipcodes"]
   doFirst {
     dirs.each { println "Deleting ${it}..." }
@@ -92,35 +89,39 @@ task clearExampleData(type: Delete) {
 }
 
 task downloadGDeltExampleData(type: Exec) {
-  // IMPORTANT: set this to a value greater than other OBJECTIDs you have in your data already
   def startObjectID = 6000
   def url = "http://api.gdeltproject.org/api/v1/gkg_geojson?TIMESPAN=1440&MAXROWS=250000&OUTPUTFIELDS=name,geores,url,domain,sharingimage,lang,themes,names,tone,wordcount,numcounts,urlpubtimedate"
 
   doFirst {
-    println "Downloading sample data from " + url
+    println "Making a request to " + url
   }
 
   commandLine "curl", "-s", url
   standardOutput = new ByteArrayOutputStream()
   
-  def responseAsJson = {
-    return new JsonSlurper().parseText(standardOutput.toString())
+  def out = {
+    return standardOutput
   }
   
   doLast {
     def id = startObjectID
-    def response = responseAsJson()
-    assert response instanceof Map
-    assert response.features instanceof List
+    def parser = new JsonParser()
+    def responseElem = parser.parse(out().toString())
+    assert responseElem.isJsonObject()
+    def response = responseElem.getAsJsonObject()
+    def features = response.getAsJsonArray("features")
 
     def tempFile = File.createTempFile("gkg_geojson_", ".zip")
     def fs = new FileOutputStream(tempFile)
     def zs = new ZipOutputStream(fs)
 
-    for (feature in response.features) {
-      feature.properties.OBJECTID = id++
-      def json = JsonOutput.toJson(feature)
-      def filename = "gkg_geojson_" + feature.properties.OBJECTID + ".json"
+    for (featureElem in features) {
+      def feature = featureElem.getAsJsonObject()
+      def objectID = id++
+      feature.getAsJsonObject("properties").addProperty("OBJECTID", objectID)
+
+      def json = feature.toString()
+      def filename = "gkg_geojson_${objectID}.json"
       def entry = new ZipEntry(filename)
       zs.putNextEntry(entry)
       zs.write(json.getBytes())
@@ -128,20 +129,21 @@ task downloadGDeltExampleData(type: Exec) {
     }
 
     zs.close()
+    fs.close()
 
     copy {
       from tempFile
       into file("data/gkg_geojson")
+      rename { "gkg_geojson.zip" }
     }
-    delete {
-      tempFile
-    }
+    delete tempFile
+
+    println "Downloaded ${(id - startObjectID)} features."
   }
 }
 
 task downloadZipCodeBoundaryExampleData(type: Exec) {
-  // IMPORTANT: set this to a value greater than other OBJECTIDs you have in your data already
-  def startObjectID = 20000;
+  def startObjectID = 50000;
   def tempCloneDir = ".tmp/zipcodes"
   
   executable "git"
@@ -199,7 +201,7 @@ task downloadZipCodeBoundaryExampleData(type: Exec) {
       delete tempFile
     }
     
-    println "Cleaning up..."
+    println "Downloaded ${(id - startObjectID)} features."
     delete tempCloneDir
   }
 }
