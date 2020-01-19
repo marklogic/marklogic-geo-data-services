@@ -74,18 +74,35 @@ task loadZipCodeBoundaryExampleData(type: com.marklogic.gradle.task.MlcpTask) {
   output_uri_replace = ".*/data/,'/'"
 }
 
-// tasks to automate downloading of sample data
-task downloadExampleData(dependsOn: [
-  "downloadGDeltExampleData",
-  "downloadZipCodeBoundaryExampleData"
-])
+final SAMPLE_DATA = [[
+  path: "data/gkg_geojson",
+  task: "downloadGDeltExampleData"
+], [
+  path: "data/zipcodes",
+  task: "downloadZipCodeBoundaryExampleData"
+]]
 
-task cleanExampleData(type: Delete) {
-  def dirs = ["data/gkg_geojson", "data/zipcodes"]
-  doFirst {
-    dirs.each { println "Deleting ${it}..." }
+// Downloads all sample data if they don't exist (in /data folder), otherwise it will do nothing.
+// To force a download, the task should be called with a command line property of -PclearSampleData=true
+task downloadSampleData {
+  def clearSampleData = project.hasProperty("clearSampleData") ? project.getProperty("clearSampleData") : false
+  def tasks = []
+  SAMPLE_DATA.each {
+    def dir = fileTree(it.path) { include "*.zip" }
+    if (dir.isEmpty() || clearSampleData) {
+      tasks.add(it.task)
+    }
   }
-  delete dirs
+  finalizedBy tasks
+}
+
+task clearExampleData {
+  doLast {
+    SAMPLE_DATA.each { 
+      println "Deleting ${it.path}..."
+      delete it.path
+    }
+  }
 }
 
 task downloadGDeltExampleData(type: Exec) {
