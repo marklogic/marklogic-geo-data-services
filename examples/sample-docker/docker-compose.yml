@@ -30,13 +30,3 @@ services:
     container_name: "deployer"
     depends_on: 
       - ml
-  #  deploy_gds:
-  #   build:
-  #     context: ./gds
-  #   environment: 
-  #     - MLHOST=ml
-  #     - MLUSER=${ML_USERNAME}
-  #     - MLPWD=${ML_PASSWORD}
-  #   container_name: "deploy_gds"
-  #   depends_on: 
-  #     - ml
