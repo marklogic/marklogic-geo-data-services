@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 HOST=$1
 PORT=$2
@@ -10,7 +10,6 @@ WAIT_SEC=10
 START=$(date +%s)
 echo "Start waiting for $HOST:$PORT..."
 until curl --head --fail --anyauth -u $USER:$PWD http://$HOST:$PORT
-#while ! nc -z $HOST $PORT;
 do
   echo "curl return value is $?"
   if [ $(($(date +%s) - $START)) -gt $TIMEOUT_SEC ]; then
@@ -20,4 +19,3 @@ do
   echo "Waiting for $HOST:$PORT..."
   sleep $WAIT_SEC
 done
-

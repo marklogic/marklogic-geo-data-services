@@ -4,8 +4,8 @@ services:
     image: "store/marklogicdb/marklogic-server:10.0-2-dev-centos"
     environment: 
       - MARKLOGIC_INIT=true
-      - MARKLOGIC_ADMIN_USERNAME=${ML_USERNAME}
-      - MARKLOGIC_ADMIN_PASSWORD=${ML_PASSWORD}
+      - MARKLOGIC_ADMIN_USERNAME=admin
+      - MARKLOGIC_ADMIN_PASSWORD=admin
     ports:
       - "10000-10003:8000-8003"
     hostname: "ml"
@@ -19,13 +19,24 @@ services:
     container_name: "koop"
     depends_on: 
       - ml
-  deploy_gds:
+  deployer:
     build:
-      context: ./gds
+      context: ../..
+      dockerfile: examples/sample-docker/deployer/Dockerfile
     environment: 
       - MLHOST=ml
-      - MLUSER=${ML_USERNAME}
-      - MLPWD=${ML_PASSWORD}
-    container_name: "deploy_gds"
+      - MLUSER=admin
+      - MLPWD=admin
+    container_name: "deployer"
     depends_on: 
       - ml
+  #  deploy_gds:
+  #   build:
+  #     context: ./gds
+  #   environment: 
+  #     - MLHOST=ml
+  #     - MLUSER=${ML_USERNAME}
+  #     - MLPWD=${ML_PASSWORD}
+  #   container_name: "deploy_gds"
+  #   depends_on: 
+  #     - ml

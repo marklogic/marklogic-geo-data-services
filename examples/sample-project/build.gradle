@@ -83,9 +83,9 @@ final SAMPLE_DATA = [[
 ]]
 
 // Downloads all sample data if they don't exist (in /data folder), otherwise it will do nothing.
-// To force a download, the task should be called with a command line property of -PclearSampleData=true
-task downloadSampleData {
-  def clearSampleData = project.hasProperty("clearSampleData") ? project.getProperty("clearSampleData") : false
+// To force a download, the task should be called with a command line property of -PclearExampleData=true
+task downloadExampleData {
+  def clearSampleData = project.hasProperty("clearExampleData") ? project.getProperty("clearExampleData") : false
   def tasks = []
   SAMPLE_DATA.each {
     def dir = fileTree(it.path) { include "*.zip" }
