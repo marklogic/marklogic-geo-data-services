@@ -7,7 +7,8 @@ services:
       - MARKLOGIC_ADMIN_USERNAME=admin
       - MARKLOGIC_ADMIN_PASSWORD=admin
     ports:
-      - "10000-10003:8000-8003"
+      - "10000-10003:8000-8003" # ML ports
+      - "10095:8095" # content app server
     hostname: "ml"
     container_name: "ml"
   koop:

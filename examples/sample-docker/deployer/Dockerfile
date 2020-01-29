@@ -13,6 +13,9 @@ COPY examples/sample-project /gds
 COPY examples/sample-docker/deployer/wait-for-ml.sh /gds/wait-for-ml.sh
 RUN chmod 777 /gds/wait-for-ml.sh
 
+# Koop configuration
+COPY examples/sample-docker/deployer/koop /gds/src/main/ml-data/koop
+
 # deploy
 WORKDIR /gds
 CMD ./wait-for-ml.sh $MLHOST 8001 $MLUSER $MLPWD && \
