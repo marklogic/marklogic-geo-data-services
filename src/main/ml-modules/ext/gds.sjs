@@ -10,7 +10,7 @@ function getServiceModel(serviceName) {
   let model = fn.head(
     cts.search(cts.andQuery([
       cts.collectionQuery(collection),
-      cts.jsonPropertyValueQuery("name", serviceName)
+      cts.jsonPropertyValueQuery("name", serviceName, ["exact"])
     ]))
   );
 
