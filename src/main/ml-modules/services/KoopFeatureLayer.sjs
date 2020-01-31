@@ -1,12 +1,11 @@
 'use strict';
 
+const gds = require('/ext/gds.sjs');
 const search = require('/MarkLogic/appservices/search/search.xqy');
 const sut = require('/MarkLogic/rest-api/lib/search-util.xqy');
 const ast = require('/MarkLogic/appservices/search/ast.xqy');
 
-
 const koopConfigUri = '/koop/config.json';
-const collFeatureServices = 'http://marklogic.com/feature-services';
 
 // Returns all feature layers of a feature service
 function get(context, params) {
@@ -14,7 +13,7 @@ function get(context, params) {
     var response = {};
     
     var serviceName = params.service;
-    var model = getServiceModel(serviceName);
+    var model = gds.getServiceModel(serviceName);
 
     if (model === null) {
       fn.error(null, 'Unable to find service ' + serviceName + '.');
@@ -49,7 +48,7 @@ function get(context, params) {
 function put(context, params, input) {
   try {
     var serviceName = params.service;
-    var model = getServiceModel(serviceName);
+    var model = gds.getServiceModel(serviceName);
     var schema = params.schema || serviceName;
 
     if (model === null) {
@@ -115,14 +114,6 @@ function put(context, params, input) {
     console.trace(err);
     returnErrToClient(500, 'Error handling request', err.toString());
   }
-}
-
-function getServiceModel(serviceName) {
-  return fn.head(cts.search(
-    cts.andQuery([
-      cts.collectionQuery(collFeatureServices),
-      cts.jsonPropertyValueQuery("name", serviceName)
-    ])));
 }
 
 function createNewLayerObj(id, name, desc, geometryType, schema, view) {
