@@ -10,16 +10,24 @@ const koopConfigUri = '/koop/config.json';
 // Returns all feature layers of a feature service
 function get(context, params) {
   try {
-    var response = {};
-    
-    var serviceName = params.service;
-    var model = gds.getServiceModel(serviceName);
+    xdmp.trace('GDS-DEBUG', 'Start GET KoopFeatureLayer');
 
-    if (model === null) {
-      fn.error(null, 'Unable to find service ' + serviceName + '.');
+    var response = {};
+    var serviceName = params.service;
+    if (!serviceName) {
+      const errorMsg = 'Request parameter \"service\" is missing or has no value';
+      xdmp.trace('GDS-DEBUG', errorMsg);
+      throw { code: 400, msg: errorMsg };
     }
 
-    model = model.toObject();
+    var model = null;
+    try { model = gds.getServiceModel(serviceName); }
+    catch (err) {
+      const errorMsg = 'Unable to find service with name \"' + serviceName + '\"';
+      xdmp.trace('GDS-DEBUG', 'Exception thrown by gds.getServiceModel(): ' + JSON.stringify(err));
+      throw { code: 404, msg: errorMsg };
+    }
+
     var layers = model.layers;
     if (params.readOnly) {
       var filterReadOnly = fn.lowerCase(params.readOnly) === 'true';
@@ -36,11 +44,20 @@ function get(context, params) {
       layers: layers
     }
 
+    xdmp.trace('GDS-DEBUG', 'Response: ' + JSON.stringify(response));
     return response;
   }
   catch (err) {
-    console.trace(err);
-    returnErrToClient(500, 'Error handling request', err.toString());
+    xdmp.trace('GDS-DEBUG', 'Responding with error due to exception: ' + JSON.stringify(err));
+    if (err.code && err.msg) {
+      returnErrToClient(err.code, 'Error handling request', err.msg);
+    }
+    else {
+      returnErrToClient(500, 'Error handling request', JSON.stringify(err));
+    }
+  }
+  finally {
+    xdmp.trace('GDS-DEBUG', 'End GET KoopFeatureLayer');
   }
 }
 
