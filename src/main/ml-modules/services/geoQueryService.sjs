@@ -124,7 +124,8 @@ function getServiceModel(serviceName, geoServerLayerName = null) {
   let propertyNames = ["name"];
   if (geoServerLayerName) propertyNames.push("geoServerLayerName");
 
-  xdmp.trace("KOOP-DEBUG", "Searching for Service Model: " + serviceName);
+  xdmp.trace("KOOP-DEBUG", "Searching for Service Model: " + serviceName + ", geoServerLayerName: " + geoServerLayerName);
+  
   let model = fn.head(
     cts.search(cts.andQuery([
       cts.collectionQuery(collection),

@@ -179,7 +179,8 @@ function getRegionQuery(regions, operation, layerModel) {
   } else {
     xdmp.trace("KOOP-DEBUG", "In getRegionQuery else");
     regionPaths = [
-      cts.geospatialRegionPathReference( '/envelope/ctsRegion', ['coordinate-system=wgs84'] )
+ //     cts.geospatialRegionPathReference( '/envelope/ctsRegion', ['coordinate-system=wgs84'] )
+      cts.geospatialRegionPathReference( '/metadata//node("soc:geometry")', ['coordinate-system=wgs84'])
     ];
   }
 
