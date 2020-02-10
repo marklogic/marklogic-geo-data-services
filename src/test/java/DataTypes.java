@@ -23,6 +23,7 @@ public class DataTypes extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("metadata.fields.find { it.name == 'domain' }.length", is(1024))
         ;
     }
