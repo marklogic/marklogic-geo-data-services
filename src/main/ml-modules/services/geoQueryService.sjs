@@ -383,10 +383,6 @@ function query(req, exportPlan=false) {
 
     geojson.count = Array.from(aggregate(req))[0].count;
 
-    // this is a workaround for https://github.com/koopjs/FeatureServer/issues/70
-    if (geojson.count === 0) {
-      geojson.features = [];
-    }
   } else if (req.query.outStatistics != null) {
 
     xdmp.trace("KOOP-DEBUG", "running aggregation");
@@ -440,6 +436,12 @@ function query(req, exportPlan=false) {
 
     geojson.metadata.idField = layerModel.metadata.idField;
     geojson.metadata.displayField = layerModel.metadata.displayField;
+  }
+
+  // GeoJSON feature collections must always have a "features" object array, even if empty.
+  // See GeoJSON RFC: https://tools.ietf.org/html/rfc7946#section-3.2
+  if (!geojson.hasOwnProperty("features")) {
+    geojson.features = [];
   }
 
   return geojson;
