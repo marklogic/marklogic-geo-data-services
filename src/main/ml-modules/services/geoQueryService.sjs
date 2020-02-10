@@ -1032,10 +1032,24 @@ function getObjects(req, exportPlan=false) {
     return exported;
   }
   else {
-    if (returnGeometry && extractor.hasExtractFunction()) {
-      xdmp.trace("KOOP-DEBUG", "Getting Extractor function");
-      pipeline = pipeline.map(extractor.extract);
-    }
+    // GeoJSON features must always have a "geometry" property; for cases where the feature has no 
+    // associated geometry data or "returnGeometry" is set to false, set "geometry" property to null.
+    // See GeoJSON RFC: https://tools.ietf.org/html/rfc7946#section-3.2
+    pipeline = pipeline.map((feature) => {
+      var outFeature = feature;
+      
+      if (returnGeometry && extractor.hasExtractFunction()) {
+        xdmp.trace("KOOP-DEBUG", "Getting Extractor function");
+        outFeature = extractor.extract(feature);
+      }
+
+      if (outFeature && !outFeature.hasOwnProperty("geometry")) {
+        outFeature.geometry = null;
+      }
+
+      return outFeature;
+    });
+
     xdmp.trace("KOOP-DEBUG", "Now to pull results from the pipeline with the following bindParams");
     xdmp.trace("KOOP-DEBUG", bindParams);
     const opticResult = Array.from(pipeline.result("object", bindParams));
