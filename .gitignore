@@ -216,3 +216,5 @@ gradle-app.setting
 
 # End of https://www.gitignore.io/api/macos,gradle,windows,sublimetext,visualstudiocode,node
 .vscode/settings.json
+
+.idea
