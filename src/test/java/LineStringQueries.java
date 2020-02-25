@@ -25,6 +25,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Holly St"));
     }
@@ -44,6 +45,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(2))
                 .body("features.properties.name", hasItems("Hwy 101", "Holly St"));
         ;
@@ -64,6 +66,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(6))
                 .body("features.properties.name", hasItems("MarkLogic Neighborhood", "Shopping Center", "Wildlife Refuge",
                         "Hwy 101", "Holly St", "Airport"));
@@ -85,6 +88,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Wildlife Refuge"));
     }
@@ -107,6 +111,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Wildlife Refuge"));
     }
@@ -126,6 +131,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(2))
                 .body("features.properties.name", hasItems("Wildlife Refuge", "MarkLogic Neighborhood"));
         ;
@@ -146,6 +152,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(4))
                 .body("features.properties.name", hasItems("Airport", "Wildlife Refuge", "MarkLogic Neighborhood", "Hwy 101"));
         ;
@@ -166,6 +173,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("MarkLogic Neighborhood"));
     }
@@ -186,6 +194,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("MarkLogic Neighborhood"));
     }

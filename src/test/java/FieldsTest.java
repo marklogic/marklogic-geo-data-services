@@ -24,6 +24,7 @@ public class FieldsTest extends AbstractFeatureServiceTest {
                 .statusCode(200)
                 .log().all()
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(5))
                 .body("features[0].properties.OBJECTID", notNullValue())
                 .body("features[0].properties.urlpubtimedate", notNullValue())

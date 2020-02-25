@@ -23,6 +23,7 @@ public class GroupByTest extends AbstractFeatureServiceTest{
                 .statusCode(200)
                 .log().all()
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 //TODO missing .body("displayFieldName", is(""))
                 //TODO missing .body("fieldAliases.domain", is("domain"))
                 //TODO missing .body("fieldAliases.domain_count", is("domain_count"))
@@ -56,6 +57,7 @@ public class GroupByTest extends AbstractFeatureServiceTest{
                 .statusCode(200)
                 .log().all()
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 .body("statistics.size()", is(9061))
                 .body(
                     "statistics.find { it.domain == '1057fmthefan.com' & it.name == 'Chile' }.objectid_count",
@@ -92,6 +94,7 @@ public class GroupByTest extends AbstractFeatureServiceTest{
                 .statusCode(200)
                 .log().all()
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 .body("statistics.size()", is(2455))
                 .body("statistics[0].domain", is("fax.al"))
                 .body("statistics[0].objectid_count", is(1259))
@@ -114,6 +117,7 @@ public class GroupByTest extends AbstractFeatureServiceTest{
                 .statusCode(200)
                 .log().all()
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 .body("statistics.size()", is(2))
                 .body("statistics.find { it.domain == '4-traders.com' }.objectid_count", is(178))
                 .body("statistics.find { it.domain == '9news.com.au' }.objectid_count", is(14))

@@ -22,6 +22,7 @@ public class IdTest extends AbstractFeatureServiceTest {
                 .log().ifError()
                 .statusCode(200)
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 //TODO missing .body("objectIdField", is("OBJECTID"))
         ;
     }
@@ -42,6 +43,7 @@ public class IdTest extends AbstractFeatureServiceTest {
                 .statusCode(200)
                 .log().all()
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
 
                 .body("features.size()", is(2))
 

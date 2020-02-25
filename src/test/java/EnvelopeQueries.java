@@ -26,6 +26,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(9))
                 .body("features.properties.name", hasItems("MarkLogic HQ","Museum","Restaurant","Shopping Center","MarkLogic Neighborhood", "Wildlife Refuge","Airport","Hwy 101","Holly St"))
         ;
@@ -46,6 +47,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(6))
                 .body("features.properties.name", hasItems("Museum","MarkLogic Neighborhood", "Wildlife Refuge","Airport","Hwy 101","Holly St"))
         ; 
@@ -66,6 +68,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Shopping Center"))
         ; 
@@ -86,6 +89,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(4))
                 .body("features.properties.name", hasItems("MarkLogic HQ","MarkLogic Neighborhood", "Wildlife Refuge","Airport"))
         ; 
@@ -106,6 +110,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(2))
                 .body("features.properties.name", hasItems("Restaurant","MarkLogic Neighborhood"))
         ; 
@@ -126,6 +131,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(0))
         ; 
     }
@@ -146,6 +152,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("MarkLogic Neighborhood"))
         ; 
@@ -166,6 +173,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(2))
                 .body("features.properties.name", hasItems("MarkLogic Neighborhood","Airport"))
         ;
@@ -186,6 +194,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("MarkLogic Neighborhood"))
         ; 

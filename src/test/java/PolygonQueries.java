@@ -26,6 +26,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Wildlife Refuge"));
 	}
@@ -45,6 +46,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(2))
 				.body("features.properties.name", hasItems("Holly St", "MarkLogic Neighborhood"));
 	}
@@ -64,6 +66,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 			.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(3))
 				.body("features.properties.name", hasItems("Airport", "Holly St", "MarkLogic Neighborhood"));
 	}
@@ -83,6 +86,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(3))
 				.body("features.properties.name", hasItems("Hwy 101", "Holly St", "MarkLogic Neighborhood"));
 	}
@@ -101,6 +105,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
 	}
 
@@ -118,6 +123,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("MarkLogic Neighborhood"));
 	}
@@ -136,6 +142,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(2))
 				.body("features.properties.name", hasItems("Restaurant", "MarkLogic Neighborhood"));
 	}
@@ -156,6 +163,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Restaurant"));
 	}
@@ -174,6 +182,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Airport"));
 	}
@@ -193,6 +202,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(6))
 				.body("features.properties.name",
 						hasItems("MarkLogic Neighborhood", "Restaurant", "Holly St", "Airport", "Museum", "MarkLogic HQ"));
@@ -214,6 +224,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
 	}
 
@@ -232,6 +243,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Wildlife Refuge"));
 	}
@@ -251,6 +263,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
 	}
 
@@ -269,6 +282,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
 	}
 
@@ -288,6 +302,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Wildlife Refuge"));
 	}
@@ -306,6 +321,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(2))
 				.body("features.properties.name", hasItems("MarkLogic Neighborhood", "Airport"));
 	}
@@ -325,6 +341,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("MarkLogic Neighborhood"));
 	}
@@ -344,6 +361,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Hwy 101"));
 	}
@@ -362,6 +380,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
 	}
 
@@ -379,6 +398,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
 	}
 
@@ -397,6 +417,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("MarkLogic Neighborhood"));
 	}
@@ -414,6 +435,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			.then()
 				.log().ifError()
 				.statusCode(200)
+				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Wildlife Refuge"));
 	}

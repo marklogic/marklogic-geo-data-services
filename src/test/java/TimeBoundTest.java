@@ -28,6 +28,7 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
                     .log().ifError()
                     .statusCode(200)
                     .log().all()
+                    .body(isValidFeatureCollection())
                     .extract().response()
             ;
 
@@ -63,6 +64,7 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
                     .log().ifError()
                     .statusCode(200)
                     .log().ifValidationFails()
+                    .body(isValidFeatureCollection())
                     .extract().response()
             ;
 
@@ -95,6 +97,7 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
                     .log().ifError()
                     .statusCode(200)
                     .log().ifValidationFails()
+                    .body(isValidFeatureCollection())
                     .extract().response()
             ;
 
@@ -126,6 +129,7 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
                     .log().ifError()
                     .statusCode(200)
                     .log().ifValidationFails()
+                    .body(isValidFeatureCollection())
                     .extract().response()
             ;
 
@@ -158,6 +162,7 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
                     .log().ifError()
                     .statusCode(200)
                     .log().ifValidationFails()
+                    .body(isValidFeatureCollection())
                     .extract().response()
             ;
 

@@ -25,6 +25,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana"))
         ;
@@ -44,6 +45,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana"))
                 .body("features.geometry.size()", is(14))
@@ -65,6 +67,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana","West Bengal","Assam","Tripura"))
         ;
@@ -84,6 +87,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
                 .body("features.geometry.size()", is(17))
                 .body("features.geometry.points.size()", not(0))      
@@ -105,6 +109,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(5))
                 .body("features.properties.name", hasItems("Himachal Pradesh","Uttar Pradesh","Jammu and Kashmir","Rajasthan","Haryana"))
         ;
@@ -124,6 +129,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(5))
                 .body("features.geometry.size()", is(5))
                 .body("features.geometry.points.size()", not(0))      
@@ -145,6 +151,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(0))
         ;
     }
@@ -163,6 +170,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.properties.name", hasItems("Gujarat"))
         ;
@@ -182,6 +190,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.geometry.size()", is(1))
                 .body("features.geometry.points.size()", not(0))      
@@ -204,6 +213,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana"))            ;
        }
@@ -222,6 +232,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana"))
                 .body("features.geometry.size()", is(14))
@@ -243,6 +254,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(17))     
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana","West Bengal","Assam","Tripura"))
             ;
@@ -262,6 +274,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
                 .body("features.geometry.size()", is(17))
                 .body("features.geometry.points.size()", not(0))      
@@ -283,6 +296,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(5))    
                 .body("features.properties.name", hasItems("Himachal Pradesh","Uttar Pradesh","Jammu and Kashmir","Rajasthan","Haryana"))
         ;
@@ -302,6 +316,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(5))
                 .body("features.geometry.size()", is(5))
                 .body("features.geometry.points.size()", not(0))      
@@ -324,6 +339,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(0))    
         ;
        }
@@ -342,6 +358,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.properties.name", hasItems("Gujarat"))
             ;
@@ -361,6 +378,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.geometry.size()", is(1))
                 .body("features.geometry.points.size()", not(0))      
@@ -382,6 +400,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Rajasthan"))
         ;
@@ -401,6 +420,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.geometry.size()", is(1))
                 .body("features.geometry.points.size()", not(0)) 
@@ -422,6 +442,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(0))
         ;
     }
@@ -440,6 +461,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Odisha"))
         ;
@@ -459,6 +481,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.geometry.size()", is(1))
                 .body("features.geometry.points.size()", not(0)) 
@@ -480,6 +503,7 @@ public class KMLQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
                 .body("features.geometry.size()", is(17))
                 .body("features.geometry.points.size()", not(0))      
