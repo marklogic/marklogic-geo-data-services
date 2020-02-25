@@ -25,6 +25,7 @@ public class PointQueries  extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("MarkLogic Neighborhood"))
         ;
@@ -45,6 +46,7 @@ public class PointQueries  extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(2))
                 .body("features.properties.name", hasItems("Wildlife Refuge", "MarkLogic Neighborhood"))
         ;
@@ -66,6 +68,7 @@ public class PointQueries  extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Wildlife Refuge"))
         ;
@@ -86,6 +89,7 @@ public class PointQueries  extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(2))
                 .body("features.properties.name", hasItems("Airport", "MarkLogic Neighborhood"))
         ;
@@ -106,6 +110,7 @@ public class PointQueries  extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(0))
         ;
     }

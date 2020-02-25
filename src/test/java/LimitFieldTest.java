@@ -24,6 +24,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .log().all()
                 .statusCode(200)
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 //TODO missing .body("objectIdFieldName", is("OBJECTID"))
                 //TODO missing .body("globalIdFieldName", is(""))
                 //TODO missing .body("hasZ", is(false))
@@ -72,6 +73,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .log().all()
                 .statusCode(200)
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(5000))
         ;
     }
@@ -92,6 +94,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .log().all()
                 .statusCode(200)
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(3500))
         ;
     }
@@ -112,6 +115,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .log().all()
                 .statusCode(200)
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(7000))
         ;
     }
@@ -132,6 +136,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .log().all()
                 .statusCode(200)
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(4000))
         ;
     }
@@ -152,6 +157,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .log().all()
                 .statusCode(200)
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(10))
         ;
     }

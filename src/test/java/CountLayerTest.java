@@ -22,6 +22,7 @@ public class CountLayerTest extends AbstractFeatureServiceTest{
                 .statusCode(200)
                 .log().all()
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 .body("count", is(38765))
             ;
     }
@@ -41,6 +42,7 @@ public class CountLayerTest extends AbstractFeatureServiceTest{
                 .statusCode(200)
                 .log().all()
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 .body("count", is(3557))
             ;
     }

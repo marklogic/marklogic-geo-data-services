@@ -21,6 +21,7 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .log().ifError()
                 .statusCode(200)
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
 
                 .body("features.size()", is(5))
 
@@ -46,6 +47,7 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .log().ifError()
                 .statusCode(200)
                     .log().ifValidationFails()
+                    .body(isValidFeatureCollection())
 
                     .body("features.size()", is(5))
 
@@ -76,6 +78,7 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .log().ifError()
                 .statusCode(200)
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
 
                 .body("features.size()", is(5))
 
@@ -101,6 +104,7 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .log().ifError()
                 .statusCode(200)
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
 
                 .body("features.size()", is(5))
 
@@ -125,6 +129,7 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .log().ifError()
                 .statusCode(200)
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
 
                 .body("features.size()", is(5))
 
@@ -150,6 +155,7 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .log().ifError()
                 .statusCode(200)
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
 
                 .body("features.size()", is(5))
 
@@ -183,6 +189,7 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .log().ifError()
                 .statusCode(200)
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
 
                 .body("statistics.size()", is(2))
                 .body(

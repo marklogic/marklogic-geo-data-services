@@ -23,6 +23,7 @@ public class OffsetAndLimitTest extends AbstractFeatureServiceTest {
                 .log().all()
                 .statusCode(200)
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
 
                 .body("features.size()", is(10))
 

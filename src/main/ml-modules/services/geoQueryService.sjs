@@ -6,6 +6,7 @@
 
 const op = require('/MarkLogic/optic');
 const geojson = require('/MarkLogic/geospatial/geojson.xqy');
+const gds = require('/ext/gds.sjs');
 const sql2optic = require('/ext/sql/sql2optic.sjs');
 const geostats = require('/ext/geo/geostats.js');
 const geoextractor = require('/ext/geo/extractor.sjs');
@@ -68,34 +69,11 @@ function getData(req) {
   returnErrToClient(501, 'Request parameters not supported', xdmp.quote(req));
 }
 
-function getServiceModel(serviceName) {
-  xdmp.trace("KOOP-DEBUG", "Starting getServiceModel");
-  // TODO: These should be cached
-
-  const collection = "http://marklogic.com/feature-services";
-
-  xdmp.trace("KOOP-DEBUG", "Searching for Service Model: " + serviceName);
-  let model = fn.head(
-    cts.search(cts.andQuery([
-      cts.collectionQuery(collection),
-      cts.jsonPropertyValueQuery("name", serviceName)
-    ]))
-  );
-
-  if (model) {
-    xdmp.trace("KOOP-DEBUG", "Found service: " + serviceName);
-    return model.toObject();
-  } else {
-    xdmp.trace("KOOP-DEBUG", "No service info found for: " + serviceName);
-    throw "No service info found for: " + serviceName;
-  }
-}
-
 function getLayerModel(serviceName, layerId) {
   xdmp.trace("KOOP-DEBUG", "Starting getLayerModel");
   // TODO: These should be cached
 
-  const serviceModel = getServiceModel(serviceName);
+  const serviceModel = gds.getServiceModel(serviceName);
 
   let layer = null;
   if (serviceModel) {
@@ -153,7 +131,7 @@ function generateServiceDescriptor(serviceName) {
 
   // TODO: we should cache this instead of generating it every time
 
-  const model = getServiceModel(serviceName);
+  const model = gds.getServiceModel(serviceName);
 
   const desc = {
     description: model.info.description,
@@ -405,10 +383,6 @@ function query(req, exportPlan=false) {
 
     geojson.count = Array.from(aggregate(req))[0].count;
 
-    // this is a workaround for https://github.com/koopjs/FeatureServer/issues/70
-    if (geojson.count === 0) {
-      geojson.features = [];
-    }
   } else if (req.query.outStatistics != null) {
 
     xdmp.trace("KOOP-DEBUG", "running aggregation");
@@ -462,6 +436,12 @@ function query(req, exportPlan=false) {
 
     geojson.metadata.idField = layerModel.metadata.idField;
     geojson.metadata.displayField = layerModel.metadata.displayField;
+  }
+
+  // GeoJSON feature collections must always have a "features" object array, even if empty.
+  // See GeoJSON RFC: https://tools.ietf.org/html/rfc7946#section-3.2
+  if (!geojson.hasOwnProperty("features")) {
+    geojson.features = [];
   }
 
   return geojson;
@@ -1054,10 +1034,24 @@ function getObjects(req, exportPlan=false) {
     return exported;
   }
   else {
-    if (returnGeometry && extractor.hasExtractFunction()) {
-      xdmp.trace("KOOP-DEBUG", "Getting Extractor function");
-      pipeline = pipeline.map(extractor.extract);
-    }
+    // GeoJSON features must always have a "geometry" property; for cases where the feature has no 
+    // associated geometry data or "returnGeometry" is set to false, set "geometry" property to null.
+    // See GeoJSON RFC: https://tools.ietf.org/html/rfc7946#section-3.2
+    pipeline = pipeline.map((feature) => {
+      var outFeature = feature;
+      
+      if (returnGeometry && extractor.hasExtractFunction()) {
+        xdmp.trace("KOOP-DEBUG", "Getting Extractor function");
+        outFeature = extractor.extract(feature);
+      }
+
+      if (outFeature && !outFeature.hasOwnProperty("geometry")) {
+        outFeature.geometry = null;
+      }
+
+      return outFeature;
+    });
+
     xdmp.trace("KOOP-DEBUG", "Now to pull results from the pipeline with the following bindParams");
     xdmp.trace("KOOP-DEBUG", bindParams);
     const opticResult = Array.from(pipeline.result("object", bindParams));

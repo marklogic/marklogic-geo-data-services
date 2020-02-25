@@ -23,6 +23,7 @@ public class LimitExceedTest extends AbstractFeatureServiceTest{
                 .statusCode(200)
                 .log().all()
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 .body("metadata.limitExceeded", is(true))
                 .body("features.size()", is(5000))
         ;
@@ -44,6 +45,7 @@ public class LimitExceedTest extends AbstractFeatureServiceTest{
                 .statusCode(200)
                 .log().all()
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 .body("metadata.limitExceeded", is(false))
                 .body("features.size()", is(3557))
         ;
@@ -65,6 +67,7 @@ public class LimitExceedTest extends AbstractFeatureServiceTest{
                 .statusCode(200)
                 .log().all()
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 .body("metadata.limitExceeded", is(true))
                 .body("features.size()", is(3500))
         ;
@@ -86,6 +89,7 @@ public class LimitExceedTest extends AbstractFeatureServiceTest{
                 .statusCode(200)
                 .log().all()
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 .body("metadata.limitExceeded", is(true))
                 .body("features.size()", is(5))
         ;

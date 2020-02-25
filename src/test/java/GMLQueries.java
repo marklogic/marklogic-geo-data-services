@@ -26,6 +26,7 @@ public class GMLQueries extends AbstractFeatureServiceTest {
                 .log().ifError()
                 .statusCode(200)
                 .log().all()
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana"))
         ;
@@ -46,6 +47,7 @@ public class GMLQueries extends AbstractFeatureServiceTest {
                 .log().ifError()
                 .statusCode(200)
                 .log().all()
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana"))
                 .body("features.geometry.size()", is(14))
@@ -68,6 +70,7 @@ public class GMLQueries extends AbstractFeatureServiceTest {
                 .log().ifError()
                 .statusCode(200)
                 .log().all()
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana","West Bengal","Assam","Tripura"))
         ;

@@ -23,6 +23,7 @@ public class PubtimeErrorTest extends AbstractFeatureServiceTest{
                 .log().ifError()
                 .statusCode(200)
 	            .log().ifValidationFails()
+                .body(isValidFeatureCollection())
 	            .body("count", is(0))
         ;
     }

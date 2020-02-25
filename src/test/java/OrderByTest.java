@@ -22,6 +22,7 @@ public class OrderByTest extends AbstractFeatureServiceTest {
                 .log().ifError()
                 .statusCode(200)
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 .body("features.size()", is(10))
 
                 .body("features[0].properties.OBJECTID", is(8991))
@@ -61,6 +62,7 @@ public class OrderByTest extends AbstractFeatureServiceTest {
                 .log().ifError()
                 .statusCode(200)
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
                 //TODO missing .body("objectIdFieldName", is("OBJECTID"))
                 //TODO missing .body("globalIdFieldName", is(""))
                 //TODO missing .body("hasZ", is(false))
