@@ -5,7 +5,7 @@ MarkLogic Geo Data Services (GDS) enables a rich set of geospatial query capabil
 
 ![GitHub release](https://img.shields.io/github/release/marklogic-community/marklogic-geo-data-services.svg?style=social)
 
-![Bintray](https://img.shields.io/bintray/v/prestonmcgowan/maven/marklogic-geo-data-services.svg?style=social)
+![Bintray](https://img.shields.io/bintray/v/marklogic-community/Maven/marklogic-geo-data-services?style=social)
 
 ## Installation
 The MarkLogic Geo Data Services capability can be included in a [ml-gradle](https://github.com/marklogic-community/ml-gradle) project using a [mlBundle](https://github.com/marklogic-community/ml-gradle/wiki/Bundles) configuration. To add the services to your project you will need to update your `build.gradle` file, configure a schemas database, add the data services configuration, TDE templates, and add any required indexes. The MarkLogic Geo Data Services modules will be deployed to your modules database when you run the `mlDeploy` gradle task in your project.
@@ -19,19 +19,19 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath "com.marklogic:marklogic-geo-data-services-modules:0.0.4"
+    classpath "com.marklogic:marklogic-geo-data-services-modules:1.1.1"
   }
 }
 plugins {
-  id "net.saliman.properties" version "1.4.6"
-  id "com.marklogic.ml-gradle" version "3.13.0"
+  id "net.saliman.properties" version "1.5.1"
+  id "com.marklogic.ml-gradle" version "3.15.2"
 }
 repositories {
   jcenter()
 }
 
 dependencies {
-  mlBundle "com.marklogic:marklogic-geo-data-services-modules:0.0.4"
+  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.1.1"
 }
 ```
 

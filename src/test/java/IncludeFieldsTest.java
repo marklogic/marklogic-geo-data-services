@@ -23,6 +23,7 @@ public class IncludeFieldsTest extends AbstractFeatureServiceTest {
                 .statusCode(200)
                 .log().all()
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
 
                 .body("features.size()", is(5))
 
@@ -55,6 +56,7 @@ public class IncludeFieldsTest extends AbstractFeatureServiceTest {
                 .statusCode(200)
                 .log().all()
                 .log().ifValidationFails()
+                .body(isValidFeatureCollection())
 
                 .body("features.size()", is(5))
 

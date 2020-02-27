@@ -1,0 +1,33 @@
+version: '3'
+services:
+  ml:
+    image: "store/marklogicdb/marklogic-server:10.0-2-dev-centos"
+    environment: 
+      - MARKLOGIC_INIT=true
+      - MARKLOGIC_ADMIN_USERNAME=admin
+      - MARKLOGIC_ADMIN_PASSWORD=admin
+    ports:
+      - "10000-10003:8000-8003" # ML ports
+      - "10095:8095" # content app server
+    hostname: "ml"
+    container_name: "ml"
+  koop:
+    build:
+      context: ./koop
+    ports:
+      - "9000:80"
+    hostname: "koop"
+    container_name: "koop"
+    depends_on: 
+      - ml
+  deployer:
+    build:
+      context: ../..
+      dockerfile: examples/sample-docker/deployer/Dockerfile
+    environment: 
+      - MLHOST=ml
+      - MLUSER=admin
+      - MLPWD=admin
+    container_name: "deployer"
+    depends_on: 
+      - ml

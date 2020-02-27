@@ -501,7 +501,8 @@ function CustomExtractor(layer) {
         selectors.push( op.jsonObject([
           op.prop("pointFormat", index.pointFormat),
           op.prop("coordinateSystem", index.coordinateSystem),
-          op.prop("points", op.map.entry("list", op.xpath("doc", getPathXPath(index))))
+          // convert node value to string so the extractor can handle the values later
+          op.prop("points", op.map.entry("list", op.call("http://www.w3.org/2005/xpath-functions", "string", op.xpath("doc", getPathXPath(index)))))
         ]));
       }
     }
@@ -686,12 +687,12 @@ function getElementPairLatXPath(index) {
 
 function getAttributePairLonXPath(index) {
   xdmp.trace("KOOP-DEBUG", "Using the following extractor helper function: getAttributePairLonXPath");
-  return `//${ns(index.parentNamespaceUri)}${index.parentLocalname}/@${ns(index.longitudeNamespaceUri)}${index.longitudeLocalname}/node()`;
+  return `//${ns(index.parentNamespaceUri)}${index.parentLocalname}/@${ns(index.longitudeNamespaceUri)}${index.longitudeLocalname}`;
 }
 
 function getAttributePairLatXPath(index) {
   xdmp.trace("KOOP-DEBUG", "Using the following extractor helper function: getAttributePairLatXPath");
-  return `//${ns(index.parentNamespaceUri)}${index.parentLocalname}/@${ns(index.latitudeNamespaceUri)}${index.latitudeLocalname}/node()`;
+  return `//${ns(index.parentNamespaceUri)}${index.parentLocalname}/@${ns(index.latitudeNamespaceUri)}${index.latitudeLocalname}`;
 }
 
 function getExtractFunction(layerModel) {

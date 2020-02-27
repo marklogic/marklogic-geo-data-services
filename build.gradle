@@ -48,6 +48,7 @@ dependencies {
     testImplementation "com.google.guava:guava:27.1-jre"
     testImplementation "io.rest-assured:json-path:3.0.6"
     testImplementation "io.rest-assured:rest-assured:3.0.6"
+    testImplementation "io.rest-assured:json-schema-validator:3.0.6"
     testImplementation "junit:junit:4.12"
     testImplementation "com.googlecode.json-simple:json-simple:1.1.1"
     testImplementation "org.gradle:gradle-tooling-api:2.1"
@@ -171,12 +172,11 @@ if (project.hasProperty("myBintrayUser")) {
         key = project.myBintrayKey
         publications = ["sourcesJava", "mainModules"]
         pkg {
-            repo = "maven"
+            repo = "Maven"
             name = project.name
-            userOrg = "prestonmcgowan"
+            userOrg = "marklogic-community"
             licenses = ["Apache-2.0"]
-            vcsUrl = "https://github.com/prestonmcgowan/marklogic-geo-data-services"
-            //vcsUrl = "https://github.com/marklogic-community/" + project.name + ".git"s
+            vcsUrl = "https://github.com/marklogic-community/marklogic-geo-data-services.git"
             version {
                 name = project.version
                 released = new Date()

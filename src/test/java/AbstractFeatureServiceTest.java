@@ -1,6 +1,7 @@
 import io.restassured.path.json.config.JsonPathConfig;
 import io.restassured.path.json.JsonPath;
 import io.restassured.RestAssured;
+import io.restassured.module.jsv.JsonSchemaValidator;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
@@ -9,8 +10,18 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.*;
 
 import static io.restassured.RestAssured.*;
+import static io.restassured.module.jsv.JsonSchemaValidator.*;
 
 public abstract class AbstractFeatureServiceTest {
+
+    private static JsonSchemaValidator geoJsonFeatureCollectionValidator = null;
+
+    public JsonSchemaValidator isValidFeatureCollection() {
+        if (geoJsonFeatureCollectionValidator == null) {
+            geoJsonFeatureCollectionValidator = matchesJsonSchema(AbstractFeatureServiceTest.class.getResource("geojson-schema/FeatureCollection.json"));
+        }
+        return geoJsonFeatureCollectionValidator;
+    }
 
     static String url = "/LATEST/resources/" + System.getProperty("feature.service");
     static String port = System.getProperty("feature.port");
