@@ -172,12 +172,11 @@ if (project.hasProperty("myBintrayUser")) {
         key = project.myBintrayKey
         publications = ["sourcesJava", "mainModules"]
         pkg {
-            repo = "maven"
+            repo = "Maven"
             name = project.name
-            userOrg = "prestonmcgowan"
+            userOrg = "marklogic-community"
             licenses = ["Apache-2.0"]
-            vcsUrl = "https://github.com/prestonmcgowan/marklogic-geo-data-services"
-            //vcsUrl = "https://github.com/marklogic-community/" + project.name + ".git"s
+            vcsUrl = "https://github.com/marklogic-community/marklogic-geo-data-services.git"
             version {
                 name = project.version
                 released = new Date()
