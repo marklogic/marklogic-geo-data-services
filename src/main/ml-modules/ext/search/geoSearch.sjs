@@ -1,7 +1,8 @@
-import { ServiceModel } from 'models';
-import { InputError } from '../error';
+const models = require('/ext/search/models.sjs');
+const err = require('/ext/error.sjs');
 const search = require('/MarkLogic/appservices/search/search.xqy');
 const sut = require('/MarkLogic/rest-api/lib/search-util.xqy');
+const cqm = require('/MarkLogic/rest-api/models/config-query-model.xqy');
 
 /*
   Sample payload:
@@ -86,7 +87,7 @@ function withDefaults(input)
   // fill these out if null
   newInput.params.request = newInput.params.request || [];
   newInput.search.facets = newInput.search.facets || {};
-  newInput.search.queries = newInput.search.queries || {};
+  newInput.search.queries = newInput.search.queries || [];
   
   // ensure these are arrays (if single values were provided)
   if (!Array.isArray(newInput.params.request)) { newInput.params.request = [ newInput.params.request ]; }
@@ -95,8 +96,10 @@ function withDefaults(input)
 }
 
 function constructSearchDocs(searchProfile, input) {
-  // get stored options from modules
-  const baseOptions = sut.options({ options: searchProfile.optionsName });
+  // get stored options
+  //const baseOptions = sut.options({ options: searchProfile.optionsName });
+  const baseOptions = cqm.getOptions(searchProfile.optionsName);
+  if (baseOptions === null) { throw err.newInternalError(`Unable to load search options \"${searchProfile.optionsName}\"; verify that the search options are deployed.`); }
   
   // collect all structured queries to be injected into search:search
   const structuredQueries = [];
@@ -156,12 +159,12 @@ function getSearchSuggestions(model, searchProfile, input) {
 function geoSearch(input) {
   const _input = withDefaults(input);
   
-  if (!_input.params.id) { throw new InputError("No service descriptor name provided in the property params.id"); }
-  const model = new ServiceModel(_input.params.id);
-  if (!model.hasSearchProfiles) { throw new InputError(`The service descriptor \"${model.name}\" has no declared search profiles.`); }
-  if (!_input.params.search) { throw new InputError("No search profile name provided in the property params.search"); }
+  if (!_input.params.id) { throw err.newInputError("No service descriptor name provided in the property params.id"); }
+  const model = models.loadServiceModel(_input.params.id);
+  if (!model.hasSearchProfiles) { throw err.newInputError(`The service descriptor \"${model.name}\" has no declared search profiles.`); }
+  if (!_input.params.search) { throw err.newInputError("No search profile name provided in the property params.search"); }
   const searchProfile = model.getSearchProfile(_input.params.search);
-  if (searchProfile === null) { throw new InputError(`The service descriptor \"${model.name}\" doesn't have a search profile named \"${_input.params.search}\".`); }
+  if (searchProfile === null) { throw err.newInputError(`The service descriptor \"${model.name}\" doesn't have a search profile named \"${_input.params.search}\".`); }
   
   // check request to determine what to return
   const returnSearchOptions = new Set(["results", "facets", "values"]);
@@ -181,4 +184,4 @@ function geoSearch(input) {
   return response;
 }
 
-export { geoSearch };
+exports.geoSearch = geoSearch;

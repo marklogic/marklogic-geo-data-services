@@ -1,4 +1,5 @@
-const gds = require('../gds.sjs');
+'use strict';
+const gds = require('/ext/gds.sjs');
 
 class ServiceModel {
   constructor(serviceName) {
@@ -19,7 +20,7 @@ class ServiceModel {
   
   getSearchProfile(searchProfileName) {
     if (!this.hasSearchProfiles) { return null; }
-    return this.model.search[searchProfileName] || null;
+    return new SearchProfile(this.model.search[searchProfileName]) || null;
   }
 }
 
@@ -37,4 +38,4 @@ class SearchProfile {
   }
 }
 
-export { ServiceModel, SearchProfile };
+exports.loadServiceModel = (serviceName) => new ServiceModel(serviceName);

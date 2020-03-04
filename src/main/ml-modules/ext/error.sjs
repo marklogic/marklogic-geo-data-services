@@ -1,30 +1,40 @@
+'use strict';
+
 const STATUS_CODE_400 = "Bad Request";
 const STATUS_CODE_422 = "Unprocessable Entity";
 const STATUS_CODE_500 = "Internal Server Error";
 
 class ServiceError {
   constructor(message, statusCode, statusMsg) {
-    this.message = message;
-    this.statusCode = statusCode;
-    this.statusMsg = statusMsg;
+    this.context = {
+      message: message,
+      statusCode: statusCode,
+      statusMsg: statusMsg
+    };
   }
 
   get message() {
-    return this.message;
+    return this.context.message;
   }
 
   get statusCode() {
-    return this.statusCode;
+    return this.context.statusCode;
   }
 
   get statusMsg() {
-    return this.statusMsg;
+    return this.context.statusMsg;
   }
 };
 
 class InputError extends ServiceError {
   constructor(message) {
     super(message, 422, STATUS_CODE_422);
+  }
+}
+
+class InternalError extends ServiceError {
+  constructor(message) {
+    super(message, 500, STATUS_CODE_500);
   }
 }
 
@@ -37,9 +47,12 @@ function handleError(err) {
     errData = [ 500, STATUS_CODE_500, err.toString() ];
   }
   else {
-    errData = [ 500, STATUS_CODE_500, JSON.stringify(err) ]
+    errData = [ 500, STATUS_CODE_500, JSON.stringify(err) ];
   }
   fn.error(null, "RESTAPI-SRVEXERR", Sequence.from(errData));
 }
 
-export { ServiceError, InputError, handleError };
+
+exports.handleError = handleError;
+exports.newInternalError = (msg) => new InternalError(msg);
+exports.newInputError = (msg) => new InputError(msg);
