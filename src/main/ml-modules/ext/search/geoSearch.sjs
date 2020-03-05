@@ -1,8 +1,6 @@
 const models = require('/ext/search/models.sjs');
 const err = require('/ext/error.sjs');
-const search = require('/MarkLogic/appservices/search/search.xqy');
-const suo = require('/ext/search/search-options-util.xqy');
-const sut = require('/MarkLogic/rest-api/lib/search-util.xqy');
+const gsu = require('/ext/search/geo-search-util.xqy');
 
 /*
   Sample payload:
@@ -11,7 +9,9 @@ const sut = require('/MarkLogic/rest-api/lib/search-util.xqy');
       "id": "service descriptor name",  // Required; determines available search profiles
       "search": "search profile name",  // Required; extract search options from specified profile
       "request": [ "results", "facets", "values", "suggest" ],  // Optional; defaults to: results, facets, values
-      "aggregateValues": true // Optional; defaults to true
+      "aggregateValues": true, // Optional; defaults to true
+      "valuesLimit": 1000, // Optional; defaults to 1000
+      "debug": false // Optional; defaults to false
     },
     "search": {
       "qtext": "query text", // Optional; defaults to empty string
@@ -58,6 +58,7 @@ function resolveInput(input)
       search: search,
       request: request = [ 'results', 'facets', 'values' ],
       aggregateValues: aggregateValues = true,
+      valuesLimit: valuesLimit = 1000,
       debug: debug = true,
       ...paramsRest // pass along any extra properties
     },
@@ -80,7 +81,7 @@ function resolveInput(input)
   
   // create new input object
   let newInput = {
-    params: { id, search, request, aggregateValues, debug, ...paramsRest },
+    params: { id, search, request, aggregateValues, valuesLimit, debug, ...paramsRest },
     search: { qtext, start, pageLength, facets, viewport: { box, latDivs, lonDivs, zoom }, queries, ...searchRest },
     ...inputRest
   };
@@ -134,9 +135,9 @@ function createSearchCriteria(searchProfile, input, returnResults, returnFacets,
       }
     }
   };
-  const deltaSearch = suo.searchFromJson(deltaSearchObj);
+  const deltaSearch = gsu.searchFromJson(deltaSearchObj);
 
-  return fn.head(suo.createSearchCriteria(
+  return fn.head(gsu.createSearchCriteria(
     searchProfile.optionsName, 
     deltaSearch, 
     searchProfile.geoConstraintName,
@@ -149,21 +150,18 @@ function createSearchCriteria(searchProfile, input, returnResults, returnFacets,
 function getSearchResults(model, searchProfile, input, returnResults, returnFacets, returnValues, debugMode) {
   // get search:search
   const criteria = createSearchCriteria(searchProfile, input, returnResults, returnFacets, returnValues);
-
-  // execute search
-  const searchResponse = sut.responseToJsonObject(
-    search.resolve(
-      criteria.xpath("*:query"), 
-      criteria.xpath("*:options"), 
-      input.search.start, 
-      input.search.pageLength), 
-    "all");
-  let response = fn.head(searchResponse).toObject();
+  
+  // get results
+  const response = fn.head(gsu.getSearchResults(criteria, searchProfile.geoConstraintName, {
+    start : input.search.start,
+    pageLength: input.search.pageLength,
+    aggregateValues: input.params.aggregateValues
+  })).toObject();
 
   if (debugMode) {
     response.debug = {
       ...response.debug,
-      criteria: sut.searchToJson(criteria) // expose search:search
+      criteria: gsu.searchToJson(criteria) // expose search:search
     };
   }
   
