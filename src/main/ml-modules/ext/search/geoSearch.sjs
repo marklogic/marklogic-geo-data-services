@@ -1,6 +1,7 @@
 const models = require('/ext/search/models.sjs');
 const err = require('/ext/error.sjs');
 const search = require('/MarkLogic/appservices/search/search.xqy');
+const suo = require('/ext/search/search-options-util.xqy');
 const sut = require('/MarkLogic/rest-api/lib/search-util.xqy');
 
 /*
@@ -35,10 +36,6 @@ const sut = require('/MarkLogic/rest-api/lib/search-util.xqy');
     }    
   }
 */
-
-const XML_NS_BINDINGS = {
-  "search": "http://marklogic.com/appservices/search"
-};
 
 /**
  * Fills in any gaps in input with default values and returns a new input object.
@@ -99,14 +96,9 @@ function resolveInput(input)
   return newInput;
 }
 
-function constructSearchCriteria(searchProfile, input) {
-  // get stored options
-  const baseOptions = sut.options({ options: searchProfile.optionsName });
-  if (baseOptions === null) { throw err.newInternalError(`Unable to load search options \"${searchProfile.optionsName}\"; verify that the search options are deployed.`); }
-  
+function createSearchCriteria(searchProfile, input, returnResults, returnFacets, returnValues, debugMode) {
   // collect all structured queries to be injected into search:search
   const structuredQueries = [];
-  structuredQueries.push(input.search.queries); // add any additional queries provided in input (request)
   
   // add qtext
   if (input.search.qtext) {
@@ -125,60 +117,60 @@ function constructSearchCriteria(searchProfile, input) {
       "box": [{ "south": viewport.box.s, "west": viewport.box.w, "north": viewport.box.n, "east": viewport.box.e }]
     }
   });
+
+  // add any additional queries provided in input (request)
+  structuredQueries.push(input.search.queries);
   
-  // construct search:search "override"
-  const deltaSearch = {
+  // create delta search:search
+  const deltaSearchObj = {
     "search": {
       "query": {
         "queries": structuredQueries
       },
       "options": {
         "page-length": input.search.pageLength,
-        "constraint": []
+        "return-results": returnResults === true,
+        "return-facets": returnFacets === true
       }
     }
   };
-  
-  // merge search:options
-  const deltaSearchDoc = sut.searchFromJson(deltaSearch);
-  const mergedOptionsDoc = sut.mergeOptions(baseOptions, deltaSearchDoc.xpath("search:options", XML_NS_BINDINGS));
-  
-  // return a search:search XML document
-  const builder = new NodeBuilder();
-  builder.startDocument();
-  builder.startElement("search", XML_NS_BINDINGS.search);
-  builder.addNode(fn.head(deltaSearchDoc.xpath("search:query", XML_NS_BINDINGS))); // search:query
-  builder.addNode(fn.head(mergedOptionsDoc)); // search:options
-  builder.endElement();
-  builder.endDocument();
+  const deltaSearch = suo.searchFromJson(deltaSearchObj);
 
-  return builder.toNode();
+  return fn.head(suo.createSearchCriteria(
+    searchProfile.optionsName, 
+    deltaSearch, 
+    searchProfile.geoConstraintName,
+    {
+      "s": viewport.box.s, "w": viewport.box.w, "n": viewport.box.n, "e": viewport.box.e,
+      "latdivs": viewport.latDivs, "londivs": viewport.lonDivs
+    }));
 }
 
-function getSearchResults(model, searchProfile, input) {
-  // get final search:search
-  const criteria = constructSearchCriteria(searchProfile, input);
+function getSearchResults(model, searchProfile, input, returnResults, returnFacets, returnValues, debugMode) {
+  // get search:search
+  const criteria = createSearchCriteria(searchProfile, input, returnResults, returnFacets, returnValues);
 
   // execute search
   const searchResponse = sut.responseToJsonObject(
     search.resolve(
-      criteria.root.xpath("search:query", XML_NS_BINDINGS), 
-      criteria.root.xpath("search:options", XML_NS_BINDINGS), 
+      criteria.xpath("*:query"), 
+      criteria.xpath("*:options"), 
       input.search.start, 
       input.search.pageLength), 
     "all");
   let response = fn.head(searchResponse).toObject();
 
-  if (input.params.debug === true) {
+  if (debugMode) {
     response.debug = {
-      criteria: sut.searchToJson(criteria.root) // expose final search:search
+      ...response.debug,
+      criteria: sut.searchToJson(criteria) // expose search:search
     };
   }
   
   return response;
 }
 
-function getSearchSuggestions(model, searchProfile, input) {
+function getSearchSuggestions(model, searchProfile, input, debugMode) {
 
 }
 
@@ -192,17 +184,19 @@ function geoSearch(input) {
   const searchProfile = model.getSearchProfile(_input.params.search);
   if (searchProfile === null) { throw err.newInputError(`The service descriptor \"${model.name}\" doesn't have a search profile named \"${_input.params.search}\".`); }
   
-  // check request to determine what to return
-  const returnSearchOptions = new Set(["results", "facets", "values"]);
-  const returnSearch = _input.params.request.some((opt) => returnSearchOptions.has(opt));
+  // check what to return
+  const returnResults = _input.params.request.some((opt) => opt === "results");
+  const returnFacets = _input.params.request.some((opt) => opt === "facets");
+  const returnValues = _input.params.request.some((opt) => opt === "values");
   const returnSuggest = _input.params.request.some((opt) => opt === "suggest");
+  const returnSearch = returnResults || returnFacets || returnValues;
   const debugMode = _input.params.debug === true;
   
   // response follows the structure returned by search:search 
-  let response = returnSearch ? getSearchResults(model, searchProfile, _input) : {};
+  let response = returnSearch ? getSearchResults(model, searchProfile, _input, returnResults, returnFacets, returnValues, debugMode) : {};
 
   // add search suggestions if requested
-  if (returnSuggest) { response.suggestions = getSearchSuggestions(model, searchProfile, _input); }
+  if (returnSuggest) { response.suggestions = getSearchSuggestions(model, searchProfile, _input, debugMode); }
 
   if (debugMode) {
     response.debug = {
