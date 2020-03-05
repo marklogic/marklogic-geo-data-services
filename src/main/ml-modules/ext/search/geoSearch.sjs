@@ -2,7 +2,6 @@ const models = require('/ext/search/models.sjs');
 const err = require('/ext/error.sjs');
 const search = require('/MarkLogic/appservices/search/search.xqy');
 const sut = require('/MarkLogic/rest-api/lib/search-util.xqy');
-const cqm = require('/MarkLogic/rest-api/models/config-query-model.xqy');
 
 /*
   Sample payload:
@@ -37,11 +36,15 @@ const cqm = require('/MarkLogic/rest-api/models/config-query-model.xqy');
   }
 */
 
+const XML_NS_BINDINGS = {
+  "search": "http://marklogic.com/appservices/search"
+};
+
 /**
  * Fills in any gaps in input with default values and returns a new input object.
  * @param {Object} input A geo search input object (the POST request's body)
  */
-function withDefaults(input)
+function resolveInput(input)
 {
   const defaultDivs = 100;
   
@@ -58,6 +61,7 @@ function withDefaults(input)
       search: search,
       request: request = [ 'results', 'facets', 'values' ],
       aggregateValues: aggregateValues = true,
+      debug: debug = true,
       ...paramsRest // pass along any extra properties
     },
     search: {
@@ -79,7 +83,7 @@ function withDefaults(input)
   
   // create new input object
   let newInput = {
-    params: { id, search, request, aggregateValues, ...paramsRest },
+    params: { id, search, request, aggregateValues, debug, ...paramsRest },
     search: { qtext, start, pageLength, facets, viewport: { box, latDivs, lonDivs, zoom }, queries, ...searchRest },
     ...inputRest
   };
@@ -95,10 +99,9 @@ function withDefaults(input)
   return newInput;
 }
 
-function constructSearchDocs(searchProfile, input) {
+function constructSearchCriteria(searchProfile, input) {
   // get stored options
-  //const baseOptions = sut.options({ options: searchProfile.optionsName });
-  const baseOptions = cqm.getOptions(searchProfile.optionsName);
+  const baseOptions = sut.options({ options: searchProfile.optionsName });
   if (baseOptions === null) { throw err.newInternalError(`Unable to load search options \"${searchProfile.optionsName}\"; verify that the search options are deployed.`); }
   
   // collect all structured queries to be injected into search:search
@@ -138,18 +141,41 @@ function constructSearchDocs(searchProfile, input) {
   
   // merge search:options
   const deltaSearchDoc = sut.searchFromJson(deltaSearch);
-  const mergedOptionsDoc = sut.mergeOptions(baseOptions, deltaSearchDoc.xpath("search:options"));
+  const mergedOptionsDoc = sut.mergeOptions(baseOptions, deltaSearchDoc.xpath("search:options", XML_NS_BINDINGS));
   
-  return {
-    options: mergedOptionsDoc, 
-    query: deltaSearchDoc.xpath("search:query")
-  };
+  // return a search:search XML document
+  const builder = new NodeBuilder();
+  builder.startDocument();
+  builder.startElement("search", XML_NS_BINDINGS.search);
+  builder.addNode(fn.head(deltaSearchDoc.xpath("search:query", XML_NS_BINDINGS))); // search:query
+  builder.addNode(fn.head(mergedOptionsDoc)); // search:options
+  builder.endElement();
+  builder.endDocument();
+
+  return builder.toNode();
 }
 
 function getSearchResults(model, searchProfile, input) {
-  const sdoc = constructSearchDocs(searchProfile, input);
-  const response = sut.responseToJsonObject(search.resolve(sdoc.query, sdoc.options, input.search.start, input.search.pageLength), "all");
-  return fn.head(response).toObject();
+  // get final search:search
+  const criteria = constructSearchCriteria(searchProfile, input);
+
+  // execute search
+  const searchResponse = sut.responseToJsonObject(
+    search.resolve(
+      criteria.root.xpath("search:query", XML_NS_BINDINGS), 
+      criteria.root.xpath("search:options", XML_NS_BINDINGS), 
+      input.search.start, 
+      input.search.pageLength), 
+    "all");
+  let response = fn.head(searchResponse).toObject();
+
+  if (input.params.debug === true) {
+    response.debug = {
+      criteria: sut.searchToJson(criteria.root) // expose final search:search
+    };
+  }
+  
+  return response;
 }
 
 function getSearchSuggestions(model, searchProfile, input) {
@@ -157,7 +183,7 @@ function getSearchSuggestions(model, searchProfile, input) {
 }
 
 function geoSearch(input) {
-  const _input = withDefaults(input);
+  const _input = resolveInput(input);
   
   if (!_input.params.id) { throw err.newInputError("No service descriptor name provided in the property params.id"); }
   const model = models.loadServiceModel(_input.params.id);
@@ -169,8 +195,8 @@ function geoSearch(input) {
   // check request to determine what to return
   const returnSearchOptions = new Set(["results", "facets", "values"]);
   const returnSearch = _input.params.request.some((opt) => returnSearchOptions.has(opt));
-  const returnRequest = _input.params.request.some((opt) => opt === "returnRequest");
   const returnSuggest = _input.params.request.some((opt) => opt === "suggest");
+  const debugMode = _input.params.debug === true;
   
   // response follows the structure returned by search:search 
   let response = returnSearch ? getSearchResults(model, searchProfile, _input) : {};
@@ -178,8 +204,12 @@ function geoSearch(input) {
   // add search suggestions if requested
   if (returnSuggest) { response.suggestions = getSearchSuggestions(model, searchProfile, _input); }
 
-  // return final input object if requested
-  if (returnRequest) { response.returnRequest = _input };
+  if (debugMode) {
+    response.debug = {
+      ...response.debug,
+      resolvedInput: _input
+    };
+  }
 
   return response;
 }
