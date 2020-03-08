@@ -1,6 +1,7 @@
 'use strict';
 
 const STATUS_CODE_400 = "Bad Request";
+const STATUS_CODE_404 = "Not Found";
 const STATUS_CODE_422 = "Unprocessable Entity";
 const STATUS_CODE_500 = "Internal Server Error";
 
@@ -25,6 +26,12 @@ class ServiceError {
     return this.context.statusMsg;
   }
 };
+
+class NotFoundError extends ServiceError {
+  constructor(message) {
+    super(message, 404, STATUS_CODE_404);
+  }
+}
 
 class InputError extends ServiceError {
   constructor(message) {
@@ -54,5 +61,6 @@ function handleError(err) {
 
 
 exports.handleError = handleError;
+exports.newNotFoundError = (msg) => new NotFoundError(msg);
 exports.newInternalError = (msg) => new InternalError(msg);
 exports.newInputError = (msg) => new InputError(msg);

@@ -1,26 +1,40 @@
 'use strict';
+const err = require('/ext/error.sjs');
+const trace = require('/ext/trace.sjs');
+
+const SERVICE_DESCRIPTOR_COLLECTION = 'http://marklogic.com/feature-services';
+
+function getServiceModels() {
+  let models = [];
+  const docs = cts.search(cts.collectionQuery(SERVICE_DESCRIPTOR_COLLECTION)).toArray();
+  docs.forEach((doc) => {
+    const sd = doc.toObject();
+    if (sd.info && sd.info) {
+      models.push(sd.info);
+    }
+  });
+  trace.info(`Found ${models.length} service descriptor documents.` + 
+    (docs.length != models.length ? `${docs.length - models.length} documents ignored from collection.` : ''), 
+    "getServiceModels");
+  return models;
+}
 
 function getServiceModel(serviceName) {
-  xdmp.trace("KOOP-DEBUG", "Starting getServiceModel");
   // TODO: These should be cached
-
-  const collection = "http://marklogic.com/feature-services";
-
-  xdmp.trace("KOOP-DEBUG", "Searching for Service Model: " + serviceName);
-  let model = fn.head(
+  const model = fn.head(
     cts.search(cts.andQuery([
-      cts.collectionQuery(collection),
+      cts.collectionQuery(SERVICE_DESCRIPTOR_COLLECTION),
       cts.jsonPropertyValueQuery("name", serviceName, ["exact"])
     ]))
   );
 
   if (model) {
-    xdmp.trace("KOOP-DEBUG", "Found service: " + serviceName);
     return model.toObject();
   } else {
-    xdmp.trace("KOOP-DEBUG", "No service info found for: " + serviceName);
-    throw "No service info found for: " + serviceName;
+    trace.info(`Unable to find service descriptor document for service ${serviceName}.`, "getServiceModel");
+    throw err.newNotFoundError(`Service descriptor ${serviceName} not found.`);
   }
 }
 
+exports.getServiceModels = getServiceModels;
 exports.getServiceModel = getServiceModel;
