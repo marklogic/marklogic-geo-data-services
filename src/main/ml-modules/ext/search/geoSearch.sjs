@@ -59,7 +59,7 @@ function resolveInput(input)
       request: request = [ 'results', 'facets', 'values' ],
       aggregateValues: aggregateValues = true,
       valuesLimit: valuesLimit = 1000,
-      debug: debug = true,
+      debug: debug = false,
       ...paramsRest // pass along any extra properties
     },
     search: {
@@ -123,6 +123,7 @@ function createSearchCriteria(searchProfile, input, returnResults, returnFacets,
   structuredQueries.push(input.search.queries);
   
   // create delta search:search
+  const aggregateValues = input.params.aggregateValues;
   const deltaSearchObj = {
     "search": {
       "query": {
@@ -130,8 +131,9 @@ function createSearchCriteria(searchProfile, input, returnResults, returnFacets,
       },
       "options": {
         "page-length": input.search.pageLength,
-        "return-results": returnResults === true,
-        "return-facets": returnFacets === true
+        "return-results": returnResults,
+        "return-facets": returnFacets || returnValues,
+        "return-values": returnValues
       }
     }
   };
@@ -142,8 +144,13 @@ function createSearchCriteria(searchProfile, input, returnResults, returnFacets,
     deltaSearch, 
     searchProfile.geoConstraintName,
     {
-      "s": viewport.box.s, "w": viewport.box.w, "n": viewport.box.n, "e": viewport.box.e,
-      "latdivs": viewport.latDivs, "londivs": viewport.lonDivs
+      returnValues: returnValues,
+      aggregateValues: aggregateValues,
+      valuesLimit: input.params.valuesLimit,
+      heatmap: {
+        s: viewport.box.s, w: viewport.box.w, n: viewport.box.n, e: viewport.box.e,
+        latdivs: viewport.latDivs, londivs: viewport.lonDivs
+      }
     }));
 }
 
@@ -155,7 +162,10 @@ function getSearchResults(model, searchProfile, input, returnResults, returnFace
   const response = fn.head(gsu.getSearchResults(criteria, searchProfile.geoConstraintName, {
     start : input.search.start,
     pageLength: input.search.pageLength,
-    aggregateValues: input.params.aggregateValues
+    aggregateValues: input.params.aggregateValues,
+    returnResults: returnResults,
+    returnFacets: returnFacets,
+    returnValues: returnValues
   })).toObject();
 
   if (debugMode) {
