@@ -1,3 +1,4 @@
+'use strict';
 const models = require('/ext/search/models.sjs');
 const err = require('/ext/error.sjs');
 const gsu = require('/ext/search/geo-search-util.xqy');
@@ -28,14 +29,16 @@ const gsu = require('/ext/search/geo-search-util.xqy');
           "w": -180.0,
           "e": 180.0
         },
-        "latDivs": 100, // Optional; defaults to 100
-        "lonDivs": 100, // Optional; defaults to 100
-        "zoom": 10      // Optional; defaults to 10
+        "maxLatDivs": 100, // Optional; defaults to 100
+        "maxLonDivs": 100, // Optional; defaults to 100
       },
       "queries": {} // Optional; additional structured queries, defaults to empty object {}
     }    
   }
 */
+
+const DEFAULT_MIN_DIVS = 10;
+const DEFAULT_MAX_DIVS = 100;
 
 /**
  * Fills in any gaps in input with default values and returns a new input object.
@@ -43,7 +46,7 @@ const gsu = require('/ext/search/geo-search-util.xqy');
  */
 function resolveInput(input)
 {
-  const defaultDivs = 100;
+  const DEFAULT_MAX_DIVS = 100;
   
   // default input object structure
   var _input = {};
@@ -69,20 +72,23 @@ function resolveInput(input)
       facets: facets = null,
       viewport: {
         box: box = { n: 90.0, s: -90.0, w: -180.0, e: 180.0 },
-        latDivs: latDivs = defaultDivs,
-        lonDivs: lonDivs = defaultDivs,
-        zoom: zoom = 10
+        maxLatDivs: maxLatDivs = DEFAULT_MAX_DIVS,
+        maxLonDivs: maxLonDivs = DEFAULT_MAX_DIVS
       },
       queries: queries = null,
       ... searchRest // pass along any extra properties
     },
     ...inputRest
   } = _input;
+
+  // set limits
+  maxLatDivs = fn.min([DEFAULT_MAX_DIVS, fn.max([DEFAULT_MIN_DIVS, maxLatDivs])]);
+  maxLonDivs = fn.min([DEFAULT_MAX_DIVS, fn.max([DEFAULT_MIN_DIVS, maxLonDivs])]);
   
   // create new input object
   let newInput = {
     params: { id, search, request, aggregateValues, valuesLimit, debug, ...paramsRest },
-    search: { qtext, start, pageLength, facets, viewport: { box, latDivs, lonDivs, zoom }, queries, ...searchRest },
+    search: { qtext, start, pageLength, facets, viewport: { box, maxLatDivs, maxLonDivs }, queries, ...searchRest },
     ...inputRest
   };
   
@@ -147,10 +153,9 @@ function createSearchCriteria(searchProfile, input, returnResults, returnFacets,
       returnValues: returnValues,
       aggregateValues: aggregateValues,
       valuesLimit: input.params.valuesLimit,
-      heatmap: {
-        s: viewport.box.s, w: viewport.box.w, n: viewport.box.n, e: viewport.box.e,
-        latdivs: viewport.latDivs, londivs: viewport.lonDivs
-      }
+      viewport: viewport,
+      defaultMinDivs: DEFAULT_MIN_DIVS,
+      defaultMaxDivs: DEFAULT_MAX_DIVS
     }));
 }
 

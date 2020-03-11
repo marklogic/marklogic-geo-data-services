@@ -38,8 +38,7 @@ declare function gsu:create-search-criteria(
   let $aggregate-values := $options/aggregateValues eq fn:true()
   let $return-values := $options/returnValues eq fn:true()
   let $values-limit := xs:unsignedLong($options/valuesLimit)
-  let $heatmap := xdmp:from-json($options/heatmap)
-
+  
   let $base-options := sut:options(map:entry("options", $stored-options-name))
   let $base-geo-constraint := $base-options/search:constraint[@name = $geo-constraint-name]
   
@@ -51,7 +50,12 @@ declare function gsu:create-search-criteria(
 
   (: <heatmap> option :)
   let $geo-constraint := if ($use-heatmap)
-  then 
+  then
+    let $viewport := $options/viewport
+    let $lat-per-div := 180.0 div $viewport/maxLatDivs
+    let $lon-per-div := 360.0 div $viewport/maxLonDivs
+    let $lon-divs := fn:ceiling(fn:max(((($viewport/box/e + fn:abs($viewport/box/w)) div $lon-per-div), $options/defaultMinDivs)))
+    let $lat-divs := fn:ceiling(fn:max(((($viewport/box/n + fn:abs($viewport/box/s)) div $lat-per-div), $options/defaultMinDivs)))
     let $exclude-elems := (
       $base-geo-constraint-index/search:heatmap,
       $base-geo-constraint-index/search:facet-option[fn:starts-with(fn:string(.), "limit=")]
@@ -62,12 +66,12 @@ declare function gsu:create-search-criteria(
       $base-geo-constraint-index/@*,
       $base-geo-constraint-index/* except $exclude-elems,
       element search:heatmap {
-        attribute w { map:get($heatmap, "w") },
-        attribute s { map:get($heatmap, "s") },
-        attribute n { map:get($heatmap, "n") },
-        attribute e { map:get($heatmap, "e") },
-        attribute latdivs { map:get($heatmap, "latdivs") },
-        attribute londivs { map:get($heatmap, "londivs") }
+        attribute w { $viewport/box/w },
+        attribute s { $viewport/box/s },
+        attribute n { $viewport/box/n },
+        attribute e { $viewport/box/e },
+        attribute latdivs { $lat-divs },
+        attribute londivs { $lon-divs }
       },
       element search:facet-option { fn:concat("limit=", $values-limit) }
     }
@@ -159,16 +163,27 @@ declare private function gsu:make-constraint-clusters(
 ) as map:map
 {
   if ($geo-constraint-boxes)
-  then map:with($json, "pointClusters", json:to-array(
-    for $box in $geo-constraint-boxes/search:box
-    return object-node {
-      "count": number-node { $box/@count },
-      "s": number-node { $box/@s },
-      "w": number-node { $box/@w },
-      "n": number-node { $box/@n },
-      "e": number-node { $box/@e }
-    })
-  )
+  then 
+    let $point-clusters := json:array(), $points := json:array()
+    let $_ := (
+      for $box in $geo-constraint-boxes/search:box
+      return if ($box/@s eq $box/@n and $box/@w eq $box/@e)
+      then json:array-push($points, object-node {
+        "count": number-node { $box/@count },
+        "lat": number-node { $box/@n },
+        "lon": number-node { $box/@e }
+      })
+      else json:array-push($point-clusters, object-node {
+        "count": number-node { $box/@count },
+        "s": number-node { $box/@s },
+        "w": number-node { $box/@w },
+        "n": number-node { $box/@n },
+        "e": number-node { $box/@e }
+      }),
+      if (json:array-size($point-clusters) gt 0) then map:with($json, "pointClusters", $point-clusters) else (),
+      if (json:array-size($points) gt 0) then map:with($json, "points", $points) else ()
+    )
+    return $json
   else $json
 };
 
@@ -182,16 +197,18 @@ declare private function gsu:make-constraint-values(
   let $geo-constraint-values := $search/search:options/search:values[@name = $geo-constraint-values-name]
   
   return if ($geo-constraint-values)
-  then
+  then 
     let $is-longlat := fn:not(fn:empty($geo-constraint-values//search:geo-option[fn:string(.) eq "type=long-lat-point"]))
+    let $lat-index := if ($is-longlat) then 2 else 1
+    let $lon-index := if ($is-longlat) then 1 else 2
     let $values-response := search:values($geo-constraint-values-name, $search/search:options, $search/search:query)
     return map:with($json, "points", json:to-array(
       for $value in $values-response/search:distinct-value
       let $coords := fn:tokenize($value, ",")
       return object-node {
         "count": number-node { $value/@frequency },
-        "lat": number-node { $coords[if ($is-longlat) then 2 else 1] },
-        "lon": number-node { $coords[if ($is-longlat) then 1 else 2] }
+        "lat": number-node { $coords[$lat-index] },
+        "lon": number-node { $coords[$lon-index] }
       })
     )
   else $json
