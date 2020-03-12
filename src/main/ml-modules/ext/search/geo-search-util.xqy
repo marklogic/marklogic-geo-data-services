@@ -114,22 +114,12 @@ declare function gsu:get-search-results(
 {
   let $start := xs:unsignedLong($options/start)
   let $page-length := xs:unsignedLong($options/pageLength)
-  let $aggregate-values := $options/aggregateValues eq fn:true()
   let $return-facets := $options/returnFacets eq fn:true()
-  let $return-values := $options/returnValues eq fn:true()
 
   let $search-response := search:resolve($search/search:query, $search/search:options, $start, $page-length)
 
-  (: prepare results for geo constraint :)
-  let $geo-constraint-boxes := $search-response/search:boxes[@name = $geo-constraint-name]
-  let $geometry-type := "Point" (: TODO: replace with function that determines type :)
-  let $geo-constraint-values-node := json:object()
-    => map:with("type", $geometry-type)
-    => gsu:make-constraint-clusters($geo-constraint-boxes)
-    => gsu:make-constraint-values($geo-constraint-name, $search)
-
   let $excluded-response-elems := (
-    $geo-constraint-boxes, (: don't include search:boxes returned from altered constraints :)
+    $search-response/search:boxes[@name = $geo-constraint-name], (: don't include search:boxes returned from altered constraints :)
     if (fn:not($return-facets)) then $search-response/search:facet else ()
   )
   let $stripped-response := element search:response {
@@ -137,32 +127,43 @@ declare function gsu:get-search-results(
     $search-response/* except $excluded-response-elems
   }
 
-  (: TODO: this will be multiple later:)
-  let $constraint-values := map:map()
-    => map:with($geo-constraint-name, $geo-constraint-values-node)
-
   let $response := xdmp:from-json(sut:response-to-json-object($stripped-response, "all"))
-    => gsu:make-response-values($constraint-values)
+    => gsu:add-response-values($geo-constraint-name, $search, $search-response, $options)
 
   return xdmp:to-json($response)
 };
 
-declare private function gsu:make-response-values(
+declare private function gsu:add-response-values(
   $json as json:object,
-  $constraint-values as map:map
+  $geo-constraint-name as xs:string,
+  $search as element(search:search),
+  $search-response as element(search:response),
+  $options as object-node()
 ) as map:map
 {
-  if (map:count($constraint-values) gt 0)
-  then map:with($json, "values", $constraint-values)
+  let $return-values := $options/returnValues eq fn:true()
+  return if ($return-values)
+  then
+    let $geometry-type := "Point" (: TODO: replace with function that determines type :)
+    let $values-object := json:object()
+      => map:with("type", $geometry-type)
+      => gsu:add-constraint-clusters($geo-constraint-name, $search-response, $options)
+      => gsu:add-constraint-values($geo-constraint-name, $search, $options)
+    return $json
+      => map:with("values", $values-object)
   else $json
 };
 
-declare private function gsu:make-constraint-clusters(
+declare private function gsu:add-constraint-clusters(
   $json as json:object,
-  $geo-constraint-boxes as element(search:boxes)*
+  $geo-constraint-name as xs:string,
+  $search-response as element(search:response),
+  $options as object-node()
 ) as map:map
 {
-  if ($geo-constraint-boxes)
+  let $aggregate-values := $options/aggregateValues eq fn:true()
+  let $geo-constraint-boxes := $search-response/search:boxes[@name = $geo-constraint-name]
+  return if ($aggregate-values and $geo-constraint-boxes)
   then 
     let $point-clusters := json:array(), $points := json:array()
     let $_ := (
@@ -180,36 +181,40 @@ declare private function gsu:make-constraint-clusters(
         "n": number-node { $box/@n },
         "e": number-node { $box/@e }
       }),
-      if (json:array-size($point-clusters) gt 0) then map:with($json, "pointClusters", $point-clusters) else (),
-      if (json:array-size($points) gt 0) then map:with($json, "points", $points) else ()
+      map:put($json, "total", fn:sum($geo-constraint-boxes/search:box/@count)),
+      if (json:array-size($point-clusters) gt 0) then map:put($json, "pointClusters", $point-clusters) else (),
+      if (json:array-size($points) gt 0) then map:put($json, "points", $points) else ()
     )
     return $json
   else $json
 };
 
-declare private function gsu:make-constraint-values(
+declare private function gsu:add-constraint-values(
   $json as json:object,
   $geo-constraint-name as xs:string,
-  $search as element(search:search)
+  $search as element(search:search),
+  $options as object-node()
 ) as map:map
 {
   let $geo-constraint-values-name := fn:concat($VALUES_OPTION_PREFIX, $geo-constraint-name)
   let $geo-constraint-values := $search/search:options/search:values[@name = $geo-constraint-values-name]
-  
-  return if ($geo-constraint-values)
+  let $aggregate-values := $options/aggregateValues eq fn:true()
+  return if (fn:not($aggregate-values) and $geo-constraint-values)
   then 
     let $is-longlat := fn:not(fn:empty($geo-constraint-values//search:geo-option[fn:string(.) eq "type=long-lat-point"]))
     let $lat-index := if ($is-longlat) then 2 else 1
     let $lon-index := if ($is-longlat) then 1 else 2
     let $values-response := search:values($geo-constraint-values-name, $search/search:options, $search/search:query)
-    return map:with($json, "points", json:to-array(
-      for $value in $values-response/search:distinct-value
-      let $coords := fn:tokenize($value, ",")
-      return object-node {
-        "count": number-node { $value/@frequency },
-        "lat": number-node { $coords[$lat-index] },
-        "lon": number-node { $coords[$lon-index] }
-      })
+    return $json
+      => map:with("total", fn:sum($values-response/search:distinct-value/@frequency))
+      => map:with("points", json:to-array(
+        for $value in $values-response/search:distinct-value
+        let $coords := fn:tokenize($value, ",")
+        return object-node {
+          "count": number-node { $value/@frequency },
+          "lat": number-node { $coords[$lat-index] },
+          "lon": number-node { $coords[$lon-index] }
+        })
     )
   else $json
 };
