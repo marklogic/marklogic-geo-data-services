@@ -8,8 +8,9 @@ function get(context, params) {
       return gds.getServiceModel(params.id);
     }
     else {
+      const filter = params.filter || "all";
       return {
-        models: gds.getServiceModels()
+        models: gds.getServiceModels(filter)
       };
     }
   }

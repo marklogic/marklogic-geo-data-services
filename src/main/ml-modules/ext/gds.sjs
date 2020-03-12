@@ -4,13 +4,26 @@ const trace = require('/ext/trace.sjs');
 
 const SERVICE_DESCRIPTOR_COLLECTION = 'http://marklogic.com/feature-services';
 
-function getServiceModels() {
+function getServiceModels(filter) {
+  const validFilters = new Set(['all', 'search']);
+  const _filter = filter || 'all';
+  if (!validFilters.has(_filter)) { throw err.newInputError(`Invalid filter '${_filter}'.`)}
+
   let models = [];
   const docs = cts.search(cts.collectionQuery(SERVICE_DESCRIPTOR_COLLECTION)).toArray();
   docs.forEach((doc) => {
     const sd = doc.toObject();
-    if (sd.info && sd.info) {
-      models.push(sd.info);
+    if (_filter === 'search' && !sd.search) { return; }
+    if (sd.info) {
+      let model = {
+        id: sd.info.name,
+        name: sd.info.name,
+        description: sd.info.description
+      };
+      if (sd.search) {
+        model.search = Object.keys(sd.search);
+      }
+      models.push(model);
     }
   });
   trace.info(`Found ${models.length} service descriptor documents.` + 
