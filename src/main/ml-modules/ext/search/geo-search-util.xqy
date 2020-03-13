@@ -144,11 +144,12 @@ declare private function gsu:add-response-values(
   let $return-values := $options/returnValues eq fn:true()
   return if ($return-values)
   then
-    let $geometry-type := "Point" (: TODO: replace with function that determines type :)
     let $values-object := json:object()
-      => map:with("type", $geometry-type)
-      => gsu:add-constraint-clusters($geo-constraint-name, $search-response, $options)
-      => gsu:add-constraint-values($geo-constraint-name, $search, $options)
+      => map:with($geo-constraint-name, json:object()
+        => map:with("type", "Point") (: TODO: replace with function that determines type :)
+        => gsu:add-constraint-clusters($geo-constraint-name, $search-response, $options)
+        => gsu:add-constraint-values($geo-constraint-name, $search, $options)
+      )
     return $json
       => map:with("values", $values-object)
   else $json
