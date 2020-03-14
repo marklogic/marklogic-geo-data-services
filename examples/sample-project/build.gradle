@@ -63,6 +63,8 @@ task loadGDeltExampleData(type: com.marklogic.gradle.task.MlcpTask) {
   output_collections = "example-gkg,example-data"
   output_permissions = "rest-reader,read,rest-writer,update,geo-data-services-reader,read,geo-data-services-writer,update"
   output_uri_replace = ".*/data/,'/'"
+  transform_module = "/transform-gkg.sjs"
+  transform_function = "transformGKG"
 }
 
 task loadZipCodeBoundaryExampleData(type: com.marklogic.gradle.task.MlcpTask) {
