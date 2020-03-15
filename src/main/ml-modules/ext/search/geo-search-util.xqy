@@ -21,46 +21,34 @@ declare function gsu:search-to-json(
   sut:search-to-json($search)
 };
 
-declare function gsu:create-search-criteria(
-  $stored-options-name as xs:string,
-  $delta-search as element(search:search),
-  $geo-constraint-name as xs:string,
-  $options as object-node()
-) as element(search:search)
+declare function gsu:get-geometry-type(
+  $constraint as element(search:constraint)
+) as xs:string*
 {
-  (: for testing only :)
-  (:
-  let $base-options := xdmp:invoke-function(
-    function() { fn:doc("/Default/gds-sample-project/rest-api/options/example-gkg-options.xml") },
-    <options xmlns="xdmp:eval"><database>{ xdmp:modules-database() }</database></options>)//search:options
-  :)
+  let $point-types := ("geo-attr-pair", "geo-elem", "geo-elem-pair", "geo-json-property", "geo-json-property-pair", "geo-path")
+  let $region-types := ("geo-region-path")
+  return if (fn:exists($constraint/*[fn:local-name(.) = $point-types])) then "Point"
+  else if (fn:exists($constraint/*[fn:local-name(.) = $region-types])) then "Region"
+  else ()
+};
 
-  let $aggregate-values := $options/aggregateValues eq fn:true()
-  let $return-values := $options/returnValues eq fn:true()
-  let $values-limit := xs:unsignedLong($options/valuesLimit)
-  
-  let $base-options := sut:options(map:entry("options", $stored-options-name))
-  let $base-geo-constraint := $base-options/search:constraint[@name = $geo-constraint-name]
-  
-  (: Add <heatmap> or <values> to the options if we'll be returning values :)
-  let $use-aggregation := $aggregate-values (: TODO: include check geometry type; anything but points should make this false :)
-  let $use-heatmap := $return-values and $use-aggregation
-  let $use-values := $return-values and fn:not($use-aggregation)
+declare function gsu:create-heatmapped-constraint(  
+  $base-geo-constraint as element(search:constraint),
+  $options as object-node()
+) as element(search:constraint)
+{
   let $base-geo-constraint-index := $base-geo-constraint/*[1]
-
-  (: <heatmap> option :)
-  let $geo-constraint := if ($use-heatmap)
-  then
-    let $viewport := $options/viewport
-    let $lat-per-div := 180.0 div $viewport/maxLatDivs
-    let $lon-per-div := 360.0 div $viewport/maxLonDivs
-    let $lon-divs := fn:ceiling(fn:max(((($viewport/box/e + fn:abs($viewport/box/w)) div $lon-per-div), $options/defaultMinDivs)))
-    let $lat-divs := fn:ceiling(fn:max(((($viewport/box/n + fn:abs($viewport/box/s)) div $lat-per-div), $options/defaultMinDivs)))
-    let $exclude-elems := (
-      $base-geo-constraint-index/search:heatmap,
-      $base-geo-constraint-index/search:facet-option[fn:starts-with(fn:string(.), "limit=")]
-    )
-    return element search:constraint {
+  let $values-limit := xs:unsignedLong($options/valuesLimit)
+  let $viewport := $options/viewport
+  let $lat-per-div := 180.0 div $viewport/maxLatDivs
+  let $lon-per-div := 360.0 div $viewport/maxLonDivs
+  let $lon-divs := fn:ceiling(fn:max(((($viewport/box/e + fn:abs($viewport/box/w)) div $lon-per-div), $options/defaultMinDivs)))
+  let $lat-divs := fn:ceiling(fn:max(((($viewport/box/n + fn:abs($viewport/box/s)) div $lat-per-div), $options/defaultMinDivs)))
+  let $exclude-elems := (
+    $base-geo-constraint-index/search:heatmap,
+    $base-geo-constraint-index/search:facet-option[fn:starts-with(fn:string(.), "limit=")]
+  )
+  return element search:constraint {
     $base-geo-constraint/@*,
     element { fn:node-name($base-geo-constraint-index) } {
       $base-geo-constraint-index/@*,
@@ -76,24 +64,51 @@ declare function gsu:create-search-criteria(
       element search:facet-option { fn:concat("limit=", $values-limit) }
     }
   }
-  else $base-geo-constraint
+};
 
-  (: <values> option :)
-  let $values-option := if ($use-values)
-  then element search:values {
-    attribute name { fn:concat($VALUES_OPTION_PREFIX, $base-geo-constraint/@name) },
-    $base-geo-constraint-index,
-    element search:values-option { fn:concat("limit=", $values-limit) }
-  }
-  else ()
+declare function gsu:create-search-criteria(
+  $stored-options-name as xs:string,
+  $delta-search as element(search:search),
+  $geo-constraint-names as xs:string*,
+  $options as object-node()
+) as element(search:search)
+{
+  (: for testing only :)
+  (:
+  let $base-options := xdmp:invoke-function(
+    function() { fn:doc("/Default/gds-sample-project/rest-api/options/example-gkg-options.xml") },
+    <options xmlns="xdmp:eval"><database>{ xdmp:modules-database() }</database></options>)//search:options
+  :)
+
+  let $aggregate-values := $options/aggregateValues eq fn:true()
+  let $return-values := $options/returnValues eq fn:true()
+  let $values-limit := xs:unsignedLong($options/valuesLimit)
+  
+  let $base-options := sut:options(map:entry("options", $stored-options-name))
+  let $base-geo-constraints := $base-options/search:constraint[@name = $geo-constraint-names]
+
+  let $new-geo-constraints := for $base-geo-constraint in $base-geo-constraints
+    (: get values via <heatmap> :)
+    let $use-heatmap := $return-values and $aggregate-values and gsu:get-geometry-type($base-geo-constraint) eq "Point"
+    where $use-heatmap
+    return gsu:create-heatmapped-constraint($base-geo-constraint, $options)
+
+  let $values-options := for $base-geo-constraint in $base-geo-constraints
+    (: get values via <values> :)
+    let $use-values := $return-values and fn:not($base-geo-constraint/@name = $new-geo-constraints/@name)
+    let $base-geo-constraint-index := $base-geo-constraint/*[1]
+    return element search:values {
+      attribute name { fn:concat($VALUES_OPTION_PREFIX, $base-geo-constraint/@name) },
+      $base-geo-constraint-index,
+      element search:values-option { fn:concat("limit=", $values-limit) }
+    }
   
   (: create modified stored options :)
   let $new-options := element search:options {
     $base-options/@*,
-    $base-geo-constraint/preceding-sibling::*,
-    $geo-constraint,
-    $base-geo-constraint/following-sibling::*,
-    $values-option
+    $base-options/* except $base-geo-constraints,
+    $new-geo-constraints,
+    $values-options
   }
   
   (: merge with delta options :)
@@ -108,7 +123,7 @@ declare function gsu:create-search-criteria(
 
 declare function gsu:get-search-results(
   $search as element(search:search),
-  $geo-constraint-name as xs:string,
+  $geo-constraint-names as xs:string*,
   $options as object-node()
 ) as item()
 {
@@ -119,7 +134,7 @@ declare function gsu:get-search-results(
   let $search-response := search:resolve($search/search:query, $search/search:options, $start, $page-length)
 
   let $excluded-response-elems := (
-    $search-response/search:boxes[@name = $geo-constraint-name], (: don't include search:boxes returned from altered constraints :)
+    $search-response/search:boxes[@name = $geo-constraint-names], (: don't include search:boxes returned from altered constraints :)
     if (fn:not($return-facets)) then $search-response/search:facet else ()
   )
   let $stripped-response := element search:response {
@@ -128,16 +143,16 @@ declare function gsu:get-search-results(
   }
 
   let $response := xdmp:from-json(sut:response-to-json-object($stripped-response, "all"))
-    => gsu:add-response-values($geo-constraint-name, $search, $search-response, $options)
+    => gsu:add-response-values($search, $search-response, $geo-constraint-names, $options)
 
   return xdmp:to-json($response)
 };
 
 declare private function gsu:add-response-values(
   $json as json:object,
-  $geo-constraint-name as xs:string,
   $search as element(search:search),
   $search-response as element(search:response),
+  $geo-constraint-names as xs:string*,
   $options as object-node()
 ) as map:map
 {
@@ -145,13 +160,16 @@ declare private function gsu:add-response-values(
   return if ($return-values)
   then
     let $values-object := json:object()
-      => map:with($geo-constraint-name, json:object()
-        => map:with("type", "Point") (: TODO: replace with function that determines type :)
-        => gsu:add-constraint-clusters($geo-constraint-name, $search-response, $options)
-        => gsu:add-constraint-values($geo-constraint-name, $search, $options)
-      )
-    return $json
-      => map:with("values", $values-object)
+    return (
+      for $geo-constraint-name in $geo-constraint-names
+        let $constraint-values := json:object()
+          => map:with("type", gsu:get-geometry-type($search/search:options/search:constraint[@name eq $geo-constraint-name]))
+          => gsu:add-constraint-clusters($geo-constraint-name, $search-response, $options)
+          => gsu:add-constraint-values($geo-constraint-name, $search, $options)
+        return map:put($values-object, $geo-constraint-name, $constraint-values),
+      map:put($json, "values", $values-object),
+      $json
+    )
   else $json
 };
 

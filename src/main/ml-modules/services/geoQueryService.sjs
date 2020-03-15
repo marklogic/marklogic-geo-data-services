@@ -6,7 +6,7 @@
 
 const op = require('/MarkLogic/optic');
 const geojson = require('/MarkLogic/geospatial/geojson.xqy');
-const gds = require('/ext/gds.sjs');
+const sm = require('/ext/serviceModel.sjs');
 const sql2optic = require('/ext/sql/sql2optic.sjs');
 const geostats = require('/ext/geo/geostats.js');
 const geoextractor = require('/ext/geo/extractor.sjs');
@@ -73,7 +73,7 @@ function getLayerModel(serviceName, layerId) {
   xdmp.trace("KOOP-DEBUG", "Starting getLayerModel");
   // TODO: These should be cached
 
-  const serviceModel = gds.getServiceModel(serviceName);
+  const serviceModel = sm.getServiceModel(serviceName);
 
   let layer = null;
   if (serviceModel) {
@@ -131,7 +131,7 @@ function generateServiceDescriptor(serviceName) {
 
   // TODO: we should cache this instead of generating it every time
 
-  const model = gds.getServiceModel(serviceName);
+  const model = sm.getServiceModel(serviceName);
 
   const desc = {
     description: model.info.description,
