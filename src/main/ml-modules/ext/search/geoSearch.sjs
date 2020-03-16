@@ -11,7 +11,7 @@ const gsu = require('/ext/search/geo-search-util.xqy');
       "id": "service descriptor name",  // Required;
       "request": [ "results", "facets", "values", "suggest" ],  // Optional; defaults to: results, facets, values
       "aggregateValues": true, // Optional; defaults to true, only gets applied to "point" geometry
-      "valuesLimit": 1000, // Optional; defaults to 1000
+      "valuesLimit": 1000, // Optional; defaults to no limit
       "debug": false // Optional; defaults to false
     },
     "search": {
@@ -60,7 +60,7 @@ function resolveInput(input)
       id: id,
       request: request = [ 'results', 'facets', 'values' ],
       aggregateValues: aggregateValues = true,
-      valuesLimit: valuesLimit = 1000,
+      valuesLimit: valuesLimit = 0,
       debug: debug = false,
       ...paramsRest // pass along any extra properties
     },

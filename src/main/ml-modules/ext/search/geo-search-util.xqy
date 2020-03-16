@@ -61,7 +61,7 @@ declare function gsu:create-heatmapped-constraint(
         attribute latdivs { $lat-divs },
         attribute londivs { $lon-divs }
       },
-      element search:facet-option { fn:concat("limit=", $values-limit) }
+      if ($values-limit gt 0) then element search:facet-option { fn:concat("limit=", $values-limit) } else ()
     }
   }
 };
@@ -100,7 +100,7 @@ declare function gsu:create-search-criteria(
     return element search:values {
       attribute name { fn:concat($VALUES_OPTION_PREFIX, $base-geo-constraint/@name) },
       $base-geo-constraint-index,
-      element search:values-option { fn:concat("limit=", $values-limit) }
+      if ($values-limit gt 0) then element search:values-option { fn:concat("limit=", $values-limit) } else ()
     }
   
   (: create modified stored options :)
