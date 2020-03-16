@@ -13,29 +13,29 @@ function getModelCache() {
   return seq.toObject();
 }
 
+function setModelCache(models, replace = false) {
+  const modelCache = replace ? {} : xdmp.getServerField(MODEL_CACHE_NAME);
+  models.forEach(m => modelCache[m.info.name] = m);
+  xdmp.setServerField(MODEL_CACHE_NAME, Sequence.from(modelCache));
+}
+
 function getServiceModelFromCache(serviceId) {
   const modelCache = getModelCache();
   return modelCache[serviceId];
 }
 
-function cacheServiceModel(serviceId, model) {
-  const modelCache = getModelCache();
-  modelCache[serviceId] = model;
-  xdmp.setServerField(MODEL_CACHE_NAME, Sequence.from(modelCache));
-  return model;
-}
-
 function getServiceModelFromDb(serviceId, cacheAfterLoad = true) {
-  const model = fn.head(
+  const modelDoc = fn.head(
     cts.search(cts.andQuery([
       cts.collectionQuery(SERVICE_DESCRIPTOR_COLLECTION),
       cts.jsonPropertyValueQuery("name", serviceId, ["exact"])
     ]))
   );
-  if (cacheAfterLoad) {
-    cacheServiceModel(serviceId, model);
+  const model = modelDoc ? modelDoc.toObject() : null;
+  if (cacheAfterLoad && model) {
+    setModelCache([ model ]);
   }
-  return model ? model.toObject() : null;
+  return model;
 }
 
 function getServiceModels(filter) {
@@ -43,21 +43,15 @@ function getServiceModels(filter) {
   const _filter = filter || 'all';
   if (!validFilters.has(_filter)) { throw err.newInputError(`Invalid filter '${_filter}'.`)}
 
-  let modelCache = {};
-  let models = [];
-  const docs = cts.search(cts.collectionQuery(SERVICE_DESCRIPTOR_COLLECTION)).toArray();
-  docs.forEach((doc) => {
-    const model = doc.toObject();
-    modelCache[model.info.name] = model;
-    if (_filter === 'search' && !model.search) { return; }
-    models.push(model);
-  });
-  xdmp.setServerField(MODEL_CACHE_NAME, Sequence.from(modelCache));
+  // (re)select all descriptors and cache them
+  const allModels = cts.search(cts.collectionQuery(SERVICE_DESCRIPTOR_COLLECTION))
+    .toArray()
+    .map(doc => doc.toObject());
+  setModelCache(allModels, true);
 
-  trace.info(`Found ${models.length} service descriptor documents.` + 
-    (docs.length != models.length ? `${docs.length - models.length} documents ignored from collection.` : ''), 
-    "getServiceModels");
-  return models;
+  trace.info(`Found a total of ${allModels.length} service descriptor documents.`, "getServiceModels");
+
+  return _filter === 'search' ? allModels.filter(m => m.search) : allModels;
 }
 
 function getServiceModel(serviceId) {
@@ -70,5 +64,5 @@ function getServiceModel(serviceId) {
   }
 }
 
-exports.getServiceModels = getServiceModels;
-exports.getServiceModel = getServiceModel;
+exports.getServiceModels = module.amp(getServiceModels);
+exports.getServiceModel = module.amp(getServiceModel);
