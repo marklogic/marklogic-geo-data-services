@@ -93,6 +93,7 @@ function resolveInput(input)
   
   // fill these out if null
   newInput.params.request = newInput.params.request || [];
+  newInput.search.qtext = newInput.search.qtext || "";
   newInput.search.facets = newInput.search.facets || {};
   newInput.search.queries = newInput.search.queries || [];
   
@@ -109,18 +110,30 @@ function getGeoConstraintNames(model) {
     .filter((constraint, idx, self) => self.indexOf(constraint) === idx); // only unique constraint names
 }
 
+function createQueryText(input) {
+  const terms = new Set();
+  if (input.search.qtext.trim()) {
+    terms.add(input.search.qtext);
+  }
+  if (input.search.facets) {
+    for (let [key, values] of Object.entries(input.search.facets)) {
+      const name = key.trim();
+      if (Array.isArray(values) && name) { 
+        values.forEach(v => {
+          const value = v.trim();
+          if (value) {
+            terms.add(`${name}:\"${value}\"`);
+          }
+        }); 
+      }
+    }
+  }
+  return terms.size > 0 ? fn.stringJoin(Sequence.from(terms), " ") : "";
+}
+
 function createSearchCriteria(model, input, returnResults, returnFacets, returnValues, debugMode) {
   // collect all structured queries to be injected into search:search
   const structuredQueries = [];
-  
-  // add qtext
-  if (input.search.qtext) {
-    structuredQueries.push({
-      "term-query": {
-        "text": [ input.search.qtext ]
-      }
-    });
-  }
   
   // constrain search against current viewport
   const geoConstraintNames = getGeoConstraintNames(model);
@@ -159,6 +172,7 @@ function createSearchCriteria(model, input, returnResults, returnFacets, returnV
     deltaSearch, 
     geoConstraintNames,
     {
+      fullQueryText: createQueryText(input),
       returnValues: returnValues,
       aggregateValues: aggregateValues,
       valuesLimit: input.params.valuesLimit,

@@ -83,10 +83,12 @@ declare function gsu:create-search-criteria(
   let $aggregate-values := $options/aggregateValues eq fn:true()
   let $return-values := $options/returnValues eq fn:true()
   let $values-limit := xs:unsignedLong($options/valuesLimit)
-  
   let $base-options := sut:options(map:entry("options", $stored-options-name))
-  let $base-geo-constraints := $base-options/search:constraint[@name = $geo-constraint-names]
+  
+  (: qtext to structured queries :)
+  let $qtext-queries := search:parse($options/fullQueryText, $base-options, "search:query")
 
+  let $base-geo-constraints := $base-options/search:constraint[@name = $geo-constraint-names]
   let $new-geo-constraints := for $base-geo-constraint in $base-geo-constraints
     (: get values via <heatmap> :)
     let $use-heatmap := $return-values and $aggregate-values and gsu:get-geometry-type($base-geo-constraint) eq "Point"
@@ -116,7 +118,10 @@ declare function gsu:create-search-criteria(
   
   (: create search:search :)
   return element search:search {
-    $delta-search/search:query,
+    element search:query {
+      $qtext-queries/*,
+      $delta-search/search:query/*
+    },
     $merged-options
   }
 };
