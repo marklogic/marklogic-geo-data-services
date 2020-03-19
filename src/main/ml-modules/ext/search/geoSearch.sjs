@@ -19,8 +19,8 @@ const gsu = require('/ext/search/geo-search-util.xqy');
       "start": 1,            // Optional; defaults to 1
       "pageLength": 10,      // Optional; defaults to 10
       "facets": {            // Optional; defaults to empty object {}
-        "constrantName1": [ 'value1', 'value2', ... ] // Optional; defaults to empty array []
-        "constrantName2": [ 'value3', 'value4', ... ]
+        "constrantName1": [ 'value' ] // Optional; defaults to empty array []
+        "constrantName2": [ 'value' ]
       }
       "viewport": {
         "box": { // Optional; defaults to cover entire coordinate system (90, -90, -180, 180)
