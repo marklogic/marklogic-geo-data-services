@@ -11,13 +11,18 @@ function get(context, params) {
       const filter = params.filter || "all";
       let models = {};
       sm.getServiceModels(filter).forEach(model => {
-        models[model.info.name] = {
+        const geoConstraints = model.layers.filter(l => l.search && l.search.geoConstraint).map(l => l.search.geoConstraint);
+        let obj = {
           id: model.info.name,
           name: model.info.name,
           description: model.info.description,
-          canSearch: model.hasOwnProperty("search"),
+          canSearch: model.hasOwnProperty("search") && geoConstraints.length > 0,
           totalLayers: model.layers ? model.layers.length : 0
         };
+        if (obj.canSearch) {
+          obj.valueNames = geoConstraints;
+        }
+        models[model.info.name] = obj;
       });
       return {
         models: models
