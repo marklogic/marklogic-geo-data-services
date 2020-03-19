@@ -205,7 +205,7 @@ declare private function gsu:add-constraint-clusters(
         "n": number-node { $box/@n },
         "e": number-node { $box/@e }
       }),
-      map:put($json, "total", fn:sum($geo-constraint-boxes/search:box/@count)),
+      map:put($json, "total", fn:count($geo-constraint-boxes/search:box)),
       if (json:array-size($point-clusters) gt 0) then map:put($json, "pointClusters", $point-clusters) else (),
       if (json:array-size($points) gt 0) then map:put($json, "points", $points) else ()
     )
@@ -230,7 +230,7 @@ declare private function gsu:add-constraint-values(
     let $lon-index := if ($is-longlat) then 1 else 2
     let $values-response := search:values($geo-constraint-values-name, $search/search:options, $search/search:query)
     return $json
-      => map:with("total", fn:sum($values-response/search:distinct-value/@frequency))
+      => map:with("total", fn:count($values-response/search:distinct-value))
       => map:with("points", json:to-array(
         for $value in $values-response/search:distinct-value
         let $coords := fn:tokenize($value, ",")
