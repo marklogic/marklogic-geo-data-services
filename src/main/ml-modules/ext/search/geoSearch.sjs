@@ -12,6 +12,7 @@ const gsu = require('/ext/search/geo-search-util.xqy');
       "request": [ "results", "facets", "values", "suggest" ],  // Optional; defaults to: results, facets, values
       "aggregateValues": true, // Optional; defaults to true, only gets applied to "point" geometry
       "valuesLimit": 1000, // Optional; defaults to no limit
+      "suggestLimit": 10, // Optional; defaults to 10
       "debug": false // Optional; defaults to false
     },
     "search": {
@@ -32,7 +33,7 @@ const gsu = require('/ext/search/geo-search-util.xqy');
         "maxLatDivs": 100, // Optional; defaults to 100
         "maxLonDivs": 100, // Optional; defaults to 100
       },
-      "queries": {} // Optional; additional structured queries, defaults to empty object {}
+      "queries": [] // Optional; additional structured queries, defaults to empty []
     }    
   }
 */
@@ -46,8 +47,6 @@ const DEFAULT_MAX_DIVS = 100;
  */
 function resolveInput(input)
 {
-  const DEFAULT_MAX_DIVS = 100;
-  
   // default input object structure
   var _input = {};
   _input.params = input.params || {};
@@ -61,6 +60,7 @@ function resolveInput(input)
       request: request = [ 'results', 'facets', 'values' ],
       aggregateValues: aggregateValues = true,
       valuesLimit: valuesLimit = 0,
+      suggestLimit: suggestLimit = 10,
       debug: debug = false,
       ...paramsRest // pass along any extra properties
     },
@@ -86,7 +86,7 @@ function resolveInput(input)
   
   // create new input object
   let newInput = {
-    params: { id, request, aggregateValues, valuesLimit, debug, ...paramsRest },
+    params: { id, request, aggregateValues, valuesLimit, suggestLimit, debug, ...paramsRest },
     search: { qtext, start, pageLength, facets, viewport: { box, maxLatDivs, maxLonDivs }, queries, ...searchRest },
     ...inputRest
   };
@@ -131,7 +131,7 @@ function createQueryText(input) {
   return terms.size > 0 ? fn.stringJoin(Sequence.from(terms), " ") : "";
 }
 
-function createSearchCriteria(model, input, returnResults, returnFacets, returnValues, debugMode) {
+function createSearchCriteria(model, input, returnResults, returnFacets, returnValues, debug) {
   // collect all structured queries to be injected into search:search
   const structuredQueries = [];
   
@@ -148,7 +148,7 @@ function createSearchCriteria(model, input, returnResults, returnFacets, returnV
   );
 
   // add any additional queries provided in input (request)
-  structuredQueries.push(input.search.queries);
+  structuredQueries.push(...input.search.queries);
   
   // create delta search:search
   const aggregateValues = input.params.aggregateValues;
@@ -167,7 +167,7 @@ function createSearchCriteria(model, input, returnResults, returnFacets, returnV
   };
   const deltaSearch = gsu.searchFromJson(deltaSearchObj);
 
-  return fn.head(gsu.createSearchCriteria(
+  const criteria = fn.head(gsu.createSearchCriteria(
     model.search.options,
     deltaSearch, 
     geoConstraintNames,
@@ -180,12 +180,12 @@ function createSearchCriteria(model, input, returnResults, returnFacets, returnV
       defaultMinDivs: DEFAULT_MIN_DIVS,
       defaultMaxDivs: DEFAULT_MAX_DIVS
     }));
+
+  if (debug) { debug.criteria = gsu.searchToJson(criteria); } // expose search:search
+  return criteria;
 }
 
-function getSearchResults(model, input, returnResults, returnFacets, returnValues, debugMode) {
-  // get search:search
-  const criteria = createSearchCriteria(model, input, returnResults, returnFacets, returnValues);
-  
+function getSearchResults(model, input, criteria, returnResults, returnFacets, returnValues, debug) {
   // get results
   const geoConstraintNames = getGeoConstraintNames(model);
   const response = fn.head(gsu.getSearchResults(criteria, geoConstraintNames, {
@@ -196,19 +196,12 @@ function getSearchResults(model, input, returnResults, returnFacets, returnValue
     returnFacets: returnFacets,
     returnValues: returnValues
   })).toObject();
-
-  if (debugMode) {
-    response.debug = {
-      ...response.debug,
-      criteria: gsu.searchToJson(criteria) // expose search:search
-    };
-  }
   
   return response;
 }
 
-function getSearchSuggestions(model, input, debugMode) {
-
+function getSearchSuggestions(input, criteria) {
+  return gsu.getSearchSuggestions(criteria, input.search.qtext, input.params.suggestLimit).toArray();
 }
 
 function geoSearch(input) {
@@ -227,15 +220,20 @@ function geoSearch(input) {
   const returnSearch = returnResults || returnFacets || returnValues;
   const debugMode = _input.params.debug === true;
   
+  let debug = debugMode ? {} : null;
+
+  // get search:search
+  const criteria = createSearchCriteria(model, _input, returnResults, returnFacets, returnValues, debug);
+  
   // response follows the structure returned by search:search 
-  let response = returnSearch ? getSearchResults(model, _input, returnResults, returnFacets, returnValues, debugMode) : {};
+  let response = returnSearch ? getSearchResults(model, _input, criteria, returnResults, returnFacets, returnValues, debug) : {};
 
   // add search suggestions if requested
-  if (returnSuggest) { response.suggestions = getSearchSuggestions(model, _input, debugMode); }
+  if (returnSuggest) { response.suggestions = getSearchSuggestions(_input, criteria); }
 
   if (debugMode) {
     response.debug = {
-      ...response.debug,
+      ...debug,
       resolvedInput: _input
     };
   }

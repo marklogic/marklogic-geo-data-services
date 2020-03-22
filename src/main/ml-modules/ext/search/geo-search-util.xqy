@@ -126,6 +126,21 @@ declare function gsu:create-search-criteria(
   }
 };
 
+declare function gsu:get-search-suggestions(
+  $search as element(search:search),
+  $qtext as xs:string,
+  $limit as xs:unsignedInt?
+) as xs:string*
+{
+  search:suggest(
+    $qtext, 
+    $search/search:options, 
+    ($limit, 10)[1],
+    (),
+    (),
+    $search/search:query)
+};
+
 declare function gsu:get-search-results(
   $search as element(search:search),
   $geo-constraint-names as xs:string*,
