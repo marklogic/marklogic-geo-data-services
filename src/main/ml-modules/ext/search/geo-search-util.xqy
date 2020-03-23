@@ -21,6 +21,28 @@ declare function gsu:search-to-json(
   sut:search-to-json($search)
 };
 
+declare function gsu:get-search-options(
+  $options-name as xs:string
+) as element(search:options)
+{
+  sut:options(map:entry("options", $options-name))
+};
+
+declare function gsu:get-search-options-constraints(
+  $options-name as xs:string
+) as object-node()*
+{
+  for $constraint in gsu:get-search-options($options-name)/search:constraint
+    let $json := json:object()
+    let $name := $constraint/@name
+    let $description := $constraint/search:annotation/description
+    return (
+      map:put($json, "name", fn:string($name)),
+      if (fn:empty($description)) then () else map:put($json, "description", fn:string($description)),
+      xdmp:to-json($json)/object-node()
+    )
+};
+
 declare function gsu:get-geometry-type(
   $constraint as element(search:constraint)
 ) as xs:string*
@@ -83,7 +105,7 @@ declare function gsu:create-search-criteria(
   let $aggregate-values := $options/aggregateValues eq fn:true()
   let $return-values := $options/returnValues eq fn:true()
   let $values-limit := xs:unsignedLong($options/valuesLimit)
-  let $base-options := sut:options(map:entry("options", $stored-options-name))
+  let $base-options := gsu:get-search-options($stored-options-name)
   
   (: qtext to structured queries :)
   let $qtext-queries := search:parse($options/fullQueryText, $base-options, "search:query")

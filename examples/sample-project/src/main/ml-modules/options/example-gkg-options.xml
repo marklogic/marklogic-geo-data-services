@@ -93,6 +93,7 @@
       <bucket name="level4" lt="5" ge="4">World City</bucket>
       <bucket name="level5" lt="6" ge="5">World State</bucket>
     </range>
+    <annotation><description xmlns="">Level of geographical resolution</description></annotation>
   </constraint>
 
   <constraint name="Language">

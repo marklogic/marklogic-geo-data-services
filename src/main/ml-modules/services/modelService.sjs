@@ -1,4 +1,5 @@
 'use strict';
+const gsu = require('/ext/search/geo-search-util.xqy');
 const sm = require('/ext/serviceModel.sjs');
 const err = require('/ext/error.sjs');
 
@@ -22,6 +23,9 @@ function get(context, params) {
         if (obj.canSearch) {
           obj.valueNames = geoConstraints;
           obj.docTransform = model.search.docTransform || "default-geo-data-services-transform";
+
+          const allConstraints = gsu.getSearchOptionsConstraints(model.search.options).toArray();
+          obj.constraints = allConstraints.filter(o => !geoConstraints.includes(o.name)); // don't include geo constraints
         }
         models[model.info.name] = obj;
       });
