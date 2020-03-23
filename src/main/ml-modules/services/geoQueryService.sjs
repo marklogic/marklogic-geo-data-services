@@ -949,7 +949,9 @@ function getObjects(req, exportPlan=false) {
   }
 
   const returnGeometry = (query.returnGeometry || outFields[0] === "*") ? true : false;
-  const geometrySource = layerModel.geometry;  // Should this be geometry or geometrySource?  TJD--"geometry"
+  // Should this be geometry or geometrySource?  TJD--"geometry"
+  // This should be geometry.source.  MDC
+  const geometrySource = (layerModel && layerModel.geometry && layerModel.geometry.source) ? layerModel.geometry.source : null;
   xdmp.trace("KOOP-DEBUG", "geometrySource = " + geometrySource);
   xdmp.trace("KOOP-DEBUG", "returnGeometry = " + returnGeometry);
 
@@ -1046,10 +1048,11 @@ function getObjects(req, exportPlan=false) {
       const view = primaryDataSource.view;
       columnDefs = generateFieldDescriptors(layerModel, schema);
 
-
-      const fragmentIdColumn = primaryDataSource.fragmentIdColumn ? primaryDataSource.fragmentIdColumn : "DocId";
-      xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + fragmentIdColumn);
-      let viewPlan = op.fromView(schema, view, null, fragmentIdColumn);
+      let viewPlan = op.fromView(schema,view,"");
+      if (primaryDataSource.fragmentIdColumn) {
+        xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + primaryDataSource.fragmentIdColumn);
+        viewPlan = op.fromView(schema, view, null, primaryDataSource.fragmentIdColumn);
+      }
       xdmp.trace("KOOP-DEBUG", "Pipeline[source === view] Plan:");
       xdmp.trace("KOOP-DEBUG", viewPlan);
       xdmp.trace("KOOP-DEBUG", "Pipeline[source === view] boundingQuery:");
@@ -1103,9 +1106,14 @@ function getObjects(req, exportPlan=false) {
 
   // TODO: see if there is any benefit to pushing the column select earlier in the pipeline
   // transform the rows into GeoJSON
-  pipeline = pipeline.select(getSelectDef(outFields, columnDefs, returnGeometry, extractor, exportPlan, layerModel.idField));
+  if (layerModel.idField) {
+    xdmp.trace("KOOP-DEBUG", "LayerID Field: " + layerModel.idField);
+    pipeline = pipeline.select(getSelectDef(outFields, columnDefs, returnGeometry, extractor, exportPlan, layerModel.idField));
+  } else {
+    pipeline = pipeline.select(getSelectDef(outFields, columnDefs, returnGeometry, extractor, exportPlan));
+  }
 
-
+  xdmp.trace("KOOP-DEBUG", "**** " + JSON.stringify(pipeline.export()))
   if (exportPlan) {
     let exported = pipeline.export();
     xdmp.trace("KOOP-DEBUG", "exported pipeline: ");
@@ -1228,9 +1236,13 @@ function getPlanForDataSource(dataSource) {
     }
     return plan;
   } else if (dataSource.source === "view") {
-    let fragmentIdColumn = dataSource.fragmentIdColumn ? dataSource.fragmentIdColumn : "DocId";
-    xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + fragmentIdColumn);
-    return op.fromView(dataSource.schema, dataSource.view, null, fragmentIdColumn)
+    if (dataSource.fragmentIdColumn) {
+      xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + dataSource.fragmentIdColumn);
+      return op.fromView(dataSource.schema, dataSource.view, null, dataSource.fragmentIdColumn)
+    } else {
+      xdmp.trace("KOOP-DEBUG", "No Fragment ID Defined");
+      return op.fromView(dataSource.schema, dataSource.view, "");
+    }
   } else {
     returnErrToClient(500, 'Error handling request', "dataSource objects must specify a valid source ('view' or 'sparql')");
   }
@@ -1297,9 +1309,11 @@ function aggregate(req) {
       const schema = primaryDataSource.schema;
       const view = primaryDataSource.view;
 
-      const fragmentIdColumn = primaryDataSource.fragmentIdColumn ? primaryDataSource.fragmentIdColumn : "DocId";
-      xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + fragmentIdColumn);
-      let viewPlan = op.fromView(schema, view, null, fragmentIdColumn);
+      let viewPlan = op.fromView(schema,view,"","DocId");
+      if (primaryDataSource.fragmentIdColumn) {
+        xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + primaryDataSource.fragmentIdColumn);
+        viewPlan = op.fromView(schema, view, null, primaryDataSource.fragmentIdColumn);
+      }
       pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
     } else if (primaryDataSource.source === "sparql") {
       let viewPlan = getPlanForDataSource(primaryDataSource);
@@ -1355,7 +1369,6 @@ function getSelectDef(outFields, columnDefs, returnGeometry = false, geometryExt
     xdmp.trace("KOOP-DEBUG", geometryExtractor.getSelector());
     defs.push(geometryExtractor.getSelector());
   }
-
   return defs;
 }
 
@@ -1426,6 +1439,7 @@ function getPropDefs(outFields, columnDefs) {
       } else {
         colName = col.name;
       }
+      xdmp.trace("KOOP-DEBUG","***** ColName: " + colName )
       props.push(
         op.prop(
           colName,
@@ -1433,7 +1447,7 @@ function getPropDefs(outFields, columnDefs) {
             op.when(op.isDefined(op.col(colName)), op.col(colName)), op.jsonNull()
           )
         )
-      );
+      )
     });
   } else {
     outFields.forEach((f) => {
