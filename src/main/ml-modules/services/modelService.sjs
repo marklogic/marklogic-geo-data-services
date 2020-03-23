@@ -21,6 +21,7 @@ function get(context, params) {
         };
         if (obj.canSearch) {
           obj.valueNames = geoConstraints;
+          obj.docTransform = model.search.docTransform || "default-geo-data-services-transform";
         }
         models[model.info.name] = obj;
       });
