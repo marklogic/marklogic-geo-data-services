@@ -1048,11 +1048,12 @@ function getObjects(req, exportPlan=false) {
       const view = primaryDataSource.view;
       columnDefs = generateFieldDescriptors(layerModel, schema);
 
-      let viewPlan = op.fromView(schema,view,"");
-      if (primaryDataSource.fragmentIdColumn) {
-        xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + primaryDataSource.fragmentIdColumn);
-        viewPlan = op.fromView(schema, view, null, primaryDataSource.fragmentIdColumn);
-      }
+      // Dynamically choosing prefix depending on existance of fragment ID column.
+      const prefix = primaryDataSource.fragmentIdColumn ? null : "";
+      const fragmentIdColumn = primaryDataSource.fragmentIdColumn ? primaryDataSource.fragmentIdColumn : "DocId";
+      xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + fragmentIdColumn);
+      let viewPlan = op.fromView(schema, view, prefix, fragmentIdColumn);
+
       xdmp.trace("KOOP-DEBUG", "Pipeline[source === view] Plan:");
       xdmp.trace("KOOP-DEBUG", viewPlan);
       xdmp.trace("KOOP-DEBUG", "Pipeline[source === view] boundingQuery:");
@@ -1308,11 +1309,12 @@ function aggregate(req) {
       const schema = primaryDataSource.schema;
       const view = primaryDataSource.view;
 
-      let viewPlan = op.fromView(schema,view,"","DocId");
-      if (primaryDataSource.fragmentIdColumn) {
-        xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + primaryDataSource.fragmentIdColumn);
-        viewPlan = op.fromView(schema, view, null, primaryDataSource.fragmentIdColumn);
-      }
+      // Dynamically choosing prefix depending on existance of fragment ID column.
+      const prefix = primaryDataSource.fragmentIdColumn ? null : "";
+      const fragmentIdColumn = primaryDataSource.fragmentIdColumn ? primaryDataSource.fragmentIdColumn : "DocId";
+      xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + fragmentIdColumn);
+      let viewPlan = op.fromView(schema, view, prefix, fragmentIdColumn);
+
       pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
     } else if (primaryDataSource.source === "sparql") {
       let viewPlan = getPlanForDataSource(primaryDataSource);
