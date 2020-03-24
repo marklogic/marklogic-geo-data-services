@@ -1113,7 +1113,6 @@ function getObjects(req, exportPlan=false) {
     pipeline = pipeline.select(getSelectDef(outFields, columnDefs, returnGeometry, extractor, exportPlan));
   }
 
-  xdmp.trace("KOOP-DEBUG", "**** " + JSON.stringify(pipeline.export()))
   if (exportPlan) {
     let exported = pipeline.export();
     xdmp.trace("KOOP-DEBUG", "exported pipeline: ");
