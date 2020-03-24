@@ -5,7 +5,7 @@ const trace = require('/ext/trace.sjs');
 const gsu = require('/ext/search/geo-search-util.xqy');
 
 /*
-  Sample payload:
+  POST payload: running search
   {
     "params": {
       "id": "service descriptor name",  // Required;
@@ -14,7 +14,7 @@ const gsu = require('/ext/search/geo-search-util.xqy');
       "valuesLimit": 1000, // Optional; defaults to no limit
       "suggestLimit": 10, // Optional; defaults to 10
       "debug": false // Optional; defaults to false
-    },
+    }
     "search": {
       "qtext": "query text", // Optional; defaults to empty string
       "start": 1,            // Optional; defaults to 1
@@ -242,3 +242,6 @@ function geoSearch(input) {
 }
 
 exports.geoSearch = geoSearch;
+exports.createSearchCriteria = createSearchCriteria;
+exports.getGeoConstraintNames = getGeoConstraintNames;
+exports.resolveInput = resolveInput;
