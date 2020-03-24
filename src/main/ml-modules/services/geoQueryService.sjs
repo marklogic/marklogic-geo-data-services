@@ -97,7 +97,7 @@ function getGeoServerLayerNames() {
 
 function getGeoServerLayerSchema(layerName) {
   
-  let model = getServiceModel(null, layerName);
+  let model = gds.getServiceModel(null, layerName);
   let serviceDesc = transformServiceModelToDescriptor(model, model.info.name);
 
 
@@ -114,33 +114,6 @@ function getGeoServerLayerSchema(layerName) {
     throw "No layer info found for: " + layerName;
   }
   return layer;
-}
-
-function getServiceModel(serviceName, geoServerLayerName = null) {
-  xdmp.trace("KOOP-DEBUG", "Starting getServiceModel");
-  // TODO: These should be cached
-
-  const collection = "http://marklogic.com/feature-services";
-
-  let propertyNames = ["name"];
-  if (geoServerLayerName) propertyNames.push("geoServerLayerName");
-
-  xdmp.trace("KOOP-DEBUG", "Searching for Service Model: " + serviceName + ", geoServerLayerName: " + geoServerLayerName);
-  
-  let model = fn.head(
-    cts.search(cts.andQuery([
-      cts.collectionQuery(collection),
-      cts.jsonPropertyValueQuery(propertyNames, [serviceName, geoServerLayerName])
-    ]))
-  );
-
-  if (model) {
-    xdmp.trace("KOOP-DEBUG", "Found service: " + serviceName);
-    return model.toObject();
-  } else {
-    xdmp.trace("KOOP-DEBUG", "No service info found for: " + serviceName);
-    throw "No service info found for: " + serviceName;
-  }
 }
 
 function getLayerModel(serviceName, layerId) {
@@ -205,7 +178,7 @@ function generateServiceDescriptor(serviceName) {
 
   // TODO: we should cache this instead of generating it every time
 
-  const model = getServiceModel(serviceName);
+  const model = gds.getServiceModel(serviceName);
   let desc = transformServiceModelToDescriptor(model, serviceName);
   return desc;
 }
