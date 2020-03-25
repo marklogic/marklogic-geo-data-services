@@ -13,18 +13,18 @@ function getModelCache() {
   return seq.toObject();
 }
 
-function setModelCache(models, replace = false) {
+function setModelCache(modelInfos, replace = false) {
   const modelCache = replace ? {} : xdmp.getServerField(MODEL_CACHE_NAME);
-  models.forEach(m => modelCache[m.info.name] = m);
+  modelInfos.forEach(modelInfo => modelCache[modelInfo.serviceId] = modelInfo);
   xdmp.setServerField(MODEL_CACHE_NAME, Sequence.from(modelCache));
 }
 
-function getServiceModelFromCache(serviceId) {
+function getServiceModelInfoFromCache(serviceId) {
   const modelCache = getModelCache();
   return modelCache[serviceId];
 }
 
-function getServiceModelFromDb(serviceId, cacheAfterLoad = true) {
+function getServiceModelInfoFromDb(serviceId, cacheAfterLoad = true) {
   const modelDoc = fn.head(
     cts.search(cts.andQuery([
       cts.collectionQuery(SERVICE_DESCRIPTOR_COLLECTION),
@@ -32,10 +32,15 @@ function getServiceModelFromDb(serviceId, cacheAfterLoad = true) {
     ]))
   );
   const model = modelDoc ? modelDoc.toObject() : null;
+  const modelInfo = {
+    serviceId: model.info.name,
+    model: model,
+    uri: fn.baseUri(modelDoc)
+  };
   if (cacheAfterLoad && model) {
-    setModelCache([ model ]);
+    setModelCache([modelInfo]);
   }
-  return model;
+  return modelInfo;
 }
 
 function getServiceModels(filter) {
@@ -44,25 +49,58 @@ function getServiceModels(filter) {
   if (!validFilters.has(_filter)) { throw err.newInputError(`Invalid filter '${_filter}'.`)}
 
   // (re)select all descriptors and cache them
-  const allModels = cts.search(cts.collectionQuery(SERVICE_DESCRIPTOR_COLLECTION))
+  const allModelInfos = cts.search(cts.collectionQuery(SERVICE_DESCRIPTOR_COLLECTION))
     .toArray()
-    .map(doc => doc.toObject());
-  setModelCache(allModels, true);
+    .map(doc => { 
+      const model = doc.toObject();
+      return {
+        serviceId: model.info.name,
+        model: model,
+        uri: fn.baseUri(doc)
+      };
+    });
+  setModelCache(allModelInfos, true);
 
-  trace.info(`Found a total of ${allModels.length} service descriptor documents.`, "getServiceModels");
-
+  trace.info(`Found a total of ${allModelInfos.length} service descriptor documents.`, "getServiceModels");
+  const allModels = allModelInfos.map(m => m.model);
   return _filter === 'search' ? allModels.filter(m => m.search) : allModels;
 }
 
-function getServiceModel(serviceId) {
-  const model = getServiceModelFromCache(serviceId) || getServiceModelFromDb(serviceId) || null;
-  if (model) {
-    return model;
+function getServiceModelInfo(serviceId) {
+  const modelInfo = getServiceModelInfoFromCache(serviceId) || getServiceModelInfoFromDb(serviceId) || null;
+  if (modelInfo) {
+    return modelInfo;
   } else {
     trace.info(`Unable to find service descriptor document for service ${serviceId}.`, "getServiceModel");
     throw err.newNotFoundError(`Service descriptor ${serviceId} not found.`);
   }
 }
 
+function getServiceModel(serviceId) {
+  return getServiceModelInfo(serviceId).model;
+}
+
+function saveServiceModel(serviceId, model, uri) {
+  declareUpdate();
+  // TODO: add validate model before saving
+  const _uri = uri || getServiceModelInfo(serviceId).uri;
+  trace.info(`Updating service descriptor document \"${serviceId}\" at \"${_uri}\".`, "saveServiceModel");
+
+  const options = {
+    collections: xdmp.documentGetCollections(_uri),
+    permissions: xdmp.documentGetPermissions(_uri),
+    metadata: xdmp.documentGetMetadata(_uri),
+    quality: xdmp.documentGetQuality(_uri)
+  };
+  xdmp.documentInsert(_uri, model, options);
+
+  setModelCache([{
+    serviceId: serviceId,
+    model: model,
+    uri: uri
+  }]);
+}
+
 exports.getServiceModels = module.amp(getServiceModels);
 exports.getServiceModel = module.amp(getServiceModel);
+exports.saveServiceModel = module.amp(saveServiceModel);

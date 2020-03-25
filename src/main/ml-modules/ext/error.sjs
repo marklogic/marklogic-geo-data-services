@@ -1,4 +1,5 @@
 'use strict';
+const trace = require('trace.sjs');
 
 const STATUS_CODE_400 = "Bad Request";
 const STATUS_CODE_404 = "Not Found";
@@ -56,6 +57,7 @@ function handleError(err) {
   else {
     errData = [ 500, STATUS_CODE_500, JSON.stringify(err) ];
   }
+  trace.error(err.stack || JSON.stringify(errData));
   fn.error(null, "RESTAPI-SRVEXERR", Sequence.from(errData));
 }
 

@@ -5,8 +5,6 @@ const trace = require('/ext/trace.sjs');
 const gs = require('/ext/search/geoSearch.sjs');
 const searchLib = require('/MarkLogic/appservices/search/search.xqy');
 
-declareUpdate();
-
 /*
   PUT payload: saving search into a layer
   {
@@ -28,7 +26,7 @@ function geoSearchSave(input) {
   if (!input.search) { throw err.newInputError("missing section 'search'."); }
 
   let model = sm.getServiceModel(input.params.id);
-  if (!(model.search && model.search.options)) { throw err.newInputError(`The service descriptor \"${model.info.name}" is not configured for use with geoSearchService: missing search options.`); }
+  if (!model.search || !model.search.options) { throw err.newInputError(`The service descriptor \"${model.info.name}" is not configured for use with geoSearchService: missing search options.`); }
   const modelGeoConstraints = gs.getGeoConstraintNames(model);
   if (modelGeoConstraints.length <= 0) { trace.warn(`The service descriptor \"${model.info.name}\" has no layers with a geoConstraint.`, "geoSearchSave"); }
 
@@ -40,7 +38,7 @@ function geoSearchSave(input) {
     search: input.search
   });
   const criteria = gs.createSearchCriteria(model, _input, false, false, false, debug); // get search:search
-  const ctsQuery = searchLib.parse(input.search.qtext, criteria.xpath('./search:options'), 'cts:query'); // get cts:query
+  const ctsQuery = searchLib.parse(_input.search.qtext, criteria.xpath('./search:options'), 'cts:query'); // get cts:query
   
   const targetLayers = [];
   if (input.params.layers) { 
@@ -83,8 +81,7 @@ function geoSearchSave(input) {
     }
   }
 
-  // xdmp.documentInsert() here
-  // update cache here
+  sm.saveServiceModel(input.params.id, model);
 
   const response = {
     id: input.params.id,
