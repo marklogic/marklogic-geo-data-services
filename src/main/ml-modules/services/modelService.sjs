@@ -12,20 +12,31 @@ function get(context, params) {
       const filter = params.filter || "all";
       let models = {};
       sm.getServiceModels(filter).forEach(model => {
-        const geoConstraints = model.layers.filter(l => l.search && l.search.geoConstraint).map(l => l.search.geoConstraint);
+        let geoConstraints = [];
         let obj = {
           id: model.info.name,
           name: model.info.name,
           description: model.info.description,
-          canSearch: model.hasOwnProperty("search") && geoConstraints.length > 0,
-          totalLayers: model.layers ? model.layers.length : 0
+          layers: model.layers.map(layer => {
+            let lobj = {
+              id: layer.id,
+              name: layer.name,
+              description: layer.description,
+              geometryType: layer.geometryType,
+            };
+            if (layer.search && layer.search.geoConstraint) {
+              lobj.geoConstraint = layer.search.geoConstraint;
+              geoConstraints.push(layer.search.geoConstraint);
+            }
+            return lobj;
+          })
         };
-        if (obj.canSearch) {
-          obj.valueNames = geoConstraints;
-          obj.docTransform = model.search.docTransform || "default-geo-data-services-transform";
-
+        if (geoConstraints.length > 0) {
           const allConstraints = gsu.getSearchOptionsConstraints(model.search.options).toArray().map(o => o.toObject());
-          obj.constraints = allConstraints.filter(o => !geoConstraints.includes(o.name)); // don't include geo constraints
+          obj.search = {
+            docTransform: model.search.docTransform || "default-geo-data-services-transform",
+            constraints: allConstraints.filter(o => !geoConstraints.includes(o.name)) // don't include geo constraints
+          }
         }
         models[model.info.name] = obj;
       });
