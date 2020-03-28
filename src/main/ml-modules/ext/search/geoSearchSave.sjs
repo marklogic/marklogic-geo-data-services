@@ -29,7 +29,7 @@ function geoSearchSave(input) {
   let model = sm.getServiceModel(input.params.id);
   if (!model.search || !model.search.options) { throw err.newInputError(`The service descriptor "${model.info.name}" is not configured for use with geoSearchService: missing search options.`); }
   const modelGeoConstraints = gs.getGeoConstraintNames(model);
-  if (modelGeoConstraints.length <= 0) { trace.warn(`The service descriptor "${model.info.name}" has no layers with a geoConstraint.`, "geoSearchSave"); }
+  if (modelGeoConstraints.length <= 0) { throw err.newInputError(`The service descriptor "${model.info.name}" has no layers with a geoConstraint.`); }
 
   const debugMode = input.params.debug === true;
   let debug = debugMode ? {} : null;
@@ -52,12 +52,9 @@ function geoSearchSave(input) {
   const now = fn.currentDateTime();
   const user = xdmp.getCurrentUser();
   const mutatedLayerIds = [];
-  const responseWarnings = [];
   for (var targetLayer of targetLayers) {
     if (!modelGeoConstraints.includes(targetLayer.geoConstraint)) {
-      trace.warn(`The specified geo constraint "${targetLayer.geoConstraint}" doesn't exist in the search options "${model.search.options}".`, "geoSearchSave");
-      responseWarnings.push(`The geo constraint "${targetLayer.geoConstraint}" doesn't exist.`);
-      continue;
+      throw err.newInputError(`The specified geo constraint "${targetLayer.geoConstraint}" doesn't exist in the search options "${model.search.options}".`);
     }
 
     // replace
@@ -73,8 +70,7 @@ function geoSearchSave(input) {
         mutatedLayerIds.push(layer.id);
       }
       else { 
-        trace.warn(`Unable to locate layer with ID = ${targetLayer.layerId} in service descriptor "${model.info.name}" for saving.`, "geoSearchSave");
-        responseWarnings.push(`Layer with ID of ${targetLayer.layerId} could not be found.`);
+        throw err.newInputError(`Unable to locate layer with ID = ${targetLayer.layerId} in service descriptor "${model.info.name}" for saving.`);
       }
     }
     // append
@@ -94,13 +90,14 @@ function geoSearchSave(input) {
         model.layers.push(newLayer);
         mutatedLayerIds.push(newLayer.id);
       }
-      else { trace.warn(`Unable to find source layer with geoConstraint "${targetLayer.geoConstraint}" in service descriptor "${model.info.name}".`, "geoSearchSave"); }
+      else { 
+        throw err.newInternalError(`Unable to find source layer with geoConstraint "${targetLayer.geoConstraint}" in service descriptor "${model.info.name}".`); 
+      }
     }
   }
 
   if (mutatedLayerIds.length <= 0) {
-    trace.warn(`No layers were modified or added for service descriptor "${model.info.name}".`, "geoSearchSave");
-    responseWarnings.push("No layers were modified or added.");
+    throw err.newInternalError(`No layers were modified or added for service descriptor "${model.info.name}".`)
   }
   else {
     sm.saveServiceModel(input.params.id, model);
@@ -111,7 +108,6 @@ function geoSearchSave(input) {
     feature: input.params.id,
     layerIds: mutatedLayerIds
   };
-  if (responseWarnings.length > 0) { response.warnings = responseWarnings; }
 
   if (debugMode) {
     response.debug = {
