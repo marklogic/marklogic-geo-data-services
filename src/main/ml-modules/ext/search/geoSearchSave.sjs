@@ -11,8 +11,10 @@ const searchLib = require('/MarkLogic/appservices/search/search.xqy');
     "params": {
       "id": "service descriptor name", // required; source descriptor model
       "layers": { 
-        "Name of geo constraint": layer number or "new" to append
-        "Name of geo constraint": layer number or "new" to append
+        "source layer ID": {
+          "layerId": 5, // required; layer ID to replace or "new" to append, can be the same as source layer ID
+          "name": "layer name", // optional; defaults to name of source layer
+          "description": "layer description" // optional; defaults to description of source layer
       },
       "debug": false // optional
     },
@@ -28,8 +30,6 @@ function geoSearchSave(input) {
 
   let model = sm.getServiceModel(input.params.id);
   if (!model.search || !model.search.options) { throw err.newInputError(`The service descriptor "${model.info.name}" is not configured for use with geoSearchService: missing search options.`); }
-  const modelGeoConstraints = gs.getGeoConstraintNames(model);
-  if (modelGeoConstraints.length <= 0) { throw err.newInputError(`The service descriptor "${model.info.name}" has no layers with a geoConstraint.`); }
 
   const debugMode = input.params.debug === true;
   let debug = debugMode ? {} : null;
@@ -41,62 +41,63 @@ function geoSearchSave(input) {
   const criteria = gs.createSearchCriteria(model, _input, false, false, false, debug); // get search:search
   const ctsQuery = searchLib.parse(_input.search.qtext, criteria.xpath('./search:options'), 'cts:query'); // get cts:query
   
-  const targetLayers = [];
+  const targets = [];
   if (input.params.layers) {
-    Object.keys(input.params.layers).forEach((propName) => {
-      const targetLayerId = input.params.layers[propName];
-      targetLayers.push({ geoConstraint: propName, layerId: targetLayerId === "new" ? -1 : targetLayerId });
+    Object.keys(input.params.layers).forEach(lid => {
+      const sourceLayerId = parseInt(lid);
+      if (isNaN(sourceLayerId)) { 
+        throw err.newInputError(`One or more source layer IDs is invalid.`);
+      }
+      targets.push({ 
+        sourceLayerId: sourceLayerId,
+        ...input.params.layers[lid]
+      });
     }); 
   }
 
   const now = fn.currentDateTime();
   const user = xdmp.getCurrentUser();
-  const mutatedLayerIds = [];
-  for (var targetLayer of targetLayers) {
-    if (!modelGeoConstraints.includes(targetLayer.geoConstraint)) {
-      throw err.newInputError(`The specified geo constraint "${targetLayer.geoConstraint}" doesn't exist in the search options "${model.search.options}".`);
-    }
+  const mutatedLayers = [];
+  for (var target of targets) {
+    const sourceLayer = model.layers.find(l => l.id === target.sourceLayerId);
+    if (!sourceLayer) { throw err.newInputError(`Source layer ${target.sourceLayerId} not found.`); }
+    if (!sourceLayer.search || (sourceLayer.search && !sourceLayer.search.geoConstraint)) { throw err.newInputError(`Source layer ${target.sourceLayerId} is not configured for use with geoSearchService; missing search section.`); }
 
     // replace
-    if (targetLayer.layerId >= 0) {
-      let layer = model.layers.find(l => l.id === targetLayer.layerId);
-      if (layer) {
-        layer.search = {
-          geoConstraint: targetLayer.geoConstraint,
-          lastModifiedOn: now,
-          lastModifiedBy: user
-        };
-        layer.boundingQuery = ctsQuery;
-        mutatedLayerIds.push(layer.id);
-      }
-      else { 
-        throw err.newInputError(`Unable to locate layer with ID = ${targetLayer.layerId} in service descriptor "${model.info.name}" for saving.`);
-      }
+    if (target.layerId >= 0) {
+      const targetLayer = model.layers.find(l => l.id === target.layerId);
+      if (!targetLayer) { throw err.newInputError(`Target layer ${target.layerId} not found.`); }
+      if (targetLayer.readOnly) { throw err.newInputError(`Target layer ${target.layerId} is read-only and cannot be replaced.`); }
+
+      targetLayer.name = target.name || targetLayer.name;
+      targetLayer.description = target.description || targetLayer.description;
+      targetLayer.search = targetLayer.search || Object.assign({}, sourceLayer.search);
+      targetLayer.search.sourcedFrom = sourceLayer.id;
+      targetLayer.search.lastModifiedOn = now;
+      targetLayer.search.lastModifiedBy = user;
+      targetLayer.boundingQuery = ctsQuery;
+      mutatedLayers.push(target);
     }
     // append
-    else { 
+    else if (target.layerId === "new") { 
       const nextLayerId = fn.max(Sequence.from(model.layers.map(l => l.id))) + 1;
-      const sourceLayer = model.layers.find(l => l.search && l.search.geoConstraint === targetLayer.geoConstraint);
-      if (sourceLayer) {
-        let newLayer = Object.assign({}, sourceLayer); // shallow copy should suffice
-        newLayer.id = nextLayerId;
-        newLayer.boundingQuery = ctsQuery;
-        newLayer.search = {
-          geoConstraint: targetLayer.geoConstraint,
-          sourceLayerId: sourceLayer.id,
-          lastModifiedOn: now,
-          lastModifiedBy: user
-        };
-        model.layers.push(newLayer);
-        mutatedLayerIds.push(newLayer.id);
-      }
-      else { 
-        throw err.newInternalError(`Unable to find source layer with geoConstraint "${targetLayer.geoConstraint}" in service descriptor "${model.info.name}".`); 
-      }
+      let newLayer = Object.assign({}, sourceLayer); // shallow copy should suffice
+      newLayer.id = nextLayerId;
+      newLayer.boundingQuery = ctsQuery;
+      newLayer.search.sourcedFrom = sourceLayer.id;
+      newLayer.search.lastModifiedOn = now;
+      newLayer.search.lastModifiedBy = user;
+      model.layers.push(newLayer);
+
+      target.layerId = nextLayerId;
+      mutatedLayers.push(target);
+    }
+    else {
+      throw err.newInputError(`The source layer ${target.sourceLayerId} has no specified target layer to be added or replaced.`);
     }
   }
 
-  if (mutatedLayerIds.length <= 0) {
+  if (mutatedLayers.length <= 0) {
     throw err.newInternalError(`No layers were modified or added for service descriptor "${model.info.name}".`)
   }
   else {
@@ -105,8 +106,10 @@ function geoSearchSave(input) {
 
   const response = {
     id: input.params.id,
-    feature: input.params.id,
-    layerIds: mutatedLayerIds
+    layers: mutatedLayers.reduce((result, layer) => { 
+      result[layer.sourceLayerId.toString()] = layer.layerId;
+      return result;
+    }, {})
   };
 
   if (debugMode) {

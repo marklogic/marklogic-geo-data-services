@@ -37,7 +37,8 @@
       },
       "search": {
         "geoConstraint": "Location"
-      }
+      },
+      "readOnly": true
     },
     {
       "id": 1,
