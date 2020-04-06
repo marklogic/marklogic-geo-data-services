@@ -11,6 +11,8 @@ const sql2optic = require('/ext/sql/sql2optic.sjs');
 const geostats = require('/ext/geo/geostats.js');
 const geoextractor = require('/ext/geo/extractor.sjs');
 const qd = require('/ext/query/ctsQueryDeserialize.sjs').qd;
+const sq = require("/ext/query/structured-query-utils.xqy");
+const search = require("/MarkLogic/appservices/search/search.xqy");
 
 const MAX_RECORD_COUNT = 5000;
 
@@ -23,6 +25,7 @@ function post(context, params, input) {
     xdmp.trace("GDS-DEBUG", JSON.stringify(geoJson));
     return {
       "$version": require('/ext/version.sjs').version,
+      "$timestamp": new Date().toISOString(),
       ...geoJson
     };
   } catch (err) {
@@ -551,9 +554,50 @@ function parseWhere(query) {
 
   const where = query.where;
   let whereQuery = null;
+  if (where && typeof where !== 'string' && where.search) {
+    // where contains Combined Query
+    let combined = where.search;
+    // convert to xml
+    let combinedElem = sq.fromJson(where);
+
+    // get options from request body, or fall back to named options
+    let options;
+    if (combined.options) {
+      // get options from body, but as xml
+      options = fn.head(combinedElem.xpath('*:options'));
+    } else {
+       try {
+         // get saved search options
+         options = sq.namedOptions(query.optionsName || 'all');
+       } catch (ignore) {
+         // fall back to empty options
+         options = fn.head(xdmp.unquote('<options xmlns="http://marklogic.com/appservices/search"/>')).root
+       }
+    }
+
+    // include any additional query
+    let queries = options.xpath('*:additional-query/*/cts:query(.)').toArray();
+
+    // include qtext
+    if (combined.qtext) {
+      queries.push(
+        search.parse(combined.qtext, options)
+      );
+    }
+
+    // include structured query
+    queries.push(
+      sq.toCts(combinedElem, options)
+    );
+
+    // combine all into large andQuery
+    whereQuery = cts.andQuery(queries);
+
+  } else
   if (!where || where === "1=1" || where === "1 = 1" || where === "") {
     //whereQuery = cts.trueQuery();
     whereQuery = op.eq(1, 1)
+
   } else {
     whereQuery = sql2optic.where(where);
   }
@@ -1040,12 +1084,12 @@ function getObjects(req, exportPlan=false) {
     return exported;
   }
   else {
-    // GeoJSON features must always have a "geometry" property; for cases where the feature has no 
+    // GeoJSON features must always have a "geometry" property; for cases where the feature has no
     // associated geometry data or "returnGeometry" is set to false, set "geometry" property to null.
     // See GeoJSON RFC: https://tools.ietf.org/html/rfc7946#section-3.2
     pipeline = pipeline.map((feature) => {
       var outFeature = feature;
-      
+
       if (returnGeometry && extractor.hasExtractFunction()) {
         xdmp.trace("GDS-DEBUG", "Getting Extractor function");
         outFeature = extractor.extract(feature);
