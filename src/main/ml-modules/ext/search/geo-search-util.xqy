@@ -114,12 +114,11 @@ declare function gsu:create-search-criteria(
   let $new-geo-constraints := for $base-geo-constraint in $base-geo-constraints
     (: get values via <heatmap> :)
     let $use-heatmap := $return-values and $aggregate-values and gsu:get-geometry-type($base-geo-constraint) eq "Point"
-    where $use-heatmap
-    return gsu:create-heatmapped-constraint($base-geo-constraint, $options)
+    return if ($use-heatmap) then gsu:create-heatmapped-constraint($base-geo-constraint, $options) else $base-geo-constraint
 
   let $values-options := for $base-geo-constraint in $base-geo-constraints
     (: get values via <values> :)
-    let $use-values := $return-values and fn:not($base-geo-constraint/@name = $new-geo-constraints/@name)
+    let $use-values := $return-values and (fn:not($aggregate-values) or ($aggregate-values and gsu:get-geometry-type($base-geo-constraint) ne "Point"))
     let $base-geo-constraint-index := $base-geo-constraint/*[1]
     return element search:values {
       attribute name { fn:concat($VALUES_OPTION_PREFIX, $base-geo-constraint/@name) },
