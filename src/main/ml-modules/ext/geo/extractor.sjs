@@ -611,6 +611,7 @@ function CustomExtractor(layer) {
           const lonLat = (extracted.pointFormat === "long-lat-point");
           if (Array.isArray(points)){
             for (const point of points) {
+              if (point === null) { continue; }
               const parts = point.valueOf().trim().split(/\s*,\s*|\s+/, 2);
               if (lonLat) {
                 resultGeometry.coordinates.push([ Number(parts[0]), Number(parts[1])]);
@@ -640,8 +641,10 @@ function CustomExtractor(layer) {
           }
         }
       }
-      if (resultGeometry.coordinates.length === 1 && resultGeometry.type === "Point") {
-        resultGeometry.coordinates = resultGeometry.coordinates[0]; // remove multi-dimensional array
+      if (resultGeometry.type === "Point") {
+        if (resultGeometry.coordinates.length >= 1) {
+          resultGeometry.coordinates = resultGeometry.coordinates[0]; // remove multi-dimensional array / there should only be 1 coordinate for "Point"
+        }
       }
       result.geometry = resultGeometry;
     }
