@@ -7,4 +7,5 @@
     </div>
   </description>
   <method name="POST"/>
+  <method name="PUT"/>
 </metadata>

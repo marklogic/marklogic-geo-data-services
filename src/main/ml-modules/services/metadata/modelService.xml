@@ -5,5 +5,5 @@
       Used to retrieve available service descriptors and their content.
     </div>
   </description>
-  <method name="POST"/>
+  <method name="GET"/>
 </metadata>
