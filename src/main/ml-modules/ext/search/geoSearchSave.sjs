@@ -83,10 +83,12 @@ function geoSearchSave(input) {
       const nextLayerId = fn.max(Sequence.from(model.layers.map(l => l.id))) + 1;
       let newLayer = Object.assign({}, sourceLayer); // shallow copy should suffice
       newLayer.id = nextLayerId;
-      newLayer.boundingQuery = ctsQuery;
+      newLayer.name = target.name || newLayer.name;
+      newLayer.description = target.description || newLayer.description;
       newLayer.search.sourcedFrom = sourceLayer.id;
       newLayer.search.lastModifiedOn = now;
       newLayer.search.lastModifiedBy = user;
+      newLayer.boundingQuery = ctsQuery;
       model.layers.push(newLayer);
 
       target.layerId = nextLayerId;
@@ -107,7 +109,10 @@ function geoSearchSave(input) {
   const response = {
     id: input.params.id,
     layers: mutatedLayers.reduce((result, layer) => { 
-      result[layer.sourceLayerId.toString()] = layer.layerId;
+      result[layer.sourceLayerId.toString()] = { 
+        layerId: layer.layerId,
+        name: layer.name
+      };
       return result;
     }, {})
   };
