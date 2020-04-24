@@ -13,6 +13,7 @@ const geoextractor = require('/ext/geo/extractor.sjs');
 const qd = require('/ext/query/ctsQueryDeserialize.sjs').qd;
 
 const MAX_RECORD_COUNT = 5000;
+const defaultDocId = "DocId" + xdmp.request();
 
 function post(context, params, input) {
   xdmp.trace("KOOP-DEBUG", "Starting post");
@@ -1000,8 +1001,8 @@ function getObjects(req, exportPlan=false) {
     const view = layerModel.view;
     columnDefs = generateFieldDescriptors(layerModel, schema);
 
-    xdmp.trace("KOOP-DEBUG", "getObjects(): layerModel.dataSources === undefined, using DocId as fragment id column");
-    let viewPlan = op.fromView(schema, view, "", "DocId");
+    xdmp.trace("KOOP-DEBUG", "getObjects(): layerModel.dataSources === undefined, using " + defaultDocId + " as fragment id column");
+    let viewPlan = op.fromView(schema, view, "", defaultDocId);
     xdmp.trace("KOOP-DEBUG", "Pipeline[dataSources === undefined] Plan:");
     xdmp.trace("KOOP-DEBUG", viewPlan);
     xdmp.trace("KOOP-DEBUG", "Pipeline[dataSources === undefined] boundingQuery:");
@@ -1023,7 +1024,7 @@ function getObjects(req, exportPlan=false) {
 
       // Dynamically choosing prefix depending on existance of fragment ID column.
       const prefix = primaryDataSource.fragmentIdColumn ? null : "";
-      const fragmentIdColumn = primaryDataSource.fragmentIdColumn ? primaryDataSource.fragmentIdColumn : "DocId";
+      const fragmentIdColumn = primaryDataSource.fragmentIdColumn ? primaryDataSource.fragmentIdColumn : defaultDocId;
       xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + fragmentIdColumn);
       let viewPlan = op.fromView(schema, view, prefix, fragmentIdColumn);
 
@@ -1070,7 +1071,7 @@ function getObjects(req, exportPlan=false) {
     if (!geometrySource || geometrySource.xpath) {
 
       xdmp.trace("KOOP-DEBUG", "GeometrySource is null or is XPath");
-      pipeline = pipeline.joinDoc(op.col('doc'), op.fragmentIdCol('DocId'))
+      pipeline = pipeline.joinDoc(op.col('doc'), op.fragmentIdCol(defaultDocId))
     }
   }
 
@@ -1272,8 +1273,8 @@ function aggregate(req) {
     const schema = layerModel.schema;
     const view = layerModel.view;
 
-    xdmp.trace("KOOP-DEBUG", "layerModel.dataSources === undefined, using DocId as fragment id column");
-    let viewPlan = op.fromView(schema, view, "", "DocId");
+    xdmp.trace("KOOP-DEBUG", "layerModel.dataSources === undefined, using " + defaultDocId + " as fragment id column");
+    let viewPlan = op.fromView(schema, view, "", defaultDocId);
 
     pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
   } else {
@@ -1284,7 +1285,7 @@ function aggregate(req) {
 
       // Dynamically choosing prefix depending on existance of fragment ID column.
       const prefix = primaryDataSource.fragmentIdColumn ? null : "";
-      const fragmentIdColumn = primaryDataSource.fragmentIdColumn ? primaryDataSource.fragmentIdColumn : "DocId";
+      const fragmentIdColumn = primaryDataSource.fragmentIdColumn ? primaryDataSource.fragmentIdColumn : defaultDocId;
       xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + fragmentIdColumn);
       let viewPlan = op.fromView(schema, view, prefix, fragmentIdColumn);
 
