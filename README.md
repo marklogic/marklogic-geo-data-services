@@ -134,7 +134,7 @@ curl --anyauth -u user:password -X POST 'localhost:8095/v1/resources/geoQuerySer
 
 ### Querying features within a region
 
-You can instruct `geoQueryService` to retrieve features within a specific region or bounding box.  The example below queries for the first 10 features within a bounding box (approximately the continental United States):
+You can instruct `geoQueryService` to retrieve features within a specific region or bounding box.  The example below queries for the first 10 features within a bounding box (approximately the continental United States), where `coordinates` is an array of *longitude* and *latitude* pairs, e.g. *X*, *Y* coordinates.
 
 ```js
 {
@@ -147,10 +147,10 @@ You can instruct `geoQueryService` to retrieve features within a specific region
         "type": "Polygon",
         "coordinates": [
           [
-          	[-126.966248, 23.944841],
-          	[-66.321716,  23.944841],
-          	[-66.321716,  49.424374],
-          	[-126.966248, 49.424374]
+            [-126.966248, 23.944841],
+            [-66.321716,  23.944841],
+            [-66.321716,  49.424374],
+            [-126.966248, 49.424374]
           ]
         ]
       }
