@@ -166,23 +166,26 @@ function getRegionQuery(regions, operation, layerModel) {
   xdmp.trace("GDS-DEBUG", "Using the following extractor: getRegionQuery");
   xdmp.trace("GDS-DEBUG", "In getRegionQuery");
   const geometry = layerModel.geometry;
-  let regionPaths;
+  let regionPaths = [];
 
   xdmp.trace("GDS-DEBUG", "geometry");
   xdmp.trace("GDS-DEBUG", geometry);
 
-  if (geometry.indexType && geometry.indexType === "region" && geometry.indexes) {
-    xdmp.trace("GDS-DEBUG", "In getRegionQuery if");
-    // get the path references from the indexes configured for the layer
-    // placeholder for this code
-    // the conditions will probably need to be updated
-  } else {
-    xdmp.trace("GDS-DEBUG", "In getRegionQuery else");
-    regionPaths = [
-      cts.geospatialRegionPathReference( '/envelope/ctsRegion', ['coordinate-system=wgs84'] )
-    ];
+  if (geometry.indexes && geometry.indexes.regionPath && Array.isArray(geometry.indexes.regionPath)) {
+    regionPaths = geometry.indexes.regionPath.map(indexRef => {
+      let options = [];
+      if (indexRef.coordinateSystem) { options.push('coordinate-system=' + indexRef.coordinateSystem); }
+      if (indexRef.precision) { options.push('precision=' + indexRef.precision); }
+      if (indexRef.unchecked) { options.push('unchecked'); }
+      return cts.geospatialRegionPathReference(indexRef.path, options, indexRef.namespaces);
+    });
   }
 
+  if (regionPaths.length === 0) {
+    xdmp.trace("GDS-DEBUG", "No region path indexes declared in service descriptor.");
+    return null;
+  }
+  
   const regionOptions = [];
   xdmp.trace("GDS-DEBUG", "regionPaths:");
   xdmp.trace("GDS-DEBUG", regionPaths);

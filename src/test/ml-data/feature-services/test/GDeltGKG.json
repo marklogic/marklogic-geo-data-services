@@ -137,6 +137,21 @@
           "weight": 0
         }
       },
+      "geometry": {
+        "format": "geojson",
+        "coordinateSystem": "wgs84",
+        "source": {
+          "xpath": "//geometry"
+        },
+        "indexes": {
+          "regionPath": [
+            {
+              "path": "/envelope/ctsRegion",
+              "coordinateSystem": "wgs84"
+            }
+          ]
+        }
+      },
       "readOnly": true
     },
     {

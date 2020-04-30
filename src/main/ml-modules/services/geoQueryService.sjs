@@ -581,15 +581,19 @@ function parseGeometry(query, layerModel) {
       regions = geojson.parseGeojson(adjustEsriPolygon(query.extension.geometry));
     }
 
-    const operation = parseRegionOperation(query);
-
     const pointQuery = geoextractor.getPointQuery(regions, layerModel);
-
+    const operation = parseRegionOperation(query);
     const regionQuery = geoextractor.getRegionQuery(regions, operation, layerModel);
-    xdmp.trace("GDS-DEBUG", "RegionQuery: " + JSON.stringify(regionQuery));
 
-    geoQuery = cts.orQuery([ pointQuery, regionQuery ]);
-  } else {
+    let queries = [];
+    if (pointQuery) { queries.push(pointQuery); }
+    if (regionQuery) { queries.push(regionQuery); }
+    if (queries.length > 0) {
+      geoQuery = cts.orQuery(queries);
+    }
+  }
+
+  if (!geoQuery) {
     // just match everything
     geoQuery = cts.trueQuery();
   }
