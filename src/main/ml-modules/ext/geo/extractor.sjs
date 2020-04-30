@@ -583,11 +583,19 @@ function CustomExtractor(layer) {
     if (result.geometry) {
       xdmp.trace("KOOP-DEBUG", "Processing result.geometry");
       xdmp.trace("KOOP-DEBUG", result.geometry);
-      xdmp.trace("KOOP-DEBUG", "Processing result.geometry.toArray()");
-      xdmp.trace("KOOP-DEBUG", result.geometry.toArray());
+      
+      let geometryToProcess = result.geometry.toObject();
+      if (Array.isArray(geometryToProcess)) {
+        xdmp.trace("KOOP-DEBUG", "result.geometry is an array, expecting to extract multiple points");
+      }
+      else {
+        xdmp.trace("KOOP-DEBUG", "result.geometry is an object, expecting to extract single point");
+        geometryToProcess = [ geometryToProcess ];
+        resultGeometry.type = "Point";
+      }
 
-      for (const geometry of result.geometry.toArray()) {
-        const extracted = geometry.toObject();
+      for (const geometry of geometryToProcess) {
+        const extracted = geometry instanceof Node ? geometry.toObject() : geometry;
 
         xdmp.trace("KOOP-DEBUG", "Extracted geometry");
         xdmp.trace("KOOP-DEBUG", extracted);
@@ -603,6 +611,7 @@ function CustomExtractor(layer) {
           const lonLat = (extracted.pointFormat === "long-lat-point");
           if (Array.isArray(points)){
             for (const point of points) {
+              if (point === null) { continue; }
               const parts = point.valueOf().trim().split(/\s*,\s*|\s+/, 2);
               if (lonLat) {
                 resultGeometry.coordinates.push([ Number(parts[0]), Number(parts[1])]);
@@ -630,6 +639,11 @@ function CustomExtractor(layer) {
               resultGeometry.coordinates.push([ Number(lons[index]), Number(lat) ]);
             });
           }
+        }
+      }
+      if (resultGeometry.type === "Point") {
+        if (resultGeometry.coordinates.length >= 1) {
+          resultGeometry.coordinates = resultGeometry.coordinates[0]; // remove multi-dimensional array / there should only be 1 coordinate for "Point"
         }
       }
       result.geometry = resultGeometry;
