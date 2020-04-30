@@ -8,7 +8,7 @@
     {
       "id": 0,
       "name" : "All",
-      "decription": "All US ZIP code boundaries",
+      "description": "All US ZIP code boundaries",
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "displayField": "zipcode",
