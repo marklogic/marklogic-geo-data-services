@@ -132,6 +132,39 @@ You can make this request using tools like **curl** or **Postman**.  The followi
 curl --anyauth -u user:password -X POST 'localhost:8095/v1/resources/geoQueryService' --header 'Content-Type: application/json' --data-raw '{"params":{"id":"GDeltExample","layer":"0","method":"query"},"query":{"returnGeometry":true,"resultRecordCount":10}}'
 ```
 
+### Querying features within a region
+
+You can instruct `geoQueryService` to retrieve features within a specific region or bounding box.  The example below queries for the first 10 features within a bounding box (approximately the continental United States):
+
+```js
+{
+  "params": { "id": "GDeltExample", "layer": "0", "method": "query" },
+  "query": {
+    "returnGeometry": true,
+    "resultRecordCount": 10,
+    "extension": {
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+          	[-126.966248, 23.944841],
+          	[-66.321716,  23.944841],
+          	[-66.321716,  49.424374],
+          	[-126.966248, 49.424374]
+          ]
+        ]
+      }
+    }
+  }
+}
+```
+
+Using **curl**:
+
+```bash
+curl --anyauth -u user:password -X POST 'localhost:8095/v1/resources/geoQueryService' --header 'Content-Type: application/json' --data-raw '{"params":{"id":"GDeltExample","layer":"0","method":"query"},"query":{"returnGeometry":true,"resultRecordCount":10,"extension":{"geometry":{"type":"Polygon","coordinates":[[[-126.966248,23.944841],[-66.321716,23.944841],[-66.321716,49.424374],[-126.966248,49.424374]]]}}}}'
+```
+
 ## Contributing
 Geo Data Services is an open source project and we welcome contributions to improve it. Please submit issues for bugs or enhancement requests and, even better, fork it and submit PRs with changes!
 
