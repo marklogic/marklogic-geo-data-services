@@ -266,15 +266,14 @@ function generateFieldDescriptorsFromViewDef(viewDef, dataSource) {
 
 function createFieldDescriptor(fieldName, scalarType, alias, includeFields) {
   xdmp.trace("KOOP-DEBUG", "Starting createFieldDescriptor");
-  const fieldDescriptor = {
+  let fieldDescriptor = {
     name : fieldName,
-    type : getFieldType(scalarType),
-    alias : alias
+    type : getFieldType(scalarType)
   };
   if (fieldDescriptor.type === "String") {
     fieldDescriptor.length = 1024;
   }
-  if (alias !== undefined) {
+  if (alias) {
     fieldDescriptor.alias = alias;
   }
   return fieldDescriptor;
