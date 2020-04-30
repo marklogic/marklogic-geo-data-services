@@ -21,7 +21,10 @@ function post(context, params, input) {
   try {
     const geoJson =  getData(fn.head(xdmp.fromJSON(input)));
     xdmp.trace("GDS-DEBUG", JSON.stringify(geoJson));
-    return geoJson;
+    return {
+      "$version": require('/ext/version.sjs').version,
+      ...geoJson
+    };
   } catch (err) {
     console.log(err.stack);
     console.trace(err);

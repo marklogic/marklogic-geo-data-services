@@ -1,0 +1,1 @@
+exports.version = "1.1.2"; // TODO: replace with "%%version%%" token, but resolve how to render this before packaging it as a JAR

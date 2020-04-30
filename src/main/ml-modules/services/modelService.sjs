@@ -2,11 +2,15 @@
 const gsu = require('/ext/search/geo-search-util.xqy');
 const sm = require('/ext/serviceModel.sjs');
 const err = require('/ext/error.sjs');
+const gdsVersion = require('/ext/version.sjs').version;
 
 function get(context, params) {
   try {
     if (params.id) {
-      return sm.getServiceModel(params.id);
+      return {
+        "$version": gdsVersion,
+        ...sm.getServiceModel(params.id)
+      };
     }
     else {
       const filter = params.filter || "all";
@@ -41,6 +45,7 @@ function get(context, params) {
         models[model.info.name] = obj;
       });
       return {
+        "$version": gdsVersion,
         models: models
       };
     }
