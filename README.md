@@ -94,6 +94,44 @@ Time aware feature layers allow users to query specific time periods. ArcGIS sup
 ## Deploy your application
 Once you have added the required configuration to your build file, configured your service descriptors, TDE templates and indexes, use the `./gradlew mlDeploy` task in your project to deploy your application with MarkLogic Geo Data Services.
 
+### Check service descriptors
+
+Do a `GET` request to `v1/resources/modelService` to quickly check if your service descriptors can be properly read.  
+
+Assuming you deployed the sample project, the following link will return a JSON object containing its list of service descriptors and some other general information:
+
+<http://localhost:8095/v1/resources/modelService>
+
+To check for a specific service descriptor, add an `rs:id` query parameter with the service descriptor *name* as its value.  The following link returns the entire *GDeltExample* service descriptor:
+
+<http://localhost:8095/v1/resources/modelService?rs:id=GDeltExample>
+
+### Check if you can retrieve data
+
+Do a `POST` request to `v1/resources/geoQueryService` to quickly check if the service is retrieving your data.
+
+You can use a simple request body like this:
+
+```js
+{
+  "params": { "id": "GDeltExample", "layer": "0", "method": "query" },
+  "query": { "returnGeometry": true, "resultRecordCount": 10 }
+}
+```
+
+This instructs `geoQueryService` to do the following:
+
+- Use layer `0` of the service descriptor `GDeltExample`.
+- We want to query for features - `"method": "query"`
+- We want the feature geometry included in the response - `"returnGeometry": true`
+- We only want the first 10 features - `"resultRecordCount": 10`
+
+You can make this request using tools like **curl** or **Postman**.  The following **curl** is an example of making this request against the sample project.  Remember to replace `user` and `password` with your MarkLogic credentials.
+
+```bash
+curl --anyauth -u user:password -X POST 'localhost:8095/v1/resources/geoQueryService' --header 'Content-Type: application/json' --data-raw '{"params":{"id":"GDeltExample","layer":"0","method":"query"},"query":{"returnGeometry":true,"resultRecordCount":10}}'
+```
+
 ## Contributing
 Geo Data Services is an open source project and we welcome contributions to improve it. Please submit issues for bugs or enhancement requests and, even better, fork it and submit PRs with changes!
 
