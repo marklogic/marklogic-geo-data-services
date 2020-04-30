@@ -12,7 +12,6 @@
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "displayField": "zipcode",
-      "geometryPath": "//geometry",
       "extent" : {
         "xmin" : -127.923437,
         "ymin" : 17.068659,
