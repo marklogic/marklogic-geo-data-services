@@ -29,7 +29,7 @@ qd:{
 
     let q = cts.query(query);
     let func = Object.keys(query)[0];
-    xdmp.trace("KOOP-DEBUG", func);
+    xdmp.trace("GDS-DEBUG", func);
     return deserializer.cts[func](q);
   }
 },
