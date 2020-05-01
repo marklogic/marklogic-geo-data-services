@@ -24,7 +24,6 @@
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,
@@ -54,7 +53,6 @@
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,
@@ -84,7 +82,6 @@
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,
@@ -114,7 +111,6 @@
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,
@@ -144,7 +140,6 @@
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,
@@ -188,7 +183,6 @@
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,
@@ -232,7 +226,6 @@
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,
@@ -267,7 +260,6 @@
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,
@@ -314,7 +306,6 @@
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,
@@ -345,7 +336,6 @@
       "geometryType": "Point",
       "idField": "OBJECT_ID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,
@@ -393,7 +383,6 @@
       "geometryType": "Point",
       "idField": "OBJECT_ID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,
@@ -433,7 +422,6 @@
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,

@@ -6,7 +6,7 @@
 
 const op = require('/MarkLogic/optic');
 const geojson = require('/MarkLogic/geospatial/geojson.xqy');
-const gds = require('/ext/gds.sjs');
+const sm = require('/ext/serviceModel.sjs');
 const sql2optic = require('/ext/sql/sql2optic.sjs');
 const geostats = require('/ext/geo/geostats.js');
 const geoextractor = require('/ext/geo/extractor.sjs');
@@ -15,13 +15,16 @@ const qd = require('/ext/query/ctsQueryDeserialize.sjs').qd;
 const MAX_RECORD_COUNT = 5000;
 
 function post(context, params, input) {
-  xdmp.trace("KOOP-DEBUG", "Starting post");
+  xdmp.trace("GDS-DEBUG", "Starting post");
   // assume the input is the request that was sent to the koop provider getData() function
 
   try {
     const geoJson =  getData(fn.head(xdmp.fromJSON(input)));
-    xdmp.trace("KOOP-DEBUG", JSON.stringify(geoJson));
-    return geoJson;
+    xdmp.trace("GDS-DEBUG", JSON.stringify(geoJson));
+    return {
+      "$version": require('/ext/version.sjs').version,
+      ...geoJson
+    };
   } catch (err) {
     console.log(err.stack);
     console.trace(err);
@@ -32,7 +35,7 @@ function post(context, params, input) {
 }
 
 function returnErrToClient(statusCode, statusMsg, body) {
-  xdmp.trace("KOOP-DEBUG", "Starting returnErrToClient");
+  xdmp.trace("GDS-DEBUG", "Starting returnErrToClient");
   fn.error(
     null,
     'RESTAPI-SRVEXERR',
@@ -42,22 +45,22 @@ function returnErrToClient(statusCode, statusMsg, body) {
 };
 
 // the same as the koop provider function without the callback parameter
-xdmp.trace("KOOP-DEBUG", "Starting without");
+xdmp.trace("GDS-DEBUG", "Starting without");
 function getData(req) {
-  xdmp.trace("KOOP-DEBUG", "Starting getData");
-  xdmp.trace("KOOP-REQUEST", JSON.stringify(req));
+  xdmp.trace("GDS-DEBUG", "Starting getData");
+  xdmp.trace("GDS-REQUEST", JSON.stringify(req));
 
   if (req.params.method == "query") {
-    xdmp.trace("KOOP-DEBUG", "Method 'query'");
+    xdmp.trace("GDS-DEBUG", "Method 'query'");
     return query(req);
   } else if (req.params.method == "exportPlan") {
-    xdmp.trace("KOOP-DEBUG", "Method 'exportPlan'");
+    xdmp.trace("GDS-DEBUG", "Method 'exportPlan'");
     return query(req, true);
   } else if (req.params.method == "generateRenderer") {
-    xdmp.trace("KOOP-DEBUG", "Method 'generateRenderer'");
+    xdmp.trace("GDS-DEBUG", "Method 'generateRenderer'");
     return queryClassificationValues(req);
   } else {
-    xdmp.trace("KOOP-DEBUG", "Method not found, just get the descriptors");
+    xdmp.trace("GDS-DEBUG", "Method not found, just get the descriptors");
     if (req.params.layer >= 0) {
       return generateLayerDescriptor(req.params.id, req.params.layer);
     } else {
@@ -70,10 +73,10 @@ function getData(req) {
 }
 
 function getLayerModel(serviceName, layerId) {
-  xdmp.trace("KOOP-DEBUG", "Starting getLayerModel");
+  xdmp.trace("GDS-DEBUG", "Starting getLayerModel");
   // TODO: These should be cached
 
-  const serviceModel = gds.getServiceModel(serviceName);
+  const serviceModel = sm.getServiceModel(serviceName);
 
   let layer = null;
   if (serviceModel) {
@@ -121,17 +124,17 @@ function getDateTime(durationOrTimestamp) {
 }
 
 function getSchema(layerDesc, serviceName) {
-  xdmp.trace("KOOP-DEBUG", "Starting getSchema");
+  xdmp.trace("GDS-DEBUG", "Starting getSchema");
   return layerDesc.schema || serviceName;
 }
 
 function generateServiceDescriptor(serviceName) {
-  xdmp.trace("KOOP-DEBUG", "Starting generateServiceDescriptor");
-  xdmp.trace("KOOP-DEBUG", "generating service descriptor for " + serviceName);
+  xdmp.trace("GDS-DEBUG", "Starting generateServiceDescriptor");
+  xdmp.trace("GDS-DEBUG", "generating service descriptor for " + serviceName);
 
   // TODO: we should cache this instead of generating it every time
 
-  const model = gds.getServiceModel(serviceName);
+  const model = sm.getServiceModel(serviceName);
 
   const desc = {
     description: model.info.description,
@@ -167,7 +170,7 @@ function generateServiceDescriptor(serviceName) {
 }
 
 function generateFieldDescriptors(layerModel, serviceName) {
-  xdmp.trace("KOOP-DEBUG", "Starting generateFieldDescriptors");
+  xdmp.trace("GDS-DEBUG", "Starting generateFieldDescriptors");
   if (layerModel.view === undefined) {
     return generateFieldDescriptorsFromDataSourcesArray(layerModel, serviceName);
   } else {
@@ -176,7 +179,7 @@ function generateFieldDescriptors(layerModel, serviceName) {
 }
 
 function generateFieldDescriptorsFromViewAndJoins(layerModel, serviceName) {
-  xdmp.trace("KOOP-DEBUG", "Starting generateFieldDescriptorsFromViewAndJoins");
+  xdmp.trace("GDS-DEBUG", "Starting generateFieldDescriptorsFromViewAndJoins");
   const fields = [];
 
   const schema = getSchema(layerModel, serviceName);
@@ -192,7 +195,7 @@ function generateFieldDescriptorsFromViewAndJoins(layerModel, serviceName) {
 }
 
 function generateFieldDescriptorsFromDataSourcesArray(layerModel, serviceName) {
-  xdmp.trace("KOOP-DEBUG", "Starting generateFieldDescriptorsFromDataSourcesArray");
+  xdmp.trace("GDS-DEBUG", "Starting generateFieldDescriptorsFromDataSourcesArray");
   const fields = [];
 
   const primaryDataSource = layerModel.dataSources[0];
@@ -221,7 +224,7 @@ function generateFieldDescriptorsFromDataSourcesArray(layerModel, serviceName) {
 }
 
 function generateJoinFieldDescriptorsFromViewAndJoins(layerModel) {
-  xdmp.trace("KOOP-DEBUG", "Starting generateJoinFieldDescriptorsFromViewAndJoins");
+  xdmp.trace("GDS-DEBUG", "Starting generateJoinFieldDescriptorsFromViewAndJoins");
   const fields = [];
   layerModel.joins.forEach((dataSource) => {
     Object.keys(dataSource.fields).forEach((field) => {
@@ -234,7 +237,7 @@ function generateJoinFieldDescriptorsFromViewAndJoins(layerModel) {
 }
 
 function generateJoinFieldDescriptorsFromDataSource(dataSource) {
-  xdmp.trace("KOOP-DEBUG", "Starting generateJoinFieldDescriptorsFromDataSource");
+  xdmp.trace("GDS-DEBUG", "Starting generateJoinFieldDescriptorsFromDataSource");
   const fields = [];
   Object.keys(dataSource.fields).forEach((field) => {
     if (dataSource.includeFields === undefined || dataSource.includeFields.includes(field.name)) {
@@ -245,7 +248,7 @@ function generateJoinFieldDescriptorsFromDataSource(dataSource) {
 }
 
 function generateFieldDescriptorsFromViewDef(viewDef, dataSource) {
-  xdmp.trace("KOOP-DEBUG", "Starting generateFieldDescriptorsFromViewDef");
+  xdmp.trace("GDS-DEBUG", "Starting generateFieldDescriptorsFromViewDef");
   const fields = [];
   Object.keys(viewDef.view.columns).forEach((column) => {
     const field = viewDef.view.columns[column];
@@ -265,24 +268,23 @@ function generateFieldDescriptorsFromViewDef(viewDef, dataSource) {
 }
 
 function createFieldDescriptor(fieldName, scalarType, alias, includeFields) {
-  xdmp.trace("KOOP-DEBUG", "Starting createFieldDescriptor");
-  const fieldDescriptor = {
+  xdmp.trace("GDS-DEBUG", "Starting createFieldDescriptor");
+  let fieldDescriptor = {
     name : fieldName,
-    type : getFieldType(scalarType),
-    alias : alias
+    type : getFieldType(scalarType)
   };
   if (fieldDescriptor.type === "String") {
     fieldDescriptor.length = 1024;
   }
-  if (alias !== undefined) {
+  if (alias) {
     fieldDescriptor.alias = alias;
   }
   return fieldDescriptor;
 }
 
 function generateLayerDescriptor(serviceName, layerNumber) {
-  xdmp.trace("KOOP-DEBUG", "Starting generateLayerDescriptor");
-  xdmp.trace("KOOP-DEBUG", "generating layer descriptor for " + serviceName + ":" + layerNumber);
+  xdmp.trace("GDS-DEBUG", "Starting generateLayerDescriptor");
+  xdmp.trace("GDS-DEBUG", "generating layer descriptor for " + serviceName + ":" + layerNumber);
 
   const serviceDesc = generateServiceDescriptor(serviceName);
 
@@ -299,7 +301,7 @@ function generateLayerDescriptor(serviceName, layerNumber) {
 }
 
 function getFieldType(datatype) {
-  xdmp.trace("KOOP-DEBUG", "Starting getFieldType");
+  xdmp.trace("GDS-DEBUG", "Starting getFieldType");
   switch(datatype) {
     case "anyURI":
     case "iri":
@@ -355,7 +357,7 @@ function getFieldType(datatype) {
 
 
 function query(req, exportPlan=false) {
-  xdmp.trace("KOOP-DEBUG", "Starting query");
+  xdmp.trace("GDS-DEBUG", "Starting query");
   // always return a FeatureCollection for now
   const geojson = {
     type : 'FeatureCollection',
@@ -372,10 +374,10 @@ function query(req, exportPlan=false) {
   };
 
   if (exportPlan) {
-    xdmp.trace("KOOP-DEBUG", "exportPlan: running getObjects...");
+    xdmp.trace("GDS-DEBUG", "exportPlan: running getObjects...");
     return getObjects(req, true);
   } else if (req.query.returnCountOnly) {
-    xdmp.trace("KOOP-DEBUG", "getting count");
+    xdmp.trace("GDS-DEBUG", "getting count");
 
     req.query.outStatistics = [
       { outStatisticFieldName : "count", statisticType : "count" }
@@ -385,31 +387,31 @@ function query(req, exportPlan=false) {
 
   } else if (req.query.outStatistics != null) {
 
-    xdmp.trace("KOOP-DEBUG", "running aggregation");
+    xdmp.trace("GDS-DEBUG", "running aggregation");
     geojson.statistics = Array.from(aggregate(req));
 
   } else  {
 
-    xdmp.trace("KOOP-DEBUG", "getting objects for geojson.features");
+    xdmp.trace("GDS-DEBUG", "getting objects for geojson.features");
     const objects = getObjects(req);
-    xdmp.trace("KOOP-DEBUG", "Object Results found:");
-    xdmp.trace("KOOP-DEBUG", objects);
+    xdmp.trace("GDS-DEBUG", "Object Results found:");
+    xdmp.trace("GDS-DEBUG", objects);
     geojson.features = objects.result;
     if (geojson.features.geometry) {
       const geometryType = typeof geojson.features.geometry;
       switch(geometryType) {
         case "object":
-            xdmp.trace("KOOP-DEBUG", "geojson.features.geometry is an object");
+            xdmp.trace("GDS-DEBUG", "geojson.features.geometry is an object");
             break;
         case "string":
-            xdmp.trace("KOOP-DEBUG", "geojson.features.geometry is an string");
+            xdmp.trace("GDS-DEBUG", "geojson.features.geometry is an string");
             break;
         default:
-            xdmp.trace("KOOP-DEBUG", "geojson.features.geometry is:" + typeof geojson.features.geometry);
+            xdmp.trace("GDS-DEBUG", "geojson.features.geometry is:" + typeof geojson.features.geometry);
       }
     }
 
-    xdmp.trace("KOOP-DEBUG", "limitExceeded flag :" + objects.limitExceeded);
+    xdmp.trace("GDS-DEBUG", "limitExceeded flag :" + objects.limitExceeded);
 
     // we should only get this once in the process but do this for now to test
     const serviceId = req.params.id;
@@ -453,7 +455,7 @@ function query(req, exportPlan=false) {
  * @param {Object} req - The request from Koop
  */
 function queryClassificationValues(req) {
-  xdmp.trace("KOOP-DEBUG", "Starting queryClassificationValues");
+  xdmp.trace("GDS-DEBUG", "Starting queryClassificationValues");
 
   const def = parseClassificationDef(req.query);
 
@@ -484,7 +486,7 @@ function queryClassificationValues(req) {
   }
 
   const result = query({ params : req.params, query : q });
-  xdmp.trace("KOOP-DEBUG", "queryClassificationValues calculating breaks for " + result.statistics.length + " values");
+  xdmp.trace("GDS-DEBUG", "queryClassificationValues calculating breaks for " + result.statistics.length + " values");
 
   const classStatistics = {
     geometryType : getLayerModel(req.params.id, req.params.layer).geometryType
@@ -533,7 +535,7 @@ function queryClassificationValues(req) {
 }
 
 function valuesToRanges(values) {
-  xdmp.trace("KOOP-DEBUG", "Starting valuesToRanges");
+  xdmp.trace("GDS-DEBUG", "Starting valuesToRanges");
   const ranges = Array(values.length - 1);
   for (let i = 0; i < ranges.length; i++) {
     ranges[i] = [values[i], values[i + 1]];
@@ -543,7 +545,7 @@ function valuesToRanges(values) {
 
 
 function parseWhere(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseWhere");
+  xdmp.trace("GDS-DEBUG", "Starting parseWhere");
   // Any legal SQL where clause operating on the fields in the layer is allowed
   // Example: where=POP2000 > 350000
 
@@ -556,13 +558,13 @@ function parseWhere(query) {
     whereQuery = sql2optic.where(where);
   }
 
-  xdmp.trace("KOOP-DEBUG", "where: " + whereQuery);
+  xdmp.trace("GDS-DEBUG", "where: " + whereQuery);
 
   return whereQuery;
 }
 
 function parseGeometry(query, layerModel) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseGeometry");
+  xdmp.trace("GDS-DEBUG", "Starting parseGeometry");
 
   // the koop provider code will convert the Esri geometry objects into GeoJSON
   // in WGS84 and place it in the query.extension.geometry property
@@ -579,20 +581,24 @@ function parseGeometry(query, layerModel) {
       regions = geojson.parseGeojson(adjustEsriPolygon(query.extension.geometry));
     }
 
-    const operation = parseRegionOperation(query);
-
     const pointQuery = geoextractor.getPointQuery(regions, layerModel);
-
+    const operation = parseRegionOperation(query);
     const regionQuery = geoextractor.getRegionQuery(regions, operation, layerModel);
-    xdmp.trace("KOOP-DEBUG", "RegionQuery: " + JSON.stringify(regionQuery));
 
-    geoQuery = cts.orQuery([ pointQuery, regionQuery ]);
-  } else {
+    let queries = [];
+    if (pointQuery) { queries.push(pointQuery); }
+    if (regionQuery) { queries.push(regionQuery); }
+    if (queries.length > 0) {
+      geoQuery = cts.orQuery(queries);
+    }
+  }
+
+  if (!geoQuery) {
     // just match everything
     geoQuery = cts.trueQuery();
   }
 
-  xdmp.trace("KOOP-DEBUG", "geometry: " + geoQuery);
+  xdmp.trace("GDS-DEBUG", "geometry: " + geoQuery);
 
   return geoQuery;
 }
@@ -634,7 +640,7 @@ function adjustEsriPolygon(esriPolygon) {
 }
 
 function convertEnvelopePolygon(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting convertEnvelopePolygon");
+  xdmp.trace("GDS-DEBUG", "Starting convertEnvelopePolygon");
   // the koop server converts Esri envelopes to GeoJSON polygons
 
   // convert them to boxes for more efficient seach
@@ -662,12 +668,12 @@ function convertEnvelopePolygon(query) {
 }
 
 function splitCtsBox(box) {
-  xdmp.trace("KOOP-DEBUG", "Starting splitCtsBox");
+  xdmp.trace("GDS-DEBUG", "Starting splitCtsBox");
   return splitBox({ south : cts.boxSouth(box), west : cts.boxWest(box), north : cts.boxNorth(box), east : cts.boxEast(box) })
 }
 
 function splitBox(box) {
-  xdmp.trace("KOOP-DEBUG", "Starting splitBox");
+  xdmp.trace("GDS-DEBUG", "Starting splitBox");
   if (Math.round(Math.abs(box.west - box.east)) >= 179) {
     // check east/west
     const middle = (box.west + box.east) / 2.0;
@@ -687,7 +693,7 @@ function splitBox(box) {
 }
 
 function parseRegionOperation(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseRegionOperation");
+  xdmp.trace("GDS-DEBUG", "Starting parseRegionOperation");
   // cts region operators: contains, covered-by, covers, disjoint, intersects, overlaps, within
   // default to intersects
 
@@ -721,7 +727,7 @@ if (query.spatialRel) {
 }
 
 function parseOutStatistics(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseOutStatistics");
+  xdmp.trace("GDS-DEBUG", "Starting parseOutStatistics");
   // outStatistics may be a JSON string of an array of stats definitions
   // or it may be converted already
   // see http://resources.arcgis.com/en/help/rest/apiref/fsquery.html
@@ -731,14 +737,14 @@ function parseOutStatistics(query) {
 }
 
 function parseClassificationDef(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseClassificationDef");
+  xdmp.trace("GDS-DEBUG", "Starting parseClassificationDef");
   return (typeof query.classificationDef === "string") ?
     JSON.parse(query.classificationDef) : query.classificationDef;
 }
 
 
 function parseOrderByFields(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseOrderByFields");
+  xdmp.trace("GDS-DEBUG", "Starting parseOrderByFields");
   // orderByFields is supported on only those layers / tables that indicate supportsAdvancedQueries is true.
   // orderByFields defaults to ASC (ascending order) if <ORDER> is unspecified.
 
@@ -760,7 +766,7 @@ function parseOrderByFields(query) {
 }
 
 function parseObjectIds(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseObjectIds");
+  xdmp.trace("GDS-DEBUG", "Starting parseObjectIds");
   //Syntax: objectIds=<objectId1>, <objectId2>
   //Example: objectIds=37, 462
   let ids = null;
@@ -775,7 +781,7 @@ function parseObjectIds(query) {
 }
 
 function parseOutFields(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseOutFields");
+  xdmp.trace("GDS-DEBUG", "Starting parseOutFields");
   // Description: The list of fields to be included in the returned resultset. This list is a comma delimited list of field names.
   // You can also specify the wildcard "*" as the value of this parameter. In this case, the query results include all the field values.
   // Note that the wildcard also implicitly implies returnGeometry=true and setting returnGeometry to false will have no effect.
@@ -791,7 +797,7 @@ function parseOutFields(query) {
 }
 
 function parseGroupByFields(query) {
-  xdmp.trace("KOOP-DEBUG", "Starting parseGroupByFields");
+  xdmp.trace("GDS-DEBUG", "Starting parseGroupByFields");
   // Description: One or more field names on which the values need to be grouped for calculating the statistics.
   // Note: groupByFieldsForStatistics is valid only when outStatistics parameter is used.
   // Syntax: groupByFieldsForStatistics=field1, field2
@@ -821,12 +827,12 @@ function parseGroupByFields(query) {
  * @return {booleanExpression} result of optic expressions, input to op.where
 */
 function getTimeBoundingWhereQuery(layerModel, req) {
-  xdmp.trace("KOOP-DEBUG", "Starting getTimeBoundingWhereQuery");
+  xdmp.trace("GDS-DEBUG", "Starting getTimeBoundingWhereQuery");
   let startTimeField = layerModel.timeInfo.startTimeField;
   let endTimeField = layerModel.timeInfo.endTimeField;
 
   if(req.query.time.toString().indexOf(",") >= 0) {  //Handle Time range
-    xdmp.trace("KOOP-DEBUG", "Handle Time Range");
+    xdmp.trace("GDS-DEBUG", "Handle Time Range");
 
     // "null" can be passed in as a parameter to the time array.
     let timeRange = req.query.time.split(",");
@@ -835,17 +841,17 @@ function getTimeBoundingWhereQuery(layerModel, req) {
     let utcStartTime = new Date(Date.UTC(startTime.getFullYear(), startTime.getMonth(), startTime.getDate()));
     let utcEndTime = new Date(Date.UTC(endTime.getFullYear(), endTime.getMonth(), endTime.getDate()));
 
-    xdmp.trace("KOOP-DEBUG", "Time Range " + utcStartTime.toISOString() + " - " + utcEndTime.toISOString());
+    xdmp.trace("GDS-DEBUG", "Time Range " + utcStartTime.toISOString() + " - " + utcEndTime.toISOString());
     return op.and(
       op.ge(op.col(startTimeField), utcStartTime.toISOString()),
       op.lt(op.col(startTimeField), utcEndTime.toISOString())
     );
   } else {  //Handle time instance
-    xdmp.trace("KOOP-DEBUG", "Handle Time Instance");
+    xdmp.trace("GDS-DEBUG", "Handle Time Instance");
     let startTime = new Date(parseInt(req.query.time.trim()));
     let utcStartTime = new Date(Date.UTC(startTime.getFullYear(), startTime.getMonth(), startTime.getDate()));
 
-    xdmp.trace("KOOP-DEBUG", "Time Instance " + utcStartTime.toISOString());
+    xdmp.trace("GDS-DEBUG", "Time Instance " + utcStartTime.toISOString());
 
     return op.eq(op.col(startTimeField), utcStartTime.toISOString());
   }
@@ -854,8 +860,8 @@ function getTimeBoundingWhereQuery(layerModel, req) {
 // returns a Sequence of documents
 function getObjects(req, exportPlan=false) {
 
-  xdmp.trace("KOOP-DEBUG", "Starting getObjects");
-  xdmp.trace("KOOP-DEBUG", "getLayerModel(" + req.params.id + ", " + req.params.layer + ")" );
+  xdmp.trace("GDS-DEBUG", "Starting getObjects");
+  xdmp.trace("GDS-DEBUG", "getLayerModel(" + req.params.id + ", " + req.params.layer + ")" );
   const layerModel = getLayerModel(req.params.id, req.params.layer);
 
   const query = req.query;
@@ -873,8 +879,8 @@ function getObjects(req, exportPlan=false) {
 
   const returnGeometry = (query.returnGeometry || outFields[0] === "*") ? true : false;
   const geometrySource = layerModel.geometrySource;  // Should this be geometry or geometrySource?
-  xdmp.trace("KOOP-DEBUG", "geometrySource = " + geometrySource);
-  xdmp.trace("KOOP-DEBUG", "returnGeometry = " + returnGeometry);
+  xdmp.trace("GDS-DEBUG", "geometrySource = " + geometrySource);
+  xdmp.trace("GDS-DEBUG", "returnGeometry = " + returnGeometry);
 
   const boundingQueries = [ geoQuery ];
 
@@ -894,7 +900,7 @@ function getObjects(req, exportPlan=false) {
     // this assumes we are querying against the OBJECTID field as a number
     // should use a range index if we have one
     //const idsQuery = cts.jsonPropertyValueQuery("OBJECTID", ids.map(Number));
-    xdmp.trace("KOOP-DEBUG", "getting ids: " + ids);
+    xdmp.trace("GDS-DEBUG", "getting ids: " + ids);
 
     //boundingQueries.push(idsQuery);
     //const idsQuery = op.sqlCondition("OBJECTID IN (" + query.objectIds + ")");
@@ -909,32 +915,32 @@ function getObjects(req, exportPlan=false) {
   if(req.query.time && layerModel.timeInfo && layerModel.timeInfo.startTimeField) {
     whereQuery = op.and(whereQuery, getTimeBoundingWhereQuery(layerModel, req));
   }
-  xdmp.trace("KOOP-DEBUG", "whereQuery: " + whereQuery);
+  xdmp.trace("GDS-DEBUG", "whereQuery: " + whereQuery);
 
   const boundingQuery = cts.andQuery(boundingQueries);
-  xdmp.trace("KOOP-DEBUG", "boundingQuery: " + xdmp.toJsonString(boundingQuery));
+  xdmp.trace("GDS-DEBUG", "boundingQuery: " + xdmp.toJsonString(boundingQuery));
 
   const offset = (!query.resultOffset ? 0 : Number(query.resultOffset));
-  xdmp.trace("KOOP-DEBUG", "offset: " + offset);
+  xdmp.trace("GDS-DEBUG", "offset: " + offset);
 
   // what if the number of ids passed in is more than the max?
 
   let limit = 0;
   if (query.resultRecordCount) {
 
-    xdmp.trace("KOOP-DEBUG", "Setting to limit to resultRecordCount");
+    xdmp.trace("GDS-DEBUG", "Setting to limit to resultRecordCount");
     limit = Number(query.resultRecordCount)
   }
   else if ( query.returnIdsOnly ) {
-    xdmp.trace("KOOP-DEBUG", "Setting to limit to MAX_SAFE_INTEGER because we are only returning IDs");
+    xdmp.trace("GDS-DEBUG", "Setting to limit to MAX_SAFE_INTEGER because we are only returning IDs");
     limit = Number.MAX_SAFE_INTEGER
   }
   else {
-    xdmp.trace("KOOP-DEBUG", "Setting to limit to MAX_RECORD_COUNT");
+    xdmp.trace("GDS-DEBUG", "Setting to limit to MAX_RECORD_COUNT");
     limit = MAX_RECORD_COUNT
   }
 
-  xdmp.trace("KOOP-DEBUG", "limit: " + limit);
+  xdmp.trace("GDS-DEBUG", "limit: " + limit);
   const bindParams = {
     "offset" : offset,
     "limit" : ((limit != Number.MAX_SAFE_INTEGER) ? (limit+1) : Number.MAX_SAFE_INTEGER),
@@ -943,19 +949,19 @@ function getObjects(req, exportPlan=false) {
   let pipeline;
   let columnDefs;
   if (layerModel.dataSources === undefined) {
-    xdmp.trace("KOOP-DEBUG", "layerModel.dataSources is undefined");
+    xdmp.trace("GDS-DEBUG", "layerModel.dataSources is undefined");
     const schema = layerModel.schema;
     const view = layerModel.view;
     columnDefs = generateFieldDescriptors(layerModel, schema);
 
 
     let viewPlan = op.fromView(schema, view, "", "DocId");
-    xdmp.trace("KOOP-DEBUG", "Pipeline[dataSources === undefined] Plan:");
-    xdmp.trace("KOOP-DEBUG", viewPlan);
-    xdmp.trace("KOOP-DEBUG", "Pipeline[dataSources === undefined] boundingQuery:");
-    xdmp.trace("KOOP-DEBUG", boundingQuery);
-    xdmp.trace("KOOP-DEBUG", "Pipeline[dataSources === undefined] layerModel:");
-    xdmp.trace("KOOP-DEBUG", layerModel);
+    xdmp.trace("GDS-DEBUG", "Pipeline[dataSources === undefined] Plan:");
+    xdmp.trace("GDS-DEBUG", viewPlan);
+    xdmp.trace("GDS-DEBUG", "Pipeline[dataSources === undefined] boundingQuery:");
+    xdmp.trace("GDS-DEBUG", boundingQuery);
+    xdmp.trace("GDS-DEBUG", "Pipeline[dataSources === undefined] layerModel:");
+    xdmp.trace("GDS-DEBUG", layerModel);
 
 
     pipeline = initializePipeline(viewPlan, boundingQuery, layerModel);
@@ -971,24 +977,24 @@ function getObjects(req, exportPlan=false) {
 
 
       let viewPlan = op.fromView(schema, view, "", "DocId");
-      xdmp.trace("KOOP-DEBUG", "Pipeline[source === view] Plan:");
-      xdmp.trace("KOOP-DEBUG", viewPlan);
-      xdmp.trace("KOOP-DEBUG", "Pipeline[source === view] boundingQuery:");
-      xdmp.trace("KOOP-DEBUG", boundingQuery);
-      xdmp.trace("KOOP-DEBUG", "Pipeline[source === view] layerModel:");
-      xdmp.trace("KOOP-DEBUG", layerModel);
+      xdmp.trace("GDS-DEBUG", "Pipeline[source === view] Plan:");
+      xdmp.trace("GDS-DEBUG", viewPlan);
+      xdmp.trace("GDS-DEBUG", "Pipeline[source === view] boundingQuery:");
+      xdmp.trace("GDS-DEBUG", boundingQuery);
+      xdmp.trace("GDS-DEBUG", "Pipeline[source === view] layerModel:");
+      xdmp.trace("GDS-DEBUG", layerModel);
 
       pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
     } else if (primaryDataSource.source === "sparql") {
       columnDefs = generateFieldDescriptors(layerModel, null);
 
       let viewPlan = getPlanForDataSource(primaryDataSource);
-      xdmp.trace("KOOP-DEBUG", "Pipeline[source === sparql] Plan:");
-      xdmp.trace("KOOP-DEBUG", viewPlan);
-      xdmp.trace("KOOP-DEBUG", "Pipeline[source === sparql] boundingQuery:");
-      xdmp.trace("KOOP-DEBUG", boundingQuery);
-      xdmp.trace("KOOP-DEBUG", "Pipeline[source === sparql] layerModel:");
-      xdmp.trace("KOOP-DEBUG", layerModel);
+      xdmp.trace("GDS-DEBUG", "Pipeline[source === sparql] Plan:");
+      xdmp.trace("GDS-DEBUG", viewPlan);
+      xdmp.trace("GDS-DEBUG", "Pipeline[source === sparql] boundingQuery:");
+      xdmp.trace("GDS-DEBUG", boundingQuery);
+      xdmp.trace("GDS-DEBUG", "Pipeline[source === sparql] layerModel:");
+      xdmp.trace("GDS-DEBUG", layerModel);
       pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
     }
   }
@@ -1010,17 +1016,17 @@ function getObjects(req, exportPlan=false) {
 
   // only join in the document if we need to get the geometry from the document
   if (returnGeometry) {
-    xdmp.trace("KOOP-DEBUG", "Returning Geometry");
+    xdmp.trace("GDS-DEBUG", "Returning Geometry");
     if (!geometrySource || geometrySource.xpath) {
 
-      xdmp.trace("KOOP-DEBUG", "GeometrySource is null or is XPath");
+      xdmp.trace("GDS-DEBUG", "GeometrySource is null or is XPath");
       pipeline = pipeline.joinDoc(op.col('doc'), op.fragmentIdCol('DocId'))
     }
   }
 
   const extractor = geoextractor.getExtractor(layerModel);
-  xdmp.trace("KOOP-DEBUG", "extractor:");
-  xdmp.trace("KOOP-DEBUG", extractor);
+  xdmp.trace("GDS-DEBUG", "extractor:");
+  xdmp.trace("GDS-DEBUG", extractor);
 
   // TODO: see if there is any benefit to pushing the column select earlier in the pipeline
   // transform the rows into GeoJSON
@@ -1029,8 +1035,8 @@ function getObjects(req, exportPlan=false) {
 
   if (exportPlan) {
     let exported = pipeline.export();
-    xdmp.trace("KOOP-DEBUG", "exported pipeline: ");
-    xdmp.trace("KOOP-DEBUG", exported);
+    xdmp.trace("GDS-DEBUG", "exported pipeline: ");
+    xdmp.trace("GDS-DEBUG", exported);
     return exported;
   }
   else {
@@ -1041,7 +1047,7 @@ function getObjects(req, exportPlan=false) {
       var outFeature = feature;
       
       if (returnGeometry && extractor.hasExtractFunction()) {
-        xdmp.trace("KOOP-DEBUG", "Getting Extractor function");
+        xdmp.trace("GDS-DEBUG", "Getting Extractor function");
         outFeature = extractor.extract(feature);
       }
 
@@ -1052,11 +1058,11 @@ function getObjects(req, exportPlan=false) {
       return outFeature;
     });
 
-    xdmp.trace("KOOP-DEBUG", "Now to pull results from the pipeline with the following bindParams");
-    xdmp.trace("KOOP-DEBUG", bindParams);
+    xdmp.trace("GDS-DEBUG", "Now to pull results from the pipeline with the following bindParams");
+    xdmp.trace("GDS-DEBUG", bindParams);
     const opticResult = Array.from(pipeline.result("object", bindParams));
 
-    xdmp.trace("KOOP-DEBUG", `Results pulled from Pipeline. Found ${opticResult.length} results.`);
+    xdmp.trace("GDS-DEBUG", `Results pulled from Pipeline. Found ${opticResult.length} results.`);
     const opticResultCount = opticResult.length;
 
 
@@ -1110,7 +1116,7 @@ function getTemporalQuery(temporalReference) {
 };
 
 function initializePipeline(viewPlan, boundingQuery, layerModel) {
-  xdmp.trace("KOOP-DEBUG", "Starting initializePipeline");
+  xdmp.trace("GDS-DEBUG", "Starting initializePipeline");
   let pipeline = viewPlan.where(boundingQuery);
 
   if (layerModel.dataSources && layerModel.dataSources.length > 1) {
@@ -1129,7 +1135,7 @@ function initializePipeline(viewPlan, boundingQuery, layerModel) {
 }
 
 function addJoinToPipeline(dataSource, viewPlan, pipeline) {
-  xdmp.trace("KOOP-DEBUG", "Starting addJoinToPipeline");
+  xdmp.trace("GDS-DEBUG", "Starting addJoinToPipeline");
   const dataSourcePlan = getPlanForDataSource(dataSource);
   const joinOn = dataSource.joinOn;
   pipeline = pipeline.joinInner(
@@ -1139,8 +1145,8 @@ function addJoinToPipeline(dataSource, viewPlan, pipeline) {
 }
 
 function getPlanForDataSource(dataSource) {
-  xdmp.trace("KOOP-DEBUG", "Starting getPlanForDataSource");
-  xdmp.trace("KOOP-DEBUG", "Data source: " + JSON.stringify(dataSource));
+  xdmp.trace("GDS-DEBUG", "Starting getPlanForDataSource");
+  xdmp.trace("GDS-DEBUG", "Data source: " + JSON.stringify(dataSource));
 
   if (dataSource.source === "sparql") {
     let plan =  op.fromSPARQL(dataSource.query);
@@ -1157,7 +1163,7 @@ function getPlanForDataSource(dataSource) {
 
 // returns a Sequence of aggregated results
 function aggregate(req) {
-  xdmp.trace("KOOP-DEBUG", "Starting aggregate");
+  xdmp.trace("GDS-DEBUG", "Starting aggregate");
   // When using outStatistics the only other parameters that will be used are
   // groupByFieldsForStatistics, orderByFields, time, and where.
 
@@ -1183,12 +1189,12 @@ function aggregate(req) {
   }
 
   const boundingQuery = cts.andQuery(boundingQueries);
-  xdmp.trace("KOOP-DEBUG", "bounding query: " + xdmp.toJsonString(boundingQuery));
+  xdmp.trace("GDS-DEBUG", "bounding query: " + xdmp.toJsonString(boundingQuery));
 
   const whereQuery = parseWhere(query);
 
-  xdmp.trace("KOOP-DEBUG", "group by: " + groupByFields);
-  xdmp.trace("KOOP-DEBUG", "order by: " + orderByFields);
+  xdmp.trace("GDS-DEBUG", "group by: " + groupByFields);
+  xdmp.trace("GDS-DEBUG", "order by: " + orderByFields);
 
   // Hard code to 0 and max for now as these aren't technically supported for
   // the feature service aggregations but we may want to support limiting if there
@@ -1238,7 +1244,7 @@ function aggregate(req) {
 };
 
 function getAggregateFieldNames(aggregateDefs) {
-  xdmp.trace("KOOP-DEBUG", "Starting getAggregateFieldNames");
+  xdmp.trace("GDS-DEBUG", "Starting getAggregateFieldNames");
   return aggregateDefs.map((def) => {
     return def._outCol._colName;
   });
@@ -1246,9 +1252,9 @@ function getAggregateFieldNames(aggregateDefs) {
 
 
 function getSelectDef(outFields, columnDefs, returnGeometry = false, geometryExtractor, exportPlan = false) {
-  xdmp.trace("KOOP-DEBUG", "Starting getSelectDef");
+  xdmp.trace("GDS-DEBUG", "Starting getSelectDef");
   if (exportPlan) {
-    xdmp.trace("KOOP-DEBUG", "Exporting Plan");
+    xdmp.trace("GDS-DEBUG", "Exporting Plan");
     return getExportPlanSelectDef(outFields, columnDefs)
   }
 
@@ -1261,13 +1267,13 @@ function getSelectDef(outFields, columnDefs, returnGeometry = false, geometryExt
     )
   ];
 
-  xdmp.trace("KOOP-DEBUG", "defs before returnGeometry");
-  xdmp.trace("KOOP-DEBUG", defs);
+  xdmp.trace("GDS-DEBUG", "defs before returnGeometry");
+  xdmp.trace("GDS-DEBUG", defs);
 
   // only include this if returnGeometry is true or outFields is *
   if (returnGeometry || outFields[0] === "*") {
-    xdmp.trace("KOOP-DEBUG", "Returning geometry from the following selector: ");
-    xdmp.trace("KOOP-DEBUG", geometryExtractor.getSelector());
+    xdmp.trace("GDS-DEBUG", "Returning geometry from the following selector: ");
+    xdmp.trace("GDS-DEBUG", geometryExtractor.getSelector());
     defs.push(geometryExtractor.getSelector());
   }
 
@@ -1275,11 +1281,11 @@ function getSelectDef(outFields, columnDefs, returnGeometry = false, geometryExt
 }
 
 function getExportPlanSelectDef(outFields, columnDefs) {
-  xdmp.trace("KOOP-DEBUG", "Starting getExportPlanSelectDef");
-  xdmp.trace("KOOP-DEBUG", "outFields:");
-  xdmp.trace("KOOP-DEBUG", outFields);
-  xdmp.trace("KOOP-DEBUG", "coluumnDefs");
-  xdmp.trace("KOOP-DEBUG", columnDefs);
+  xdmp.trace("GDS-DEBUG", "Starting getExportPlanSelectDef");
+  xdmp.trace("GDS-DEBUG", "outFields:");
+  xdmp.trace("GDS-DEBUG", outFields);
+  xdmp.trace("GDS-DEBUG", "coluumnDefs");
+  xdmp.trace("GDS-DEBUG", columnDefs);
 
   const props = [];
 
@@ -1293,9 +1299,9 @@ function getExportPlanSelectDef(outFields, columnDefs) {
     });
   } else {
     outFields.forEach((f) => {
-      xdmp.trace("KOOP-DEBUG", "LOOKING FOR " + f)
+      xdmp.trace("GDS-DEBUG", "LOOKING FOR " + f)
       const col = columnDefs.find((c) => {
-        xdmp.trace("KOOP-DEBUG", Sequence.from(["looking at ", f, c]));
+        xdmp.trace("GDS-DEBUG", Sequence.from(["looking at ", f, c]));
         return c.alias === f || c.name === f
       });
       if (col) props.push(getSelectAs(col));
@@ -1305,7 +1311,7 @@ function getExportPlanSelectDef(outFields, columnDefs) {
 }
 
 function getSelectAs(col) {
-  xdmp.trace("KOOP-DEBUG", "Starting getSelectAs");
+  xdmp.trace("GDS-DEBUG", "Starting getSelectAs");
   let colName;
   let alias;
   if (col.alias) {
@@ -1326,7 +1332,7 @@ function getSelectAs(col) {
 }
 
 function getPropDefs(outFields, columnDefs) {
-  xdmp.trace("KOOP-DEBUG", "Starting getPropDefs");
+  xdmp.trace("GDS-DEBUG", "Starting getPropDefs");
   const props = [];
 
   if (outFields.length === 0 || outFields[0] === "*") {
@@ -1367,7 +1373,7 @@ function getPropDefs(outFields, columnDefs) {
 }
 
 function getValueConverter(col) {
-  xdmp.trace("KOOP-DEBUG", "Starting getValueConverter");
+  xdmp.trace("GDS-DEBUG", "Starting getValueConverter");
   switch (col.scalarType) {
     case "date":
       return "";
@@ -1377,7 +1383,7 @@ function getValueConverter(col) {
 }
 
 function getOrderByDef(fields) {
-  xdmp.trace("KOOP-DEBUG", "Starting getOrderByDef");
+  xdmp.trace("GDS-DEBUG", "Starting getOrderByDef");
   return fields.map((field) => {
     switch (field.order.toLowerCase()) {
       case "desc":
@@ -1392,7 +1398,7 @@ function getOrderByDef(fields) {
 
 // not used any more since we don't return aggregates in properties
 function getAggregatePropDefs(groupByFields, stats) {
-  xdmp.trace("KOOP-DEBUG", "Starting getAggregatePropDefs");
+  xdmp.trace("GDS-DEBUG", "Starting getAggregatePropDefs");
   const props = [];
 
   groupByFields.map((f) => {
@@ -1410,12 +1416,12 @@ function getAggregatePropDefs(groupByFields, stats) {
 }
 
 function getAggregateGroupByDef(stats) {
-  xdmp.trace("KOOP-DEBUG", "Starting getAggregateGroupByDef");
+  xdmp.trace("GDS-DEBUG", "Starting getAggregateGroupByDef");
   return stats.map(getAggregateStatDef);
 }
 
 function getAggregateStatDef(stat) {
-  xdmp.trace("KOOP-DEBUG", "Starting getAggregateStatDef");
+  xdmp.trace("GDS-DEBUG", "Starting getAggregateStatDef");
   const statsType = stat.statisticType;
   const statsFieldName = stat.onStatisticField;
   const statsOutFieldName = stat.outStatisticFieldName || stat.onStatisticField + "_" + statsType;

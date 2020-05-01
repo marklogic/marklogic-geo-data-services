@@ -1,0 +1,11 @@
+<metadata>
+  <title>geoSearchService</title>
+  <description>
+    <div>
+      A REST extension that provides search functionality similar to that of MarkLogic's Client API (v1/search) coupled with geospatial-specific features, 
+      such as automatic aggregation of geospatial values and support for viewports and zoom.
+    </div>
+  </description>
+  <method name="POST"/>
+  <method name="PUT"/>
+</metadata>

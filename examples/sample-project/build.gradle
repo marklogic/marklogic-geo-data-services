@@ -8,9 +8,10 @@ import com.google.gson.stream.JsonReader
 buildscript {
   repositories {
     jcenter()
+    mavenLocal()
   }
   dependencies {
-    classpath "com.marklogic:marklogic-geo-data-services-modules:1.1.1"
+    classpath "com.marklogic:marklogic-geo-data-services-modules:1.1.2"
     classpath "com.google.code.gson:gson:2.8.6"
   }
 }
@@ -25,6 +26,8 @@ repositories {
 
   // Needed for some mlcp dependencies, such as commons-csv:1.5.1-marklogic
   maven { url "http://developer.marklogic.com/maven2/" }
+
+  mavenLocal()
 }
 
 configurations {
@@ -32,7 +35,7 @@ configurations {
 }
 
 dependencies {
-  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.1.1"
+  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.1.2"
   mlcp "com.marklogic:mlcp:9.0.9"
 
   /**
@@ -60,6 +63,8 @@ task loadGDeltExampleData(type: com.marklogic.gradle.task.MlcpTask) {
   output_collections = "example-gkg,example-data"
   output_permissions = "rest-reader,read,rest-writer,update,geo-data-services-reader,read,geo-data-services-writer,update"
   output_uri_replace = ".*/data/,'/'"
+  transform_module = "/transform-gkg.sjs"
+  transform_function = "transformGKG"
 }
 
 task loadZipCodeBoundaryExampleData(type: com.marklogic.gradle.task.MlcpTask) {

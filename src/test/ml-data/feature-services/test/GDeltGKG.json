@@ -24,7 +24,6 @@
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,
@@ -60,7 +59,6 @@
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,
@@ -90,7 +88,6 @@
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,
@@ -120,7 +117,6 @@
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,
@@ -141,6 +137,21 @@
           "weight": 0
         }
       },
+      "geometry": {
+        "format": "geojson",
+        "coordinateSystem": "wgs84",
+        "source": {
+          "xpath": "//geometry"
+        },
+        "indexes": {
+          "regionPath": [
+            {
+              "path": "/envelope/ctsRegion",
+              "coordinateSystem": "wgs84"
+            }
+          ]
+        }
+      },
       "readOnly": true
     },
     {
@@ -150,7 +161,6 @@
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,
@@ -197,7 +207,6 @@
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent": {
         "xmin": -180,
         "ymin": -90,
@@ -220,7 +229,6 @@
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent" : {
         "xmin" : -180,
         "ymin" : -90,

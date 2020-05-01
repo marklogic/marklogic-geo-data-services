@@ -1,8 +1,22 @@
 {
   "role-name": "geo-data-services-writer",
   "description": "Can read and write feature-services",
-  "role": ["rest-writer", "geo-data-services-reader"],
   "privilege": [
+    {
+      "privilege-name": "rest-reader",
+      "action": "http://marklogic.com/xdmp/privileges/rest-reader",
+      "kind": "execute"
+    },
+    {
+      "privilege-name":"xdmp:value",
+      "action": "http://marklogic.com/xdmp/privileges/xdmp-value",
+      "kind": "execute"
+    },
+    {
+      "privilege-name": "rest-writer",
+      "action": "http://marklogic.com/xdmp/privileges/rest-writer",
+      "kind": "execute"
+    },
     {
       "privilege-name": "any-uri",
       "action": "http://marklogic.com/xdmp/privileges/any-uri",

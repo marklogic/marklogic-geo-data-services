@@ -8,11 +8,10 @@
     {
       "id": 0,
       "name" : "All",
-      "decription": "All US ZIP code boundaries",
+      "description": "All US ZIP code boundaries",
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "displayField": "zipcode",
-      "geometryPath": "//geometry",
       "extent" : {
         "xmin" : -127.923437,
         "ymin" : 17.068659,
