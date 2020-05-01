@@ -8,6 +8,18 @@ MarkLogic Geo Data Services (GDS) enables a rich set of geospatial query capabil
 
 ![Bintray](https://img.shields.io/bintray/v/marklogic-community/Maven/marklogic-geo-data-services?style=social)
 
+## Upgrading from previous versions
+
+If you already have an existing project with Geo Data Services and wish to upgrade, all you need to do is update the version of your dependencies in `build.gradle`, as specified in the **Installation** section.
+
+```
+com.marklogic:marklogic-geo-data-services-modules:1.1.2
+```
+
+After updating, run `./gradlew mlRedeploy` to update MarkLogic.  
+
+> Note: `mlDeploy` works too, but `mlRedeploy` ensures the modules database is wiped clean before deployment.
+
 ## Installation
 
 The MarkLogic Geo Data Services capability can be included in a [ml-gradle](https://github.com/marklogic-community/ml-gradle) project using a [mlBundle](https://github.com/marklogic-community/ml-gradle/wiki/Bundles) configuration. To add the services to your project you will need to update your `build.gradle` file, configure a schemas database, add the data services configuration, TDE templates, and add any required indexes. The MarkLogic Geo Data Services modules will be deployed to your modules database when you run the `mlDeploy` gradle task in your project.
@@ -22,7 +34,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath "com.marklogic:marklogic-geo-data-services-modules:1.1.1"
+    classpath "com.marklogic:marklogic-geo-data-services-modules:1.1.2"
   }
 }
 plugins {
@@ -34,7 +46,7 @@ repositories {
 }
 
 dependencies {
-  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.1.1"
+  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.1.2"
 }
 ```
 
@@ -189,9 +201,11 @@ curl --anyauth -u user:password -X POST 'localhost:8095/v1/resources/geoQuerySer
 ```
 
 ## Contributing
+
 Geo Data Services is an open source project and we welcome contributions to improve it. Please submit issues for bugs or enhancement requests and, even better, fork it and submit PRs with changes!
 
 ### Testing
+
 Use the following steps to install GDS as a standalone project and run the tests:
 
 1. Configure `gradle-test.properties` for your environment
@@ -200,17 +214,18 @@ Use the following steps to install GDS as a standalone project and run the tests
 4. Run `./gradlew -PenvironmentName=test test`
 
 ### Testing with MarkLogic Koop Provider
+
 You can make use of the koop-provider-marklogic project to test the MarkLogic Geo Data Services though the MarkLogic Koop Connector. The [koop-provider-marklogic](https://github.com/koopjs/koop-provider-marklogic) project expects this repository to be deployed, the associated test data, and users & roles to be deployed (see: [Testing](#Testing)).
 Once that is complete, configure the `gradle-test.properties` in koop-provider-marklogic for your environment and run the following in two different command line sessions to begin the tests.
 
-__Command Line 1__
+#### __Command Line 1__
 
 1. Configure `/config/<environment>.json`
 2. Install `npm install`
 3. Environment Setting `export NODE_ENV=<environment>`
-3. Start Koop `node server.js`
+4. Start Koop `node server.js`
 
-__Command Line 2__
+#### __Command Line 2__
 
 1. `cd test`
 2. `../gradlew -PenvironmentName=test test`
