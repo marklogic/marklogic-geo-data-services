@@ -1,0 +1,9 @@
+<metadata>
+  <title>modelService</title>
+  <description>
+    <div>
+      Used to retrieve available service descriptors and their content.
+    </div>
+  </description>
+  <method name="GET"/>
+</metadata>

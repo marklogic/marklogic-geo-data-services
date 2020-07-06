@@ -84,5 +84,18 @@
       "geohash-precision": 2,
       "invalid-values": "reject"
     }
+  ],
+  "geospatial-element-pair-index": [
+    {
+      "parent-namespace-uri": "",
+      "parent-localname": "latlongs",
+      "latitude-namespace-uri": "",
+      "latitude-localname": "lat",
+      "longitude-namespace-uri": "",
+      "longitude-localname": "lon",
+      "coordinate-system": "wgs84",
+      "range-value-positions": false,
+      "invalid-values": "reject"
+    }
   ]
 }

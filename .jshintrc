@@ -1,0 +1,11 @@
+{
+  "esversion": 9,
+  "strict": true,
+  "globals": {
+    "require": true,
+    "exports": true,
+    "fn": true,
+    "cts": true,
+    "xdmp": true
+  }
+}

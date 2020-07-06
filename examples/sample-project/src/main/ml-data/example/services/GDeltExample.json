@@ -5,26 +5,48 @@
   },
 
   "search": {
-    "Articles": {
-      "options": "example-gkg-options",
-      "geometryType": "Point",
-      "geoConstraint": "Location",
-      "values": "points",
-      "docTransform": "example-gkg-transform",
-      "schema": "GDeltGKG",
-      "view": "Article"
-    }
+    "options": "example-gkg-options",
+    "docTransform": "example-gkg-transform"
   },
 
   "layers" : [
     {
       "id": 0,
-      "name" : "GKG level 1",
-      "decription": "GDelt GKG article data at geores 1 (country)",
+      "name" : "GKG",
+      "description": "All GDelt articles",
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
+      "extent" : {
+        "xmin" : -180,
+        "ymin" : -90,
+        "xmax" : 180,
+        "ymax" : 90,
+        "spatialReference" : {
+          "wkid" : 4326,
+          "latestWkid" : 4326
+        }
+      },
+      "schema": "GDeltGKG",
+      "view" : "Article",
+      "geometry" : {
+        "type" : "Point",
+        "format" : "geojson",
+        "coordinateSystem" : "wgs84",
+        "xpath" : "//geometry"
+      },
+      "search": {
+        "geoConstraint": "Location"
+      },
+      "readOnly": true
+    },
+    {
+      "id": 1,
+      "name" : "GKG level 1",
+      "description": "GDelt GKG article data at geores 1 (country)",
+      "geometryType": "Point",
+      "idField": "OBJECTID",
+      "displayField": "name",
       "extent" : {
         "xmin" : -180,
         "ymin" : -90,
@@ -43,7 +65,6 @@
           "options" : ["lang=en"], "weight" : 0
         }
       },
-      "readOnly": true,
       "geometry" : {
         "type" : "Point",
         "format" : "geojson",
@@ -52,13 +73,12 @@
       }
     },
     {
-      "id": 1,
+      "id": 2,
       "name" : "GKG level 2",
-      "decription": "GDelt GKG article data at geores 2 (US State / non-US ADM1)",
+      "description": "GDelt GKG article data at geores 2 (US State / non-US ADM1)",
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent" : {
         "xmin" : -180,
         "ymin" : -90,
@@ -77,7 +97,6 @@
           "options" : ["lang=en"], "weight" : 0
         }
       },
-      "readOnly": true,
       "geometry" : {
         "type" : "Point",
         "format" : "geojson",
@@ -86,13 +105,12 @@
       }
     },
     {
-      "id": 2,
+      "id": 3,
       "name" : "GKG level 3",
-      "decription": "GDelt GKG article data at geores 3 (city/landmark)",
+      "description": "GDelt GKG article data at geores 3 (city/landmark)",
       "geometryType": "Point",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent" : {
         "xmin" : -180,
         "ymin" : -90,
@@ -111,7 +129,6 @@
           "options" : ["lang=en"], "weight" : 0
         }
       },
-      "readOnly": true,
       "geometry" : {
         "type" : "Point",
         "format" : "geojson",
@@ -120,13 +137,12 @@
       }
     },
     {
-      "id": 3,
+      "id": 4,
       "name" : "GKG level 4",
-      "decription": "GDelt GKG article data at geores 4 (city/landmark)",
+      "description": "GDelt GKG article data at geores 4 (city/landmark)",
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "displayField": "name",
-      "geometryPath": "/geometry",
       "extent" : {
         "xmin" : -180,
         "ymin" : -90,
@@ -145,7 +161,6 @@
           "options" : ["lang=en"], "weight" : 0
         }
       },
-      "readOnly": true,
       "geometry" : {
         "type" : "Point",
         "format" : "geojson",

@@ -1,0 +1,7 @@
+{
+  "namespace": "",
+  "local-name": "getServiceModels",
+  "document-uri": "/ext/serviceModel.sjs",
+  "modules-database": "%%MODULES_DATABASE%%",
+  "role": [ "geo-data-services-model-cache-role" ]
+}

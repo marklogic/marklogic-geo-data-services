@@ -58,8 +58,6 @@
     <per-match-tokens>20</per-match-tokens>
   </transform-results>
 
-  <return-query>1</return-query>
-
   <!-- This controls the snippet size toggle -->
   <operator name="results">
     <state name="compact">
@@ -83,26 +81,6 @@
   <!-- Annotations (allowed pretty much anywhere) allow adding text or elements to feed custom components with options that would normally not validate) -->
   <annotation>Delta options here</annotation>
 
-  <!-- Facet based on document collections, simple yet elegant -->
-<!--
-  <constraint name="Source">
-    <collection facet="true">
-      <facet-option>frequency-order</facet-option>
-      <facet-option>descending</facet-option>
-    </collection>
-  </constraint>
--->
-<!--
-  <constraint name="Sentiment">
-    <range type="xs:string" facet="true">
-      <facet-option>limit=5</facet-option>
-      <facet-option>frequency-order</facet-option>
-      <facet-option>descending</facet-option>
-      <element ns="" name="sentiment" />
-    </range>
-  </constraint>
--->
-
   <constraint name="GeoResolution">
     <range type="xs:int" facet="true">
       <facet-option>limit=5</facet-option>
@@ -115,6 +93,7 @@
       <bucket name="level4" lt="5" ge="4">World City</bucket>
       <bucket name="level5" lt="6" ge="5">World State</bucket>
     </range>
+    <annotation><description xmlns="">Level of geographical resolution</description></annotation>
   </constraint>
 
   <constraint name="Language">
@@ -135,98 +114,19 @@
     </range>
   </constraint>
 
-
-  <!-- Example facet based on the sample-data -->
-  <!-- <constraint name="eyeColor">
-    <range type="xs:string" facet="true" collation="http://marklogic.com/collation/codepoint">
-      <facet-option>limit=5</facet-option>
-      <facet-option>frequency-order</facet-option>
-      <facet-option>descending</facet-option>
-      <path-index>eyeColor</path-index>
-    </range>
-  </constraint>
--->
-  <!--<constraint name="docFormat">
-    <range type="xs:string" facet="true" collation="http://marklogic.com/collation/codepoint">
-      <facet-option>limit=5</facet-option>
-      <facet-option>item-order</facet-option>
-      <facet-option>descending</facet-option>
-      <path-index>docFormat</path-index>
-    </range>
-  </constraint>
-
-  <constraint name="gender">
-    <range type="xs:string" facet="true" collation="http://marklogic.com/collation/codepoint">
-      <facet-option>limit=5</facet-option>
-      <facet-option>item-order</facet-option>
-      <facet-option>descending</facet-option>
-      <path-index>gender</path-index>
-    </range>
-  </constraint>
--->
-  <!-- Example geospatial facet based on the sample-data, used by map theme -->
-<!--  <constraint name="Location">
+  <constraint name="Location">
     <geo-elem-pair>
-      <parent ns="" name="location"/>
-      <lat ns="" name="latitude"/>
-      <lon ns="" name="longitude"/>
+      <parent ns="" name="latlongs"/>
+      <lat ns="" name="lat"/>
+      <lon ns="" name="lon"/>
       <geo-option>boundaries-included</geo-option>
       <geo-option>score-function=reciprocal</geo-option>
-      <heatmap s="-90" w="-180" n="90" e="180" latdivs="4" londivs="4"/>
     </geo-elem-pair>
   </constraint>
--->
-  <!-- example facet constraint below -->
-  <!--
-  <constraint name="myconstraint">
-    <range type="xs:string" facet="true">
-      <facet-option>limit=5</facet-option>
-      <facet-option>frequency-order</facet-option>
-      <facet-option>descending</facet-option>
-      <element ns="" name="my-el"/>
-    </range>
-  </constraint>
-  -->
-
-  <!-- example suggestion-source below -->
-  <!--
-  <suggestion-source ref="myconstraint">
-    <suggestion-option>frequency-order</suggestion-option>
-    <suggestion-option>descending</suggestion-option>
-    <suggestion-option>limit=10</suggestion-option>
-  </suggestion-source>
-  -->
 
   <default-suggestion-source>
     <range type="xs:string">
       <element ns="" name="domain" />
     </range>
   </default-suggestion-source>
-
-  <!-- This will extract the latitude and longitude from the search. -->
-  <constraint name="Location">
-    <geo-path>
-      <path-index>geometry[type="Point"]/array-node("coordinates")</path-index>
-<!-- having two path-index elements should be supported but thows an error...may be a bug -->
-<!-- <path-index>//geometry[type = "MultiPoint"]//array-node("coordinates")</path-index> -->
-      <geo-option>boundaries-included</geo-option>
-      <geo-option>score-function=reciprocal</geo-option>
-      <geo-option>type=long-lat-point</geo-option>
-    </geo-path>
-  </constraint>
-
-  <values name="points">
-    <geo-path>
-      <path-index>geometry[type="Point"]/array-node("coordinates")</path-index>
-      <geo-option>boundaries-included</geo-option>
-      <geo-option>score-function=reciprocal</geo-option>
-      <geo-option>type=long-lat-point</geo-option>
-    </geo-path>
-  </values>
-
-  <extract-document-data selected="include">
-    <extract-path>//geometry</extract-path>
-  </extract-document-data>
-
-
 </options>
