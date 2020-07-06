@@ -1,0 +1,273 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://marklogic.com/feature-services/feature-service-descriptor/schema.json",
+
+  "definitions": {
+    "info": {
+      "type": "object",
+      "properties": {
+        "name":         { "type": "string" },
+        "description":  { "type": "string" }
+      },
+      "required": [ "name" ]
+    },
+    "scalarType": {
+      "type": "string",
+      "enum": [ "string", "long" ]
+    },
+    "pointFormat": {
+      "type": "string",
+      "enum": [ "point", "long-lat-point" ]
+    },
+    "geometryType": {
+      "type": "string",
+      "enum": [ "Point", "MultiPoint", "Polygon" ]
+    },
+    "geometryFormat": {
+      "type": "string",
+      "enum": [ "geojson", "gml", "kml", "rss", "mcgm", "wkt", "any", "custom" ]
+    },
+    "spatialReference": {
+      "type": "integer",
+      "enum": [ 4326 ]
+    },
+    "coordinateSystem": {
+      "type": "string",
+      "enum": [ "wgs84", "wgs84/double", "etrs89", "etrs89/double", "raw", "raw/double" ]
+    },
+    "esriTimeUnits": {
+      "type": "string",
+      "enum": [ "esriTimeUnitsMilliseconds", "esriTimeUnitsSeconds", "esriTimeUnitsMinutes", "esriTimeUnitsHours", "esriTimeUnitsDays", "esriTimeUnitsWeeks", "esriTimeUnitsMonths", "esriTimeUnitsYears", "esriTimeUnitsDecades", "esriTimeUnitsCenturies" ]
+    },
+    "extent": {
+      "type": "object",
+      "properties": {
+        "xmin": { "type": "number" },
+        "ymin": { "type": "number" },
+        "xmax": { "type": "number" },
+        "ymax": { "type": "number" },
+        "spatialReference": {
+          "type": "object",
+          "properties": {
+            "wkid": { "$ref": "#/definitions/spatialReference" },
+            "latestWkid": { "$ref": "#/definitions/spatialReference" }
+          },
+          "required": [ "wkid", "latestWkid" ]
+        }
+      },
+      "required": [ "xmin", "ymin", "xmax", "ymax", "spatialReference" ]
+    },
+    "fieldDefinition": {
+      "type": "object",
+      "properties": {
+        "scalarType": { "$ref": "#/definitions/scalarType" }
+      }
+    },
+    "fieldsDefinition": {
+      "type": "object",
+      "patternProperties": {
+        ".*": { "$ref": "#/definitions/fieldDefinition" }
+      },
+      "additionalProperties": true
+    },
+    "joinOn": { 
+      "type": "object",
+      "properties": {
+        "left": { "type": "string" },
+        "right": { "type": "string" }
+      },
+      "required": [ "left", "right" ]
+    },
+    "join": {
+      "type": "object",
+      "properties": {
+        "source": { "type": "string" },
+        "query": { "type": "string" },
+        "joinOn": { "$ref": "#/definitions/joinOn" },
+        "fields": { "$ref": "#/definitions/fieldsDefinition" }
+      },
+      "required": [ "source", "query", "joinOn", "fields" ]
+    },
+    "dataSource": {
+      "type": "object",
+      "properties": {
+        "source": { "type": "string" },
+        "schema": { "type": "string" },
+        "view": { "type": "string" },
+        "query": { "type": "string" },
+        "joinOn": { "$ref": "#/definitions/joinOn" },
+        "fields": { "$ref": "#/definitions/fieldsDefinition" },
+        "includeFields": { "type": "array", "items": [ { "type": "string" } ] }
+      },
+      "required": [ "source", "schema", "view" ],
+      "dependencies": {
+        "schema": [ "view" ],
+        "view": [ "schema" ]
+      }
+    },
+    "geometry": {
+      "type": "object",
+      "properties": {
+        "type": { "$ref": "#/definitions/geometryType" },
+        "format": { "$ref": "#/definitions/geometryFormat" },
+        "coordinateSystem": { "$ref": "#/definitions/coordinateSystem" },
+        "xpath": { "type": "string" },
+        "pointFormat": { "$ref": "#/definitions/pointFormat" },
+        "source": {
+          "type": "object",
+          "properties": {
+            "format": { "type": "string" },
+            "xpath": { "type": "string" },
+            "column": { "type": "string" }
+          }
+        }
+      },
+      "required": [ "type", "format" ]
+    },
+    "timeInfo": {
+      "type": "object",
+      "properties": {
+        "startTimeField": { "type": "string" },
+        "endTimeField": { "type": "string" },
+        "trackIdField": { "type": "string" },
+        "timeExtent": { "type": "array", "items": [ { "type": "integer"} ] },
+        "timeReference": {
+          "type": "object",
+          "properties": {
+            "timeZone": { "type": "string" },
+            "respectsDalightSaving": { "type": "boolean" }
+          }
+        },
+        "timeInterval": { "type": "integer" },
+        "timeIntervalUnits": { "$ref": "#/definitions/esriTimeUnits" },
+        "exportOptions": {
+          "type": "object",
+          "properties": {
+            "useTime": { "type": "boolean" },
+            "timeDataCumulative": { "type": "boolean" },
+            "TimeOffset": { "type": "integer" },
+            "timeOffsetUnits": { "$ref": "#/definitions/esriTimeUnits" }
+          }
+        },
+        "hasLiveData": { "type": "boolean" }
+      }
+    },
+    "indexElement": {
+      "type": "object",
+      "properties": {
+        "namespaceUri": { "type": "string" },
+        "localname": { "type": "string" },
+        "coordinateSystem": { "$ref": "#/definitions/coordinateSystem" },
+        "pointFormat": { "$ref": "#/definitions/pointFormat" }
+      },
+      "required": [ "namespaceUri", "localname", "coordinateSystem", "pointFormat" ]
+    },
+    "indexElementChild": {
+      "type": "object",
+      "properties": {
+        "parentNamespaceUri": { "type": "string" },
+        "parentLocalname": { "type": "string" },
+        "namespaceUri": { "type": "string" },
+        "localname": { "type": "string" },
+        "coordinateSystem": { "$ref": "#/definitions/coordinateSystem" },
+        "pointFormat": { "$ref": "#/definitions/pointFormat" }
+      },
+      "required": [ "parentNamespaceUri", "parentLocalname", "namespaceUri", "localname", "coordinateSystem", "pointFormat" ]
+    },
+    "indexElementPair": {
+      "type": "object",
+      "properties": {
+        "parentNamespaceUri": { "type": "string" },
+        "parentLocalname": { "type": "string" },
+        "latitudeNamespaceUri": { "type": "string" },
+        "latitudeLocalname": { "type": "string" },
+        "longtitudeNamespaceUri": { "type": "string" },
+        "longtitudeLocalname": { "type": "string" },
+        "coordinateSystem": { "$ref": "#/definitions/coordinateSystem" }
+      },
+      "required": [ "parentNamespaceUri", "parentLocalname", "latitudeNamespaceUri", "latitudeLocalname", "longtitudeNamespaceUri", "longtitudeLocalname", "coordinateSystem" ]
+    },
+    "indexElementAttributePair": {
+      "type": "object",
+      "properties": {
+        "parentNamespaceUri": { "type": "string" },
+        "parentLocalname": { "type": "string" },
+        "latitudeNamespaceUri": { "type": "string" },
+        "latitudeLocalname": { "type": "string" },
+        "longtitudeNamespaceUri": { "type": "string" },
+        "longtitudeLocalname": { "type": "string" },
+        "coordinateSystem": { "$ref": "#/definitions/coordinateSystem" }
+      },
+      "required": [ "parentNamespaceUri", "parentLocalname", "latitudeNamespaceUri", "latitudeLocalname", "longtitudeNamespaceUri", "longtitudeLocalname", "coordinateSystem" ]
+    },
+    "indexPath": {
+      "type": "object",
+      "properties": {
+        "pathExpression": { "type": "string" },
+        "coordinateSystem": { "$ref": "#/definitions/coordinateSystem" },
+        "pointFormat": { "$ref": "#/definitions/pointFormat" }
+      },
+      "required": [ "pathExpression", "coordinateSystem", "pointFormat" ]
+    },
+    "indexes": {
+      "type": "object",
+      "properties": {
+        "element": { "type": "array", "items": [ { "$ref": "#/definitions/indexElement" } ] },
+        "elementChild": { "type": "array", "items": [ { "$ref": "#/definitions/indexElementChild" } ] },
+        "elementPair": { "type": "array", "items": [ { "$ref": "#/definitions/indexElementPair" } ] },
+        "elementAttributePair": { "type": "array", "items": [ { "$ref": "#/definitions/indexElementAttributePair" } ] },
+        "path": { "type": "array", "items": [ { "$ref": "#/definitions/indexPath" } ] }
+      }
+    },
+    "search": {
+      "type": "object",
+      "properties": {
+        "options": { "type": "string" },
+        "docTransform": { "type": "string" }
+      },
+      "required": [ "options" ]
+    },
+    "layerSearch": {
+      "type": "object",
+      "properties": {
+        "geoConstraint": { "type": "string" }
+      },
+      "required": [ "geoConstraint" ],
+      "additionalProperties": true
+    },
+    "layer": {
+      "type": "object",
+      "properties": {
+        "id":           { "type": "integer" },
+        "name":         { "type": "string" },
+        "description":  { "type": "string" },
+        "geometryType": { "$ref": "#/definitions/geometryType" },
+        "idField":      { "type": "string" },
+        "displayField": { "type": "string" },
+        "extent":       { "$ref": "#/definitions/extent" },
+        "boundingQuery": { "type": "object" },
+        "readOnly":     { "type": "boolean", "default": true },
+        "schema":       { "type": "string" },
+        "view":         { "type": "string" },
+        "joins":        { "type": "array", "items": [ { "$ref": "#/definition/join" } ] },
+        "dataSources":  { "type": "array", "items": [ { "$ref": "#/definition/dataSource"} ] },
+        "includeFields": { "type": "array", "items": [ { "type": "string" } ] },
+        "timeInfo":     { "$ref": "#/definitions/timeInfo" },
+        "search":       { "$ref": "#/definitions/layerSearch" }
+      },
+      "required": [ "id", "name", "geometryType", "idField", "displayField", "schema", "view" ],
+      "dependencies": {
+        "schema": [ "view" ],
+        "view": [ "schema" ]
+      }
+    }
+  },
+
+  "type": "object",
+  "properties": {
+    "info": { "$ref": "#/definitions/info" },
+    "search": { "$ref": "#/definitions/search" },
+    "layers": { "type": "array", "items": [ { "$ref": "#/definitions/layer" } ] }
+  },
+  "required": [ "info" ]
+}
