@@ -44,7 +44,7 @@ function getServiceModelInfoFromDb(serviceId, cacheAfterLoad = true) {
 }
 
 function getServiceModels(filter) {
-  const validFilters = new Set(['all', 'search']);
+  const validFilters = new Set(['all', 'search', 'geoserver']);
   const _filter = filter || 'all';
   if (!validFilters.has(_filter)) { throw err.newInputError(`Invalid filter '${_filter}'.`)}
 
@@ -63,7 +63,12 @@ function getServiceModels(filter) {
 
   trace.info(`Found a total of ${allModelInfos.length} service descriptor documents.`, "getServiceModels");
   const allModels = allModelInfos.map(m => m.model);
-  return _filter === 'search' ? allModels.filter(m => m.search) : allModels;
+  if (_filter === 'search')
+    return allModels.filter(m => m.search);
+  else if (_filter === 'geoserver')
+    return allModels.filter(m => m.layers && Array.isArray(m.layers) && m.layers.some(l => l.geoServerMetadata));
+  else
+    return allModels;
 }
 
 function getServiceModelInfo(serviceId) {

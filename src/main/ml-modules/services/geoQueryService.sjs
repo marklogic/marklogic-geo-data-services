@@ -101,20 +101,25 @@ function getGeoServerLayerNames() {
 
 function getGeoServerLayerSchema(layerName) {
   
-  let model = gds.getServiceModel(null, layerName);
-  let serviceDesc = transformServiceModelToDescriptor(model, model.info.name);
+  let geoserverModels = sm.getServiceModels("geoserver");
+  let model = geoserverModels.find(m => m.layers.find(l => l.geoServerMetadata && l.geoServerMetadata.geoServerLayerName === layerName));
+  if (!model) {
+    xdmp.trace("GDS-DEBUG", "Unable to find service descriptor with geoServerLayerName of " + layerName);
+    throw "No layer info found for: " + layerName;
+  }
 
+  let serviceDesc = transformServiceModelToDescriptor(model, model.info.name);
 
   let layer = null;
   if (serviceDesc) {
-    xdmp.trace("KOOP-DEBUG", "Found layer: " + layerName);
+    xdmp.trace("GDS-DEBUG", "Found layer: " + layerName);
     layer =
       serviceDesc.layers.find((l) => {
         return l.metadata && l.metadata.geoServerMetadata && l.metadata.geoServerMetadata.geoServerLayerName == layerName;
       });
     layer.serviceName = model.info.name;
   } else {
-    xdmp.trace("KOOP-DEBUG", "No layer info found for: " + layerName);
+    xdmp.trace("GDS-DEBUG", "No layer info found for: " + layerName);
     throw "No layer info found for: " + layerName;
   }
   return layer;
@@ -1030,7 +1035,7 @@ function getObjects(req, exportPlan=false) {
       // Dynamically choosing prefix depending on existance of fragment ID column.
       const prefix = primaryDataSource.fragmentIdColumn ? null : "";
       const fragmentIdColumn = primaryDataSource.fragmentIdColumn ? primaryDataSource.fragmentIdColumn : defaultDocId;
-      xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + fragmentIdColumn);
+      xdmp.trace("GDS-DEBUG", "fragmentIdColumn: " + fragmentIdColumn);
       let viewPlan = op.fromView(schema, view, prefix, fragmentIdColumn);
 
       xdmp.trace("GDS-DEBUG", viewPlan);
@@ -1077,7 +1082,7 @@ function getObjects(req, exportPlan=false) {
   // TODO: see if there is any benefit to pushing the column select earlier in the pipeline
   // transform the rows into GeoJSON
   if (layerModel.idField) {
-    xdmp.trace("KOOP-DEBUG", "LayerID Field: " + layerModel.idField);
+    xdmp.trace("GDS-DEBUG", "LayerID Field: " + layerModel.idField);
     pipeline = pipeline.select(getSelectDef(outFields, columnDefs, returnGeometry, extractor, exportPlan, layerModel.idField));
   } else {
     pipeline = pipeline.select(getSelectDef(outFields, columnDefs, returnGeometry, extractor, exportPlan));
@@ -1206,10 +1211,10 @@ function getPlanForDataSource(dataSource) {
     return plan;
   } else if (dataSource.source === "view") {
     if (dataSource.fragmentIdColumn) {
-      xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + dataSource.fragmentIdColumn);
+      xdmp.trace("GDS-DEBUG", "fragmentIdColumn: " + dataSource.fragmentIdColumn);
       return op.fromView(dataSource.schema, dataSource.view, null, dataSource.fragmentIdColumn)
     } else {
-      xdmp.trace("KOOP-DEBUG", "No Fragment ID Defined");
+      xdmp.trace("GDS-DEBUG", "No Fragment ID Defined");
       return op.fromView(dataSource.schema, dataSource.view, "");
     }
   } else {
@@ -1268,7 +1273,7 @@ function aggregate(req) {
     const schema = layerModel.schema;
     const view = layerModel.view;
 
-    xdmp.trace("KOOP-DEBUG", "layerModel.dataSources === undefined, using " + defaultDocId + " as fragment id column");
+    xdmp.trace("GDS-DEBUG", "layerModel.dataSources === undefined, using " + defaultDocId + " as fragment id column");
     let viewPlan = op.fromView(schema, view, "", defaultDocId);
 
     pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
@@ -1281,7 +1286,7 @@ function aggregate(req) {
       // Dynamically choosing prefix depending on existance of fragment ID column.
       const prefix = primaryDataSource.fragmentIdColumn ? null : "";
       const fragmentIdColumn = primaryDataSource.fragmentIdColumn ? primaryDataSource.fragmentIdColumn : defaultDocId;
-      xdmp.trace("KOOP-DEBUG", "fragmentIdColumn: " + fragmentIdColumn);
+      xdmp.trace("GDS-DEBUG", "fragmentIdColumn: " + fragmentIdColumn);
       let viewPlan = op.fromView(schema, view, prefix, fragmentIdColumn);
 
       pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
@@ -1314,7 +1319,7 @@ function getAggregateFieldNames(aggregateDefs) {
 
 
 function getSelectDef(outFields, columnDefs, returnGeometry, geometryExtractor, exportPlan = false, idField="OBJECTID") {
-  xdmp.trace("KOOP-DEBUG", "Starting getSelectDef");
+  xdmp.trace("GDS-DEBUG", "Starting getSelectDef");
   if (exportPlan) {
     xdmp.trace("GDS-DEBUG", "Exporting Plan");
     return getExportPlanSelectDef(outFields, columnDefs)
@@ -1409,7 +1414,7 @@ function getPropDefs(outFields, columnDefs) {
       } else {
         colName = col.name;
       }
-      xdmp.trace("KOOP-DEBUG","***** ColName: " + colName )
+      xdmp.trace("GDS-DEBUG","***** ColName: " + colName )
       props.push(
         op.prop(
           colName,
