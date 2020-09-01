@@ -11,8 +11,7 @@ const sql2optic = require('/ext/sql/sql2optic.sjs');
 const geostats = require('/ext/geo/geostats.js');
 const geoextractor = require('/ext/geo/extractor.sjs');
 const qd = require('/ext/query/ctsQueryDeserialize.sjs').qd;
-const sq = require("/ext/query/structured-query-utils.xqy");
-const search = require("/MarkLogic/appservices/search/search.xqy");
+const gsu = require('/ext/search/geo-search-util.xqy');
 
 const MAX_RECORD_COUNT = 5000;
 
@@ -555,43 +554,8 @@ function parseWhere(query) {
   const where = query.where;
   let whereQuery = null;
   if (where && typeof where !== 'string' && where.search) {
-    // where contains Combined Query
-    let combined = where.search;
-    // convert to xml
-    let combinedElem = sq.fromJson(where);
-
-    // get options from request body, or fall back to named options
-    let options;
-    if (combined.options) {
-      // get options from body, but as xml
-      options = fn.head(combinedElem.xpath('*:options'));
-    } else {
-       try {
-         // get saved search options
-         options = sq.namedOptions(query.optionsName || 'all');
-       } catch (ignore) {
-         // fall back to empty options
-         options = fn.head(xdmp.unquote('<options xmlns="http://marklogic.com/appservices/search"/>')).root
-       }
-    }
-
-    // include any additional query
-    let queries = options.xpath('*:additional-query/*/cts:query(.)').toArray();
-
-    // include qtext
-    if (combined.qtext) {
-      queries.push(
-        search.parse(combined.qtext, options)
-      );
-    }
-
-    // include structured query
-    queries.push(
-      sq.toCts(combinedElem, options)
-    );
-
-    // combine all into large andQuery
-    whereQuery = cts.andQuery(queries);
+    // where.search contains Combined Query
+    whereQuery = gsu.parseCombined(where, query.optionsName);
 
   } else
   if (!where || where === "1=1" || where === "1 = 1" || where === "") {
