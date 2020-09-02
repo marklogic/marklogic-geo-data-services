@@ -1,0 +1,15 @@
+<options xmlns="http://marklogic.com/appservices/search">
+  <search-option>unfiltered</search-option>
+  <page-length>10</page-length>
+
+  <additional-query>
+    <cts:collection-query xmlns:cts="http://marklogic.com/cts">
+      <cts:uri>test-data</cts:uri>
+    </cts:collection-query>
+  </additional-query>
+
+  <constraint name="collection">
+    <collection facet="false"/>
+  </constraint>
+
+</options>

@@ -321,5 +321,45 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .body("features.properties.domain", everyItem(containsString("journal")))
         ;
     }
+
+    @Test
+    public void testCombinedSearch() {
+        JsonPath postBody = getJson("testCombinedSearch.json");
+
+        RestAssured
+            .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
+            .when()
+                .log().uri()
+                .post(url)
+            .then()
+                .log().ifError()
+                .statusCode(200)
+                .log().ifValidationFails()
+                .body(isValidFeatureCollection())
+                .body("features.size()", is(29))
+        ;
+    }
+
+    @Test
+    public void testCombinedSearchFalse() {
+        JsonPath postBody = getJson("testCombinedSearchFalse.json");
+
+        RestAssured
+            .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
+            .when()
+                .log().uri()
+                .post(url)
+            .then()
+                .log().ifError()
+                .statusCode(200)
+                .log().ifValidationFails()
+                .body(isValidFeatureCollection())
+                .body("features.size()", is(0))
+        ;
+    }
 }
 

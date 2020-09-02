@@ -1,0 +1,19 @@
+{
+  "params" : {
+    "id" : "GDeltGKG",
+    "layer" : 0,
+    "method" : "query"
+  },
+  "query" : {
+    "optionsName": "test",
+    "where" : {
+      "search": {
+        "qtext": "nikkei",
+        "query": {
+          "true-query": ""
+        }
+      }
+    },
+    "returnCountsOnly": true
+  }
+}
