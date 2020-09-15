@@ -8,6 +8,28 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
+    @Test
+    public void versionCheck() {
+        // Sanity check the version number output of GDS endpoint(s)
+        // If this test fails, it means the src/main/ml-modules/version.sjs doesn't match the version in gradle.properties, and should be updated.
+        String expectedVersion = System.getProperty("gds.version");
+
+        JsonPath postBody = getJson("testServiceDescriptor.json");
+
+        RestAssured
+            .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
+            .when()
+                .log().uri()
+                .post(url)
+            .then()
+                .log().ifError()
+                .statusCode(200)
+                .log().ifValidationFails()
+                .body("$version", is(expectedVersion))
+        ;
+    }
 
     @Test
     public void testServiceDescriptor() {
