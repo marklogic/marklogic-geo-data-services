@@ -11,7 +11,7 @@ buildscript {
     mavenLocal()
   }
   dependencies {
-    classpath "com.marklogic:marklogic-geo-data-services-modules:1.1.2"
+    classpath "com.marklogic:marklogic-geo-data-services-modules:1.2.0"
     classpath "com.google.code.gson:gson:2.8.6"
   }
 }
