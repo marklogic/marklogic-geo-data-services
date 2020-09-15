@@ -4,14 +4,55 @@ module namespace gsu = "http://marklogic.com/geo-data-services/geo-search-util";
 
 import module namespace sut = "http://marklogic.com/rest-api/lib/search-util" at "/MarkLogic/rest-api/lib/search-util.xqy";
 import module namespace search = "http://marklogic.com/appservices/search" at "/MarkLogic/appservices/search/search.xqy";
+import module namespace ast = "http://marklogic.com/appservices/search-ast" at "/MarkLogic/appservices/search/ast.xqy";
 
 declare private variable $VALUES_OPTION_PREFIX as xs:string := "__generated_values_";
 
+declare function gsu:parse-combined(
+  $json as item(),
+  $options-name as xs:string?
+) as cts:query
+{
+  (: convert to xml :)
+  let $search := gsu:search-from-json($json)
+
+  (: get options from request body, or fall back to named options :)
+  let $resolved-options := gsu:resolve-options($search, ($options-name, "all")[1])
+
+  (: include any additional query :)
+  let $additional-queries := $resolved-options/search:additional-query/*/cts:query(.)
+
+  (: include qtext :)
+  let $text-query :=
+    if ($search/search:qtext) then
+      search:parse($search/search:qtext, $resolved-options, "cts:query")
+    else ()
+
+  (: include structured query :)
+  let $structured-query :=
+    if ($search/search:query) then
+      gsu:structured-to-cts($search/search:query, $resolved-options)
+    else ()
+
+  (: combine all into large andQuery :)
+  return cts:and-query((
+    $additional-queries,
+    $text-query,
+    $structured-query
+  ))
+};
+
 declare function gsu:search-from-json(
-  $json as node()
+  $json as item()
 ) as element(search:search)
 {
-  sut:search-from-json($json)
+  let $json :=
+    if ($json instance of json:object) then
+      xdmp:to-json($json)
+    else
+      $json
+  return
+    sut:search-from-json($json)
 };
 
 declare function gsu:search-to-json(
@@ -21,9 +62,35 @@ declare function gsu:search-to-json(
   sut:search-to-json($search)
 };
 
-declare function gsu:get-search-options(
+declare function gsu:structured-to-cts(
+  $sq as element(search:query),
+  $options as element(search:options)
+) as cts:query?
+{
+  map:get(ast:to-query($sq, $options), "query")
+};
+
+declare function gsu:resolve-options(
+  $search as element(search:search),
   $options-name as xs:string
 ) as element(search:options)
+{
+  let $delta-options := $search/search:options
+  let $saved-options := gsu:get-search-options($options-name)
+  let $empty-options := <options xmlns="http://marklogic.com/appservices/search"/>
+  return
+    if (exists($delta-options) and exists($saved-options)) then
+      sut:merge-options($saved-options, $delta-options)
+    else if (empty($delta-options) and empty($saved-options)) then
+      $empty-options
+    else
+      (: only one of these contains a value :)
+      ($delta-options, $saved-options)
+};
+
+declare function gsu:get-search-options(
+  $options-name as xs:string
+) as element(search:options)?
 {
   sut:options(map:entry("options", $options-name))
 };
@@ -54,7 +121,7 @@ declare function gsu:get-geometry-type(
   else ()
 };
 
-declare function gsu:create-heatmapped-constraint(  
+declare function gsu:create-heatmapped-constraint(
   $base-geo-constraint as element(search:constraint),
   $options as object-node()
 ) as element(search:constraint)
@@ -106,7 +173,7 @@ declare function gsu:create-search-criteria(
   let $return-values := $options/returnValues eq fn:true()
   let $values-limit := xs:unsignedLong($options/valuesLimit)
   let $base-options := gsu:get-search-options($stored-options-name)
-  
+
   (: qtext to structured queries :)
   let $qtext-queries := search:parse($options/fullQueryText, $base-options, "search:query")
 
@@ -125,7 +192,7 @@ declare function gsu:create-search-criteria(
       $base-geo-constraint-index,
       if ($values-limit gt 0) then element search:values-option { fn:concat("limit=", $values-limit) } else ()
     }
-  
+
   (: create modified stored options :)
   let $new-options := element search:options {
     $base-options/@*,
@@ -133,10 +200,10 @@ declare function gsu:create-search-criteria(
     $new-geo-constraints,
     $values-options
   }
-  
+
   (: merge with delta options :)
   let $merged-options := sut:merge-options($new-options, $delta-search/search:options)
-  
+
   (: create search:search :)
   return element search:search {
     element search:query {
@@ -154,8 +221,8 @@ declare function gsu:get-search-suggestions(
 ) as xs:string*
 {
   search:suggest(
-    $qtext, 
-    $search/search:options, 
+    $qtext,
+    $search/search:options,
     ($limit, 10)[1],
     (),
     (),
@@ -224,7 +291,7 @@ declare private function gsu:add-constraint-clusters(
   let $aggregate-values := $options/aggregateValues eq fn:true()
   let $geo-constraint-boxes := $search-response/search:boxes[@name = $geo-constraint-name]
   return if ($aggregate-values and $geo-constraint-boxes)
-  then 
+  then
     let $point-clusters := json:array(), $points := json:array()
     let $_ := (
       for $box in $geo-constraint-boxes/search:box
@@ -260,7 +327,7 @@ declare private function gsu:add-constraint-values(
   let $geo-constraint-values := $search/search:options/search:values[@name = $geo-constraint-values-name]
   let $aggregate-values := $options/aggregateValues eq fn:true()
   return if (fn:not($aggregate-values) and $geo-constraint-values)
-  then 
+  then
     let $is-longlat := fn:not(fn:empty($geo-constraint-values//search:geo-option[fn:string(.) eq "type=long-lat-point"]))
     let $lat-index := if ($is-longlat) then 2 else 1
     let $lon-index := if ($is-longlat) then 1 else 2
