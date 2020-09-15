@@ -68,6 +68,7 @@ test {
     systemProperty "feature.user", mlUsername
     systemProperty "feature.password", mlPassword
     systemProperty "feature.service", serviceName
+    systemProperty "gds.version", project.version
 }
 
 

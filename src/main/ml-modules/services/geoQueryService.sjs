@@ -11,6 +11,7 @@ const sql2optic = require('/ext/sql/sql2optic.sjs');
 const geostats = require('/ext/geo/geostats.js');
 const geoextractor = require('/ext/geo/extractor.sjs');
 const qd = require('/ext/query/ctsQueryDeserialize.sjs').qd;
+const gsu = require('/ext/search/geo-search-util.xqy');
 
 const MAX_RECORD_COUNT = 5000;
 
@@ -23,6 +24,7 @@ function post(context, params, input) {
     xdmp.trace("GDS-DEBUG", JSON.stringify(geoJson));
     return {
       "$version": require('/ext/version.sjs').version,
+      "$timestamp": new Date().toISOString(),
       ...geoJson
     };
   } catch (err) {
@@ -551,9 +553,15 @@ function parseWhere(query) {
 
   const where = query.where;
   let whereQuery = null;
+  if (where && typeof where !== 'string' && where.search) {
+    // where.search contains Combined Query
+    whereQuery = gsu.parseCombined(where, query.optionsName);
+
+  } else
   if (!where || where === "1=1" || where === "1 = 1" || where === "") {
     //whereQuery = cts.trueQuery();
     whereQuery = op.eq(1, 1)
+
   } else {
     whereQuery = sql2optic.where(where);
   }
@@ -1040,12 +1048,12 @@ function getObjects(req, exportPlan=false) {
     return exported;
   }
   else {
-    // GeoJSON features must always have a "geometry" property; for cases where the feature has no 
+    // GeoJSON features must always have a "geometry" property; for cases where the feature has no
     // associated geometry data or "returnGeometry" is set to false, set "geometry" property to null.
     // See GeoJSON RFC: https://tools.ietf.org/html/rfc7946#section-3.2
     pipeline = pipeline.map((feature) => {
       var outFeature = feature;
-      
+
       if (returnGeometry && extractor.hasExtractFunction()) {
         xdmp.trace("GDS-DEBUG", "Getting Extractor function");
         outFeature = extractor.extract(feature);
