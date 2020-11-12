@@ -1048,8 +1048,14 @@ function getObjects(req, exportPlan=false) {
       xdmp.trace("GDS-DEBUG", layerModel);
       pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
     }
+    else if (primaryDataSource.source === "sparql") {
+      columnDefs = generateFieldDescriptors(layerModel);
+      let sparqlPlan = getPlanForDataSource(primaryDataSource);
+      pipeline = initializePipeline(sparqlPlan, boundingQuery, layerModel);
+    }
   }
 
+  
   if (exportPlan) {
     pipeline = pipeline
       .where(whereQuery)

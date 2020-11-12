@@ -48,6 +48,9 @@ function publishLayersInGroup(geoserverUrl, workspace, datastore, authentication
             if (layerGroupBounds.miny > layer.extent.ymin) { layerGroupBounds.miny = layer.extent.ymin;}
             if (layerGroupBounds.maxx < layer.extent.xmax) { layerGroupBounds.maxx = layer.extent.xmax;}
             if (layerGroupBounds.maxy < layer.extent.ymax) { layerGroupBounds.maxy = layer.extent.ymax;}
+            if (layer.extent.spatialReference && layer.extent.spatialReference.wkid) {
+                layerGroupBounds.crs = "EPSG:" + layer.extent.spatialReference.wkid;
+            }
 
             published.push(checkResponse(xdmp.httpGet(geoserverUrl+"\/rest\/layers\/"+workspace+":"+layer.geoServerMetadata.geoServerLayerName+".json", httpOptions)).toObject()[1])
         }
@@ -126,20 +129,20 @@ function generateLayerJson(layer, workspace, datastore, geoserverUrl) {
             "nativeName": layer.geoServerMetadata.geoServerLayerName,
             "title": layer.description,
             "abstract": layer.name + ": " + layer.description,
-            "srs": "EPSG:4326",
+            "srs": ayer.geoServerMetadata.coordinateSystem || "EPSG:4326",
             "nativeBoundingBox": {
                 "minx": layer.extent.xmin,
                 "maxx": layer.extent.xmax,
                 "miny": layer.extent.ymin,
                 "maxy": layer.extent.ymax,
-                "crs": "EPSG:4326"
+                "crs": layer.geoServerMetadata.coordinateSystem || "EPSG:4326"
             },
             "latLonBoundingBox": {
                 "minx": layer.extent.xmin,
                 "maxx": layer.extent.xmax,
                 "miny": layer.extent.ymin,
                 "maxy": layer.extent.ymax,
-                "crs": "EPSG:4326"
+                "crs": layer.geoServerMetadata.coordinateSystem || "EPSG:4326"
             },
             "projectionPolicy": "NONE",
             "enabled": true,
