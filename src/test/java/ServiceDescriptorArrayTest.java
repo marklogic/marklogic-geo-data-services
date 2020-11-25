@@ -114,6 +114,8 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
         ;
     }
 
+
+
     @Test
     public void testDataSourceWithSparqlAsRootAndViewJoinWithFieldsElement() {
         JsonPath postBody = getJson("testDataSourceWithSparqlAsRootAndViewJoinWithFieldsElement.json");

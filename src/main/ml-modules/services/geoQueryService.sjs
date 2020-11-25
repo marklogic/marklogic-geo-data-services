@@ -14,6 +14,7 @@ const qd = require('/ext/query/ctsQueryDeserialize.sjs').qd;
 const gsu = require('/ext/search/geo-search-util.xqy');
 
 const MAX_RECORD_COUNT = 5000;
+const defaultDocId = "DocId" + xdmp.request();
 
 function post(context, params, input) {
   xdmp.trace("GDS-DEBUG", "Starting post");
@@ -52,7 +53,10 @@ function getData(req) {
   xdmp.trace("GDS-DEBUG", "Starting getData");
   xdmp.trace("GDS-REQUEST", JSON.stringify(req));
 
-  if (req.params.method == "query") {
+  if (req.geoserver) {
+    return getGeoServerData(req);
+  }
+  else if (req.params.method == "query") {
     xdmp.trace("GDS-DEBUG", "Method 'query'");
     return query(req);
   } else if (req.params.method == "exportPlan") {
@@ -72,6 +76,55 @@ function getData(req) {
 
   // return an unsupported error
   returnErrToClient(501, 'Request parameters not supported', xdmp.quote(req));
+}
+
+function getGeoServerData(req) {
+  if (req.geoserver.method == "getLayerNames") {
+    return getGeoServerLayerNames();
+  }
+  else if (req.geoserver.method == "getLayerSchema") {
+    return getGeoServerLayerSchema(req.geoserver.layerName);
+  }
+}
+
+function getGeoServerLayerNames() {
+  const collection = "http://marklogic.com/feature-services";
+  let layerNames = [];
+  for (let descriptorDoc of cts.search(cts.collectionQuery(collection))) {
+    let descriptor = descriptorDoc.toObject();
+
+    for (let layer of descriptor.layers) {
+      if (layer.geoServerMetadata && layer.geoServerMetadata.geoServerLayerName)
+        layerNames.push(layer.geoServerMetadata.geoServerLayerName);
+    }
+  }
+  return layerNames;
+}
+
+function getGeoServerLayerSchema(layerName) {
+  
+  let geoserverModels = sm.getServiceModels("geoserver");
+  let model = geoserverModels.find(m => m.layers.find(l => l.geoServerMetadata && l.geoServerMetadata.geoServerLayerName === layerName));
+  if (!model) {
+    xdmp.trace("GDS-DEBUG", "Unable to find service descriptor with geoServerLayerName of " + layerName);
+    throw "No layer info found for: " + layerName;
+  }
+
+  let serviceDesc = transformServiceModelToDescriptor(model, model.info.name);
+
+  let layer = null;
+  if (serviceDesc) {
+    xdmp.trace("GDS-DEBUG", "Found layer: " + layerName);
+    layer =
+      serviceDesc.layers.find((l) => {
+        return l.metadata && l.metadata.geoServerMetadata && l.metadata.geoServerMetadata.geoServerLayerName == layerName;
+      });
+    layer.serviceName = model.info.name;
+  } else {
+    xdmp.trace("GDS-DEBUG", "No layer info found for: " + layerName);
+    throw "No layer info found for: " + layerName;
+  }
+  return layer;
 }
 
 function getLayerModel(serviceName, layerId) {
@@ -137,7 +190,11 @@ function generateServiceDescriptor(serviceName) {
   // TODO: we should cache this instead of generating it every time
 
   const model = sm.getServiceModel(serviceName);
+  let desc = transformServiceModelToDescriptor(model, serviceName);
+  return desc;
+}
 
+function transformServiceModelToDescriptor(model, serviceName) {
   const desc = {
     description: model.info.description,
     maxRecordCount: MAX_RECORD_COUNT
@@ -167,7 +224,6 @@ function generateServiceDescriptor(serviceName) {
 
     desc.layers.push(layer);
   }
-
   return desc;
 }
 
@@ -230,7 +286,7 @@ function generateJoinFieldDescriptorsFromViewAndJoins(layerModel) {
   const fields = [];
   layerModel.joins.forEach((dataSource) => {
     Object.keys(dataSource.fields).forEach((field) => {
-      if (layerModel.includeFields === undefined || layerModel.includeFields.includes(field.name)) {
+      if (layerModel.includeFields === undefined || layerModel.includeFields.includes(field)) {
         fields.push(createFieldDescriptor(field, dataSource.fields[field].scalarType, dataSource.fields[field].alias));
       }
     });
@@ -242,7 +298,7 @@ function generateJoinFieldDescriptorsFromDataSource(dataSource) {
   xdmp.trace("GDS-DEBUG", "Starting generateJoinFieldDescriptorsFromDataSource");
   const fields = [];
   Object.keys(dataSource.fields).forEach((field) => {
-    if (dataSource.includeFields === undefined || dataSource.includeFields.includes(field.name)) {
+    if (dataSource.includeFields === undefined || dataSource.includeFields.includes(field)) {
       fields.push(createFieldDescriptor(field, dataSource.fields[field].scalarType, dataSource.fields[field].alias, dataSource.includeFields));
     }
   });
@@ -886,7 +942,9 @@ function getObjects(req, exportPlan=false) {
   }
 
   const returnGeometry = (query.returnGeometry || outFields[0] === "*") ? true : false;
-  const geometrySource = layerModel.geometrySource;  // Should this be geometry or geometrySource?
+  // Should this be geometry or geometrySource?  TJD--"geometry"
+  // This should be geometry.source.  MDC
+  const geometrySource = (layerModel && layerModel.geometry && layerModel.geometry.source) ? layerModel.geometry.source : null;
   xdmp.trace("GDS-DEBUG", "geometrySource = " + geometrySource);
   xdmp.trace("GDS-DEBUG", "returnGeometry = " + returnGeometry);
 
@@ -962,16 +1020,15 @@ function getObjects(req, exportPlan=false) {
     const view = layerModel.view;
     columnDefs = generateFieldDescriptors(layerModel, schema);
 
-
-    let viewPlan = op.fromView(schema, view, "", "DocId");
+    xdmp.trace("GDS-DEBUG", "getObjects(): layerModel.dataSources === undefined, using " + defaultDocId + " as fragment id column");
+    let viewPlan = op.fromView(schema, view, "", defaultDocId);
     xdmp.trace("GDS-DEBUG", "Pipeline[dataSources === undefined] Plan:");
     xdmp.trace("GDS-DEBUG", viewPlan);
     xdmp.trace("GDS-DEBUG", "Pipeline[dataSources === undefined] boundingQuery:");
     xdmp.trace("GDS-DEBUG", boundingQuery);
     xdmp.trace("GDS-DEBUG", "Pipeline[dataSources === undefined] layerModel:");
     xdmp.trace("GDS-DEBUG", layerModel);
-
-
+    
     pipeline = initializePipeline(viewPlan, boundingQuery, layerModel);
 
     // joins?
@@ -983,30 +1040,30 @@ function getObjects(req, exportPlan=false) {
       const view = primaryDataSource.view;
       columnDefs = generateFieldDescriptors(layerModel, schema);
 
+      // Dynamically choosing prefix depending on existance of fragment ID column.
+      const prefix = primaryDataSource.fragmentIdColumn ? null : "";
+      const fragmentIdColumn = primaryDataSource.fragmentIdColumn ? primaryDataSource.fragmentIdColumn : defaultDocId;
+      xdmp.trace("GDS-DEBUG", "fragmentIdColumn: " + fragmentIdColumn);
+      let viewPlan = op.fromView(schema, view, prefix, fragmentIdColumn);
 
-      let viewPlan = op.fromView(schema, view, "", "DocId");
-      xdmp.trace("GDS-DEBUG", "Pipeline[source === view] Plan:");
       xdmp.trace("GDS-DEBUG", viewPlan);
       xdmp.trace("GDS-DEBUG", "Pipeline[source === view] boundingQuery:");
       xdmp.trace("GDS-DEBUG", boundingQuery);
       xdmp.trace("GDS-DEBUG", "Pipeline[source === view] layerModel:");
       xdmp.trace("GDS-DEBUG", layerModel);
 
-      pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
-    } else if (primaryDataSource.source === "sparql") {
-      columnDefs = generateFieldDescriptors(layerModel, null);
-
-      let viewPlan = getPlanForDataSource(primaryDataSource);
-      xdmp.trace("GDS-DEBUG", "Pipeline[source === sparql] Plan:");
-      xdmp.trace("GDS-DEBUG", viewPlan);
-      xdmp.trace("GDS-DEBUG", "Pipeline[source === sparql] boundingQuery:");
-      xdmp.trace("GDS-DEBUG", boundingQuery);
       xdmp.trace("GDS-DEBUG", "Pipeline[source === sparql] layerModel:");
       xdmp.trace("GDS-DEBUG", layerModel);
       pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
     }
+    else if (primaryDataSource.source === "sparql") {
+      columnDefs = generateFieldDescriptors(layerModel);
+      let sparqlPlan = getPlanForDataSource(primaryDataSource);
+      pipeline = initializePipeline(sparqlPlan, boundingQuery, layerModel);
+    }
   }
 
+  
   if (exportPlan) {
     pipeline = pipeline
       .where(whereQuery)
@@ -1025,11 +1082,15 @@ function getObjects(req, exportPlan=false) {
   // only join in the document if we need to get the geometry from the document
   if (returnGeometry) {
     xdmp.trace("GDS-DEBUG", "Returning Geometry");
-    if (!geometrySource || geometrySource.xpath) {
-
-      xdmp.trace("GDS-DEBUG", "GeometrySource is null or is XPath");
-      pipeline = pipeline.joinDoc(op.col('doc'), op.fragmentIdCol('DocId'))
+    if (geometrySource && geometrySource.xpath && geometrySource.documentUriColumn) {
+      xdmp.trace("GDS-DEBUG", "GeometrySource is xpath and documentUriColumn is specified");
+      pipeline = pipeline.joinDoc(op.col('doc'), op.col(geometrySource.documentUriColumn))
     }
+    else if (!geometrySource || geometrySource.xpath) {
+      xdmp.trace("GDS-DEBUG", "GeometrySource is null or is XPath only");
+      pipeline = pipeline.joinDoc(op.col('doc'), op.fragmentIdCol(defaultDocId))
+    }
+    //otherwise we must have column extraction
   }
 
   const extractor = geoextractor.getExtractor(layerModel);
@@ -1038,8 +1099,12 @@ function getObjects(req, exportPlan=false) {
 
   // TODO: see if there is any benefit to pushing the column select earlier in the pipeline
   // transform the rows into GeoJSON
-  pipeline = pipeline.select(getSelectDef(outFields, columnDefs, returnGeometry, extractor, exportPlan));
-
+  if (layerModel.idField) {
+    xdmp.trace("GDS-DEBUG", "LayerID Field: " + layerModel.idField);
+    pipeline = pipeline.select(getSelectDef(outFields, columnDefs, returnGeometry, extractor, exportPlan, layerModel.idField));
+  } else {
+    pipeline = pipeline.select(getSelectDef(outFields, columnDefs, returnGeometry, extractor, exportPlan));
+  }
 
   if (exportPlan) {
     let exported = pipeline.export();
@@ -1163,7 +1228,13 @@ function getPlanForDataSource(dataSource) {
     }
     return plan;
   } else if (dataSource.source === "view") {
-    return op.fromView(dataSource.schema, dataSource.view, "")
+    if (dataSource.fragmentIdColumn) {
+      xdmp.trace("GDS-DEBUG", "fragmentIdColumn: " + dataSource.fragmentIdColumn);
+      return op.fromView(dataSource.schema, dataSource.view, null, dataSource.fragmentIdColumn)
+    } else {
+      xdmp.trace("GDS-DEBUG", "No Fragment ID Defined");
+      return op.fromView(dataSource.schema, dataSource.view, "");
+    }
   } else {
     returnErrToClient(500, 'Error handling request', "dataSource objects must specify a valid source ('view' or 'sparql')");
   }
@@ -1220,7 +1291,8 @@ function aggregate(req) {
     const schema = layerModel.schema;
     const view = layerModel.view;
 
-    let viewPlan = op.fromView(schema, view, "", "DocId");
+    xdmp.trace("GDS-DEBUG", "layerModel.dataSources === undefined, using " + defaultDocId + " as fragment id column");
+    let viewPlan = op.fromView(schema, view, "", defaultDocId);
 
     pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
   } else {
@@ -1229,7 +1301,12 @@ function aggregate(req) {
       const schema = primaryDataSource.schema;
       const view = primaryDataSource.view;
 
-      let viewPlan = op.fromView(schema, view, "", "DocId");
+      // Dynamically choosing prefix depending on existance of fragment ID column.
+      const prefix = primaryDataSource.fragmentIdColumn ? null : "";
+      const fragmentIdColumn = primaryDataSource.fragmentIdColumn ? primaryDataSource.fragmentIdColumn : defaultDocId;
+      xdmp.trace("GDS-DEBUG", "fragmentIdColumn: " + fragmentIdColumn);
+      let viewPlan = op.fromView(schema, view, prefix, fragmentIdColumn);
+
       pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
     } else if (primaryDataSource.source === "sparql") {
       let viewPlan = getPlanForDataSource(primaryDataSource);
@@ -1259,7 +1336,7 @@ function getAggregateFieldNames(aggregateDefs) {
 };
 
 
-function getSelectDef(outFields, columnDefs, returnGeometry = false, geometryExtractor, exportPlan = false) {
+function getSelectDef(outFields, columnDefs, returnGeometry, geometryExtractor, exportPlan = false, idField="OBJECTID") {
   xdmp.trace("GDS-DEBUG", "Starting getSelectDef");
   if (exportPlan) {
     xdmp.trace("GDS-DEBUG", "Exporting Plan");
@@ -1269,6 +1346,7 @@ function getSelectDef(outFields, columnDefs, returnGeometry = false, geometryExt
   // start with a GeoJSON feature with properties
   const defs = [
     op.as("type", "Feature"),
+    op.as("id", op.col(idField)),
     op.as(
       "properties",
       op.jsonObject(getPropDefs(outFields, columnDefs))
@@ -1284,7 +1362,6 @@ function getSelectDef(outFields, columnDefs, returnGeometry = false, geometryExt
     xdmp.trace("GDS-DEBUG", geometryExtractor.getSelector());
     defs.push(geometryExtractor.getSelector());
   }
-
   return defs;
 }
 
@@ -1355,6 +1432,7 @@ function getPropDefs(outFields, columnDefs) {
       } else {
         colName = col.name;
       }
+      xdmp.trace("GDS-DEBUG","***** ColName: " + colName )
       props.push(
         op.prop(
           colName,
