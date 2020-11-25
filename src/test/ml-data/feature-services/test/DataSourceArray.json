@@ -316,6 +316,14 @@
           "latestWkid": 4326
         }
       },
+      "geometry": {
+        "format": "geojson",
+        "coordinateSystem": "wgs84",
+        "source": {
+          "documentUriColumn":"DocId",
+          "xpath": "//geometry"
+        }
+      },
       "dataSources": [
         {
           "source": "sparql",

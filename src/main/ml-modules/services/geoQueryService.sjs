@@ -1074,11 +1074,15 @@ function getObjects(req, exportPlan=false) {
   // only join in the document if we need to get the geometry from the document
   if (returnGeometry) {
     xdmp.trace("GDS-DEBUG", "Returning Geometry");
-    if (!geometrySource || geometrySource.xpath) {
-
-      xdmp.trace("GDS-DEBUG", "GeometrySource is null or is XPath");
+    if (geometrySource && geometrySource.xpath && geometrySource.documentUriColumn) {
+      xdmp.trace("GDS-DEBUG", "GeometrySource is xpath and documentUriColumn is specified");
+      pipeline = pipeline.joinDoc(op.col('doc'), op.col(geometrySource.documentUriColumn))
+    }
+    else if (!geometrySource || geometrySource.xpath) {
+      xdmp.trace("GDS-DEBUG", "GeometrySource is null or is XPath only");
       pipeline = pipeline.joinDoc(op.col('doc'), op.fragmentIdCol(defaultDocId))
     }
+    //otherwise we must have column extraction
   }
 
   const extractor = geoextractor.getExtractor(layerModel);
