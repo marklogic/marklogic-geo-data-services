@@ -129,7 +129,7 @@ function generateLayerJson(layer, workspace, datastore, geoserverUrl) {
             "nativeName": layer.geoServerMetadata.geoServerLayerName,
             "title": layer.description,
             "abstract": layer.name + ": " + layer.description,
-            "srs": ayer.geoServerMetadata.coordinateSystem || "EPSG:4326",
+            "srs": layer.geoServerMetadata.coordinateSystem || "EPSG:4326",
             "nativeBoundingBox": {
                 "minx": layer.extent.xmin,
                 "maxx": layer.extent.xmax,
