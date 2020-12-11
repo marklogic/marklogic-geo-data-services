@@ -983,7 +983,12 @@ function getObjects(req, exportPlan=false) {
   }
   xdmp.trace("GDS-DEBUG", "whereQuery: " + whereQuery);
 
-  const boundingQuery = cts.andQuery(boundingQueries);
+  let additionalOrQuery = cts.falseQuery();
+  if (layerModel.additionalOrQuery) {
+    additionalOrQuery = qd.query(layerModel.additionalOrQuery);
+  }
+
+  const boundingQuery = cts.orQuery([additionalOrQuery, cts.andQuery(boundingQueries)]);
   xdmp.trace("GDS-DEBUG", "boundingQuery: " + xdmp.toJsonString(boundingQuery));
 
   const offset = (!query.resultOffset ? 0 : Number(query.resultOffset));
@@ -1187,7 +1192,7 @@ function getTemporalQuery(temporalReference) {
   else
     return cts.trueQuery();
 };
-
+ 
 function initializePipeline(viewPlan, boundingQuery, layerModel) {
   xdmp.trace("GDS-DEBUG", "Starting initializePipeline");
   let pipeline = viewPlan.where(boundingQuery);
