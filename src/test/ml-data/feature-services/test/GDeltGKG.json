@@ -276,6 +276,49 @@
         "xpath" : "//geometry"
       },
       "readOnly": true
+    },
+    {
+      "id": 7,
+      "name": "GKG levels 1 and 2",
+      "description": "GDelt GKG article data, 2 (US State / non-US ADM1), plus alwaysInclude geores 1 (country)",
+      "geometryType": "Point",
+      "idField": "OBJECTID",
+      "displayField": "name",
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        }
+      },
+      "schema": "GDeltGKG",
+      "view": "Article",
+      "boundingQuery": {
+        "jsonPropertyValueQuery": {
+          "property": ["geores"],
+          "value": [1],
+          "options": ["lang=en"],
+          "weight": 0
+        }
+      },
+      "alwaysIncludeQuery" : {
+        "jsonPropertyValueQuery": {
+          "property": ["geores"],
+          "value": [2],
+          "options": ["lang=en"],
+          "weight": 0
+        }
+      },
+      "geometry": {
+        "type": "Point",
+        "format": "geojson",
+        "coordinateSystem": "wgs84",
+        "xpath": "//geometry"
+      },
+      "readOnly": true
     }
   ]
 }

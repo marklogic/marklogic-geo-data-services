@@ -983,7 +983,12 @@ function getObjects(req, exportPlan=false) {
   }
   xdmp.trace("GDS-DEBUG", "whereQuery: " + whereQuery);
 
-  const boundingQuery = cts.andQuery(boundingQueries);
+  let alwaysIncludeQuery = cts.falseQuery();
+  if (layerModel.alwaysIncludeQuery) {
+    alwaysIncludeQuery = qd.query(layerModel.alwaysIncludeQuery);
+  }
+
+  const boundingQuery = cts.orQuery([alwaysIncludeQuery, cts.andQuery(boundingQueries)]);
   xdmp.trace("GDS-DEBUG", "boundingQuery: " + xdmp.toJsonString(boundingQuery));
 
   const offset = (!query.resultOffset ? 0 : Number(query.resultOffset));
@@ -1187,7 +1192,7 @@ function getTemporalQuery(temporalReference) {
   else
     return cts.trueQuery();
 };
-
+ 
 function initializePipeline(viewPlan, boundingQuery, layerModel) {
   xdmp.trace("GDS-DEBUG", "Starting initializePipeline");
   let pipeline = viewPlan.where(boundingQuery);
@@ -1267,7 +1272,12 @@ function aggregate(req) {
     boundingQueries.push(getTemporalQuery(layerModel.temporalBounds));
   }
 
-  const boundingQuery = cts.andQuery(boundingQueries);
+  let alwaysIncludeQuery = cts.falseQuery();
+  if (layerModel.alwaysIncludeQuery) {
+    alwaysIncludeQuery = qd.query(layerModel.alwaysIncludeQuery);
+  }
+
+  const boundingQuery = cts.orQuery([alwaysIncludeQuery, cts.andQuery(boundingQueries)]);
   xdmp.trace("GDS-DEBUG", "bounding query: " + xdmp.toJsonString(boundingQuery));
 
   const whereQuery = parseWhere(query);
