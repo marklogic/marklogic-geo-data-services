@@ -11,7 +11,7 @@ buildscript {
     mavenLocal()
   }
   dependencies {
-    classpath "com.marklogic:marklogic-geo-data-services-modules:1.3.1-beta"
+    classpath "com.marklogic:marklogic-geo-data-services-modules:1.3.2-beta"
     classpath "com.google.code.gson:gson:2.8.6"
   }
 }
@@ -35,7 +35,7 @@ configurations {
 }
 
 dependencies {
-  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.3.1-beta"
+  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.3.2-beta"
   mlcp "com.marklogic:mlcp:9.0.9"
 
   /**
