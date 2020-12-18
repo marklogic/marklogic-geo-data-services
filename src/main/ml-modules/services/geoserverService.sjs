@@ -8,7 +8,7 @@ const gslib = require('/lib/geoserverLib.sjs');
 
 function post(context, params, input) {
     xdmp.trace("GEOSERVER-DEBUG", "Starting post");
-    xdmp.trace("GEOSERVER_DEBUG", params.geoserverUrl);
+    xdmp.trace("GEOSERVER-DEBUG", params.geoserverUrl);
 
     const auth = {
         "method":params.geoserverAuthType,
@@ -30,6 +30,31 @@ function post(context, params, input) {
         returnErrToClient(500, 'Error handling request', err.toString());
     }
 }
+
+function deleteFunction(context, params) {
+    xdmp.trace("GEOSERVER-DEBUG", "Starting delete");
+    xdmp.trace("GEOSERVER-DEBUG", params.geoserverUrl);
+
+    const auth = {
+        "method":params.geoserverAuthType,
+        "username":params.geoserverUser,
+        "password":params.geoserverPassword
+    }
+
+    try {
+        return gslib.geoserverUnpublisher(
+            params.geoserverUrl,
+            params.geoserverWorkspace,
+            auth,
+            params.serviceDescriptorUri
+        )
+    } catch (err) {
+        console.log(err.stack);
+        console.trace(err);
+        returnErrToClient(500, 'Error handling request', err.toString());
+    }
+}
+
 function returnErrToClient(statusCode, statusMsg, body) {
     xdmp.trace("GEOSERVER-DEBUG", "Starting returnErrToClient");
     fn.error(
@@ -41,4 +66,5 @@ function returnErrToClient(statusCode, statusMsg, body) {
 };
 
 exports.POST = post;
+exports.DELETE = deleteFunction;
 

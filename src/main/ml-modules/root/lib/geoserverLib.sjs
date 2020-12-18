@@ -18,12 +18,34 @@
  * }
  */
 
+function deleteLayersInGroup(geoserverUrl, workspace, authenticationJson, serviceDescriptorURI) {
+    const httpOptions = {
+        "authentication" : authenticationJson,
+        "headers" : { 
+            "content-type":"application/json"
+        }
+    }
+    const serviceDescriptor = cts.doc(serviceDescriptorURI).toObject();
+
+    xdmp.trace("GEOSERVER-DEBUG", "Found descriptor to delete: " + serviceDescriptor.info.name);
+    if (serviceDescriptor) {
+        for (const layer of serviceDescriptor.layers) {
+            xdmp.trace("GEOSERVER-DEBUG", "Deleting layer id: " + layer.geoServerMetadata.geoServerLayerName);
+            checkResponse(xdmp.httpDelete(geoserverUrl+"\/rest\/layers\/"+workspace+":"+layer.geoServerMetadata.geoServerLayerName + "?recurse=true", httpOptions)).toObject()[1];
+        }
+    }
+    else {
+        fn.error(null, 'RESTAPI-SRVEXERR', "No Service Descriptor found at " + serviceDescriptorURI);
+    }
+}
 
 function publishLayersInGroup(geoserverUrl, workspace, datastore, authenticationJson, serviceDescriptorURI) {
     const restNewFeatureType = "\/rest\/workspaces\/"+workspace+"\/datastores\/"+datastore+"\/featuretypes.json"
     const httpOptions = {
         "authentication" : authenticationJson,
-        "headers" : { "content-type":"application/json"}
+        "headers" : { 
+            "content-type":"application/json"
+        }
     }
 
     const serviceDescriptor = cts.doc(serviceDescriptorURI).toObject();
@@ -51,7 +73,8 @@ function publishLayersInGroup(geoserverUrl, workspace, datastore, authentication
             if (layer.extent.spatialReference && layer.extent.spatialReference.wkid) {
                 layerGroupBounds.crs = "EPSG:" + layer.extent.spatialReference.wkid;
             }
-
+            
+            xdmp.trace("GEOSERVER-DEBUG", "Checking published status, trying... " + geoserverUrl+"\/rest\/layers\/"+workspace+":"+layer.geoServerMetadata.geoServerLayerName+".json");
             published.push(checkResponse(xdmp.httpGet(geoserverUrl+"\/rest\/layers\/"+workspace+":"+layer.geoServerMetadata.geoServerLayerName+".json", httpOptions)).toObject()[1])
         }
 
@@ -164,3 +187,4 @@ function generateLayerJson(layer, workspace, datastore, geoserverUrl) {
 }
 
 exports.geoserverPublisher = publishLayersInGroup
+exports.geoserverUnpublisher = deleteLayersInGroup
