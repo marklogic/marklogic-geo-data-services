@@ -100,6 +100,75 @@
       	</row>
       </rows>
     </template>
+
+	<template xmlns:tde="http://marklogic.com/xdmp/tde">
+	<!-- this template is so we can do good unit tests for different join types-->
+      <context>.</context>
+      <rows>
+      	<row>
+      	  <schema-name>GDeltGKG</schema-name>
+      	  <view-name>Article_Join</view-name>
+      	  <view-layout>sparse</view-layout>
+      	  <columns>
+      	    <column>
+      	      <name>OBJECTID_join</name>
+      	      <scalar-type>long</scalar-type>
+      	      <val>OBJECTID</val>
+      	    </column>
+      	    <column>
+      	      <name>urlpubtimedate_join</name>
+      	      <scalar-type>dateTime</scalar-type>
+      	      <val>urlpubtimedate</val>
+      	      <nullable>true</nullable>
+      	    </column>
+            <column>
+              <name>urlpubdate_join</name>
+              <scalar-type>date</scalar-type>
+              <val>xs:date(xs:dateTime(urlpubtimedate))</val>
+              <nullable>true</nullable>
+            </column>
+      	    <column>
+      	      <name>url_join</name>
+      	      <scalar-type>string</scalar-type>
+      	      <val>url</val>
+      	      <nullable>true</nullable>
+      	    </column>
+      	    <column>
+      	      <name>name_join</name>
+      	      <scalar-type>string</scalar-type>
+      	      <val>name</val>
+      	      <nullable>true</nullable>
+      	    </column>
+      	    <column>
+      	      <name>urltone_join</name>
+      	      <scalar-type>decimal</scalar-type>
+      	      <val>urltone</val>
+      	      <nullable>true</nullable>
+      	    </column>
+      	    <column>
+      	      <name>domain_join</name>
+      	      <scalar-type>string</scalar-type>
+      	      <val>domain</val>
+      	      <nullable>true</nullable>
+      	    </column>
+      	    <column>
+      	      <name>urllangcode_join</name>
+      	      <scalar-type>string</scalar-type>
+      	      <val>urllangcode</val>
+      	      <nullable>true</nullable>
+      	    </column>
+      	    <column>
+      	      <name>geores_join</name>
+      	      <scalar-type>integer</scalar-type>
+      	      <val>geores</val>
+      	      <nullable>true</nullable>
+      	    </column>
+      	  </columns>
+      	</row>
+      </rows>
+    </template>
+
+
 		<template xmlns:tde="http://marklogic.com/xdmp/tde">
       <context>.</context>
       <rows>

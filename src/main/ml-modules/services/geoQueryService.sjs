@@ -1216,7 +1216,10 @@ function addJoinToPipeline(dataSource, viewPlan, pipeline) {
   xdmp.trace("GDS-DEBUG", "Starting addJoinToPipeline");
   const dataSourcePlan = getPlanForDataSource(dataSource);
   const joinOn = dataSource.joinOn;
-  pipeline = pipeline.joinInner(
+  let joinFunc = dataSource.joinFunction ? dataSource.joinFunction : "joinInner";
+
+  if (pipeline[joinFunc] == null || joinFunc == "joinCrossProduct") returnErrToClient(500, joinFunc + " is not a supported joinFunction value, check the layer descriptor");
+  pipeline = pipeline[joinFunc](
     dataSourcePlan, op.on(op.col(joinOn.left), op.col(joinOn.right))
   )
   return pipeline;
