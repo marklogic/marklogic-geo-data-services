@@ -493,7 +493,6 @@
           "schema": "GDeltGKG",
           "view": "Article",
           "fragmentIdColumn": "FRAGMENT_ID_Article",
-          "joinFunction": "joinLeftOuter",
           "fields": {
             "OBJECTID": {
             "scalarType": "long"
@@ -553,7 +552,6 @@
           "schema": "GDeltGKG",
           "view": "Article",
           "fragmentIdColumn": "FRAGMENT_ID_Article",
-          "joinFunction": "joinFullOuter",
           "fields": {
             "OBJECTID": {
             "scalarType": "long"
@@ -613,7 +611,6 @@
           "schema": "GDeltGKG",
           "view": "Article",
           "fragmentIdColumn": "FRAGMENT_ID_Article",
-          "joinFunction": "joinCrossProduct",
           "fields": {
             "OBJECTID": {
             "scalarType": "long"
@@ -673,7 +670,6 @@
           "schema": "GDeltGKG",
           "view": "Article",
           "fragmentIdColumn": "FRAGMENT_ID_Article",
-          "joinFunction": "joinInvalidFunction",
           "fields": {
             "OBJECTID": {
             "scalarType": "long"
