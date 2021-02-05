@@ -16,6 +16,13 @@ const gsu = require('/ext/search/geo-search-util.xqy');
 const MAX_RECORD_COUNT = 5000;
 const defaultDocId = "DocId" + xdmp.request();
 
+const joinFunctionMap = {
+  "inner":"joinInner",
+  "left outer":"joinLeftOuter",
+  "full outer":"joinFullOuter"
+};
+
+
 function post(context, params, input) {
   xdmp.trace("GDS-DEBUG", "Starting post");
   // assume the input is the request that was sent to the koop provider getData() function
@@ -1212,13 +1219,21 @@ function initializePipeline(viewPlan, boundingQuery, layerModel) {
   return pipeline;
 }
 
+function getOpticJoinFunction(joinOn) {
+  if (joinOn.joinType == null) 
+    return "joinInner";
+  let joinFunc = joinFunctionMap[joinOn.joinType.toLowerCase()];
+  if (joinFunc == null) 
+    returnErrToClient(500, joinFunc + " is not a supported joinType, check the layer descriptor->dataSource->joinOn.joinType");
+  return joinFunc;
+}
+
 function addJoinToPipeline(dataSource, viewPlan, pipeline) {
   xdmp.trace("GDS-DEBUG", "Starting addJoinToPipeline");
   const dataSourcePlan = getPlanForDataSource(dataSource);
   const joinOn = dataSource.joinOn;
-  let joinFunc = dataSource.joinFunction ? dataSource.joinFunction : "joinInner";
+  let joinFunc = getOpticJoinFunction(joinOn);
 
-  if (pipeline[joinFunc] == null || joinFunc == "joinCrossProduct") returnErrToClient(500, joinFunc + " is not a supported joinFunction value, check the layer descriptor");
   pipeline = pipeline[joinFunc](
     dataSourcePlan, op.on(op.col(joinOn.left), op.col(joinOn.right))
   )

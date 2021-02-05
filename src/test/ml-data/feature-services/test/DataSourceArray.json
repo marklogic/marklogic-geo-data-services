@@ -507,10 +507,10 @@
           "schema": "GdeltGKG",
           "view": "Article_Join",
           "fragmentIdColumn": "FRAGMENT_ID_Article_Join",
-          "joinFunction": "joinLeftOuter",
           "joinOn": {
             "left": "FRAGMENT_ID_Article", 
-            "right": "FRAGMENT_ID_Article_Join"
+            "right": "FRAGMENT_ID_Article_Join",
+            "joinType": "left outer"
             }, 
           "fields": {
             "name_join":{
@@ -566,10 +566,10 @@
           "schema": "GdeltGKG",
           "view": "Article_Join",
           "fragmentIdColumn": "FRAGMENT_ID_Article_Join",
-          "joinFunction": "joinFullOuter",
           "joinOn": {
             "left": "FRAGMENT_ID_Article", 
-            "right": "FRAGMENT_ID_Article_Join"
+            "right": "FRAGMENT_ID_Article_Join",
+            "joinType": "full outer"
             }, 
           "fields": {
             "name_join":{
@@ -628,7 +628,8 @@
           "joinFunction": "joinCrossProduct",
           "joinOn": {
             "left": "FRAGMENT_ID_Article", 
-            "right": "FRAGMENT_ID_Article_Join"
+            "right": "FRAGMENT_ID_Article_Join",
+            "joinType": "join cross product"
             }, 
           "fields": {
             "name_join":{
@@ -684,10 +685,10 @@
           "schema": "GdeltGKG",
           "view": "Article_Join",
           "fragmentIdColumn": "FRAGMENT_ID_Article_Join",
-          "joinFunction": "joinInvalid",
           "joinOn": {
             "left": "FRAGMENT_ID_Article", 
-            "right": "FRAGMENT_ID_Article_Join"
+            "right": "FRAGMENT_ID_Article_Join",
+            "joinType": "join invalid"
             }, 
           "fields": {
             "name_join":{
