@@ -64,6 +64,88 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
     }
 
     @Test
+    public void testDataSourcesWithLeftOuterJoin() {
+        JsonPath postBody = getJson("testDataSourcesWithLeftOuterJoin.json");
+
+        RestAssured
+            .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
+            .when()
+                .log().uri()
+                .post(url)
+            .then()
+                .log().ifError()
+                .statusCode(200)
+                .log().ifValidationFails()
+                .body(isValidFeatureCollection())
+
+                .body("features.size()", is(1502))
+
+                .body("features[0].properties.OBJECTID", is(49))
+                .body("features[0].properties.name_join", is("Ukraine"))
+        ;
+    }
+
+    @Test
+    public void testDataSourcesWithFullOuterJoin() {
+        JsonPath postBody = getJson("testDataSourcesWithFullOuterJoin.json");
+
+        RestAssured
+            .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
+            .when()
+                .log().uri()
+                .post(url)
+            .then()
+                .log().ifError()
+                .statusCode(200)
+                .log().ifValidationFails()
+                .body(isValidFeatureCollection())
+
+                .body("features.size()", is(67622))
+
+                .body("features[0].properties.OBJECTID", is(49))
+                .body("features[0].properties.name_join", is("Ukraine"))
+        ;
+    }
+
+    @Test
+    public void testDataSourcesWithCrossProductJoin() {
+        JsonPath postBody = getJson("testDataSourcesWithCrossProductJoin.json");
+
+        RestAssured
+            .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
+            .when()
+                .log().uri()
+                .post(url)
+            .then()
+                //.log().ifError()
+                .statusCode(500)
+        ;
+    }
+
+    @Test
+    public void testDataSourcesWithInvalidJoin() {
+        JsonPath postBody = getJson("testDataSourcesWithInvalidJoin.json");
+
+        RestAssured
+            .given()
+                .contentType(ContentType.JSON)
+                .body(postBody.prettyPrint())
+            .when()
+                .log().uri()
+                .post(url)
+            .then()
+                //.log().ifError()
+                .statusCode(500)
+        ;
+    }
+
+    @Test
     public void testDataSourceWithViewAsRootAndSparqlJoin() {
         JsonPath postBody = getJson("testDataSourceWithViewAsRootAndSparqlJoin.json");
 

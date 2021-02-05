@@ -469,6 +469,243 @@
         }
       },
       "readOnly": true
+    },
+    {
+      "id": 12,
+      "name": "GKG Left Outer Join",
+      "description": "GDelt article data with Left Outer Join",
+      "geometryType": "Point",
+      "idField": "OBJECTID",
+      "displayField": "name",
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        }
+      },
+      "dataSources": [
+        {
+          "source": "view",
+          "schema": "GDeltGKG",
+          "view": "Article",
+          "fragmentIdColumn": "FRAGMENT_ID_Article",
+          "fields": {
+            "OBJECTID": {
+            "scalarType": "long"
+            }
+          },
+          "includeFields": [
+            "OBJECTID"
+          ]
+        },
+        {
+          "source": "view",
+          "schema": "GdeltGKG",
+          "view": "Article_Join",
+          "fragmentIdColumn": "FRAGMENT_ID_Article_Join",
+          "joinOn": {
+            "left": "FRAGMENT_ID_Article", 
+            "right": "FRAGMENT_ID_Article_Join",
+            "joinType": "left outer"
+            }, 
+          "fields": {
+            "name_join":{
+              "scalarType":"string"
+            }
+          },
+          "includeFields": [
+            "name_join"
+          ]
+        }
+      ],
+      "boundingQuery": {
+        "wordQuery": {
+          "text":"Ukraine"
+        }
+      },
+      "readOnly": true
+    },
+    {
+      "id": 13,
+      "name": "GKG Full Join",
+      "description": "GDelt article data with Full Join",
+      "geometryType": "Point",
+      "idField": "OBJECTID",
+      "displayField": "name",
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        }
+      },
+      "dataSources": [
+        {
+          "source": "view",
+          "schema": "GDeltGKG",
+          "view": "Article",
+          "fragmentIdColumn": "FRAGMENT_ID_Article",
+          "fields": {
+            "OBJECTID": {
+            "scalarType": "long"
+            }
+          },
+          "includeFields": [
+            "OBJECTID"
+          ]
+        },
+        {
+          "source": "view",
+          "schema": "GdeltGKG",
+          "view": "Article_Join",
+          "fragmentIdColumn": "FRAGMENT_ID_Article_Join",
+          "joinOn": {
+            "left": "FRAGMENT_ID_Article", 
+            "right": "FRAGMENT_ID_Article_Join",
+            "joinType": "full outer"
+            }, 
+          "fields": {
+            "name_join":{
+              "scalarType":"string"
+            }
+          },
+          "includeFields": [
+            "name_join"
+          ]
+        }
+      ],
+      "boundingQuery": {
+        "wordQuery": {
+          "text":"Ukraine"
+        }
+      },
+      "readOnly": true
+    },
+    {
+      "id": 14,
+      "name": "GKG Cross Product Join",
+      "description": "GDelt article data with Cross Product Join",
+      "geometryType": "Point",
+      "idField": "OBJECTID",
+      "displayField": "name",
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        }
+      },
+      "dataSources": [
+        {
+          "source": "view",
+          "schema": "GDeltGKG",
+          "view": "Article",
+          "fragmentIdColumn": "FRAGMENT_ID_Article",
+          "fields": {
+            "OBJECTID": {
+            "scalarType": "long"
+            }
+          },
+          "includeFields": [
+            "OBJECTID"
+          ]
+        },
+        {
+          "source": "view",
+          "schema": "GdeltGKG",
+          "view": "Article_Join",
+          "fragmentIdColumn": "FRAGMENT_ID_Article_Join",
+          "joinFunction": "joinCrossProduct",
+          "joinOn": {
+            "left": "FRAGMENT_ID_Article", 
+            "right": "FRAGMENT_ID_Article_Join",
+            "joinType": "join cross product"
+            }, 
+          "fields": {
+            "name_join":{
+              "scalarType":"string"
+            }
+          },
+          "includeFields": [
+            "name_join"
+          ]
+        }
+      ],
+      "boundingQuery": {
+        "wordQuery": {
+          "text":"Ukraine"
+        }
+      },
+      "readOnly": true
+    },
+    {
+      "id": 15,
+      "name": "GKG Invalid Join",
+      "description": "GDelt article data with Invalid Join",
+      "geometryType": "Point",
+      "idField": "OBJECTID",
+      "displayField": "name",
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        }
+      },
+      "dataSources": [
+        {
+          "source": "view",
+          "schema": "GDeltGKG",
+          "view": "Article",
+          "fragmentIdColumn": "FRAGMENT_ID_Article",
+          "fields": {
+            "OBJECTID": {
+            "scalarType": "long"
+            }
+          },
+          "includeFields": [
+            "OBJECTID"
+          ]
+        },
+        {
+          "source": "view",
+          "schema": "GdeltGKG",
+          "view": "Article_Join",
+          "fragmentIdColumn": "FRAGMENT_ID_Article_Join",
+          "joinOn": {
+            "left": "FRAGMENT_ID_Article", 
+            "right": "FRAGMENT_ID_Article_Join",
+            "joinType": "join invalid"
+            }, 
+          "fields": {
+            "name_join":{
+              "scalarType":"string"
+            }
+          },
+          "includeFields": [
+            "name_join"
+          ]
+        }
+      ],
+      "boundingQuery": {
+        "wordQuery": {
+          "text":"Ukraine"
+        }
+      },
+      "readOnly": true
     }
   ]
 }
