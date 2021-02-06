@@ -75,7 +75,8 @@ function viewHashesValid(layerModelEntry) {
         //if they have the same # of hashes, loop through each hash and compare
         //them, if any one is different then return false
         if (Object.keys(descriptorLayerViewHashes).some(hash => {
-            descriptorLayerViewHashes[hash] != dbLayerViewHashes[hash]
+          if (DEBUG) xdmp.trace("GDS-DEBUG", "comparing layerModel view Hash " + descriptorLayerViewHashes[hash] + " to dbLayerView Hash " + dbLayerViewHashes[hash]);
+            return descriptorLayerViewHashes[hash] != dbLayerViewHashes[hash]
         })) {
             if (DEBUG) xdmp.trace("GDS-DEBUG", "descriptor's viewHashes don't match current view hashes");
             return false;
@@ -207,7 +208,7 @@ function getLayerModelIndexEntry(serviceName, layerId) {
             return layerModelEntry;
         else {
             //it's either not in the db or not current, so build a new one
-            let serviceModel = getServiceModel(serviceModel);
+            let serviceModel = getServiceModel(serviceName);
             layerModelEntry = calculateNewLayerModelIndex(serviceModel, layerId);
             //save it in the db
             saveLayerModelIndexEntryInDb(serviceModelEntry.uri, layerModelEntry);
@@ -423,7 +424,7 @@ function getViewHashes(layerModelIndexEntry) {
             let viewNameKey = layer.schema + "." + layer.view;
             getCachedHashOrDeferCalculation(viewNameKey, viewHashes, viewInfo);
         }
-        if (layer.datasources && Array.isArray(layer.datasources)) {
+        if (layer.dataSources && Array.isArray(layer.dataSources)) {
           for (let ds of layer.dataSources) {
               if (ds.source == "view") {
                   let viewNameKey = ds.schema + "." + ds.view;
