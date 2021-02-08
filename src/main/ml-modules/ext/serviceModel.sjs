@@ -1,4 +1,11 @@
 'use strict';
+
+/**
+ * The idea behind this module is to make retrieving the service and layer model(s)
+ * as efficient as possible, and to retrieve them only once per transaction.  Also,
+ * we need to avoid the use of server fields for the layer models themselves.  
+ */
+
 const err = require('/ext/error.sjs');
 const trace = require('/ext/trace.sjs');
 const sfc = require('/ext/server-field-cache.xqy');
@@ -8,14 +15,31 @@ const MAX_RECORD_COUNT = 5000;
 
 const DEBUG = xdmp.traceEnabled("GDS-DEBUG");
 
+/**
+ * This is a transaction-level index to hold service/layer models.  We reference
+ * the layer model several times during a transaction and this allows us easy/fast
+ * access to it.
+ */
 var serviceModelIndex = {
   
 };
 
+/**
+ * Retrieveing a layer model involves verifying that the underlying view beneath it
+ * has not changed.  We do that by calculating a 64-bit hash of the output of tde.getView(). 
+ * This object gives us a fast transaction-level index for the hashes associated with
+ * each view in the service/layer models.
+ */
 var viewHashIndex = {
   
 }
 
+/**
+ * 
+ * @param filter can be set to 'all', 'search' or 'geoserver'.alert
+ * 
+ * This method returns all service models that match the submitted filter.
+ */
 function getServiceModels(filter) {
   const validFilters = new Set(['all', 'search', 'geoserver']);
   const _filter = filter || 'all';
@@ -49,8 +73,12 @@ function getServiceModels(filter) {
     return allModels;
 }
 
+/**
+ * returns the service model for the given service Id.
+ * @param serviceId {String} The service id.
+ */
 function getServiceModel(serviceId) {
-    let entry = getServiceModelIndexEntry(serviceId, true);
+    let entry = getServiceModelIndexEntry(serviceId, false);
     return entry.serviceModel;
 }
 
@@ -59,6 +87,13 @@ function setLayerModelIndexEntry(serviceId, layer) {
     entry.layerModelIndex[layer.id] = layer;
 }
 
+/**
+ * This function validates that the view beneath the layerModel has not changed.  It
+ * does this by looking at the cached 64-bit hash(es) of the schema.view(s) the layer
+ * is based on and comparing those to the 64-bit hash(es) of the current version of
+ * the view(s) in the database.
+ * @param layerModelEntry {Object} The layer model to be validated.
+ */
 function viewHashesValid(layerModelEntry) {
     if (DEBUG) xdmp.trace("GDS-DEBUG", "Starting viewHashesValid");
     if (layerModelEntry) {
@@ -90,6 +125,17 @@ function viewHashesValid(layerModelEntry) {
     }
 }
 
+/**
+ * Return the layerModel index entry as a 'rehydrated' JSON object.  This object is
+ * stored as stringified JSON in a document metadata field on the service descriptor
+ * document.  The layerModel is created by parsing the contents of the document metadata field,
+ * validating the view hashes, and if validation passes it is cached in the corresponding
+ * serviceModel index entry and returned.  If either the metadata field is empty or the 
+ * view hashes fail validation, null is returned from this function.  This will force the layerModel
+ * to be regenerated and stored back to the db.
+ * @param serviceModelEntry {Object} the service model index entry from the transaction index
+ * @param layerId {int} the layer id we are looking for.
+ */
 function getLayerModelIndexEntryFromDb(serviceModelEntry, layerId) {
     if (DEBUG) xdmp.trace("GDS-DEBUG", "Starting getLayerModelIndexEntryFromDb");
     /*
@@ -124,6 +170,12 @@ function getLayerModelIndexEntryFromDb(serviceModelEntry, layerId) {
     return null;
 }
 
+/**
+ * This function (re)generates a layerModelIndexEntry for the given serviceModel
+ * and layer id. 
+ * @param serviceModel {Object} the service model
+ * @param layerId {int} the layer id
+ */
 function calculateNewLayerModelIndex(serviceModel, layerId) {
     if (DEBUG) xdmp.trace("GDS-DEBUG", "starting calculateNewLayerModelIndex");
     //if we got here, that means there was no pre-generated layer model, or 
@@ -171,11 +223,22 @@ function calculateNewLayerModelIndex(serviceModel, layerId) {
     }
 }
 
+/**
+ * Convenience function to efficiently retrieve the column definitions from
+ * index/cache as part of the query.
+ * @param serviceName {String} the service name/id
+ * @param layerId {int} the layer number
+ */
 function getColumnDefs(serviceName, layerId) {
   let layerModelIndexEntry = getLayerModelIndexEntry(serviceName, layerId);
   return layerModelIndexEntry.columnDefs;
 }
 
+/**
+ * Stores the layer model index entries to the correct document metadata field in the database.
+ * @param uri {String} the service descriptor document uri.
+ * @param layerModelIndexEntry {Object} the layerModel index entry to be stored to the db
+ */
 function saveLayerModelIndexEntryInDb(uri, layerModelIndexEntry) {
     xdmp.invokeFunction(function() {
         declareUpdate();
@@ -186,10 +249,19 @@ function saveLayerModelIndexEntryInDb(uri, layerModelIndexEntry) {
     {isolation:"different-transaction"});
 }
 
+/**
+ * Retrieves a layer model index entry from either the transaction cache or, if
+ * we haven't already retrieved it, from the database.  If there is no index
+ * entry saved in the database, it calculates a new one, caches it, stores it
+ * in the database, and returns it.
+ * @param serviceName {String} The service name/id 
+ * @param layerId {int} the layer number.
+ */
 function getLayerModelIndexEntry(serviceName, layerId) {
     let serviceModelEntry = null;
     try {
-        serviceModelEntry = getServiceModelIndexEntry(serviceName, false);
+        //get the service model, all we need here is a shallow copy/shell of the service model
+        serviceModelEntry = getServiceModelIndexEntry(serviceName);
     }
     catch(e) {
         xdmp.log(e);
@@ -219,8 +291,17 @@ function getLayerModelIndexEntry(serviceName, layerId) {
     }
 }
 
-
-function getServiceModelIndexEntry(serviceId, deep=false) {
+/**
+ * Gets a service model from the local transaction index.  It will return the 
+ * full service model or a lightweight shell, depending on the value of the 'lightweight' 
+ * parameter.
+ * @param serviceId {String} The service name/id we are looking for
+ * @param lightweight {boolean} @default true.  This is a boolean value that determines whether 
+ * we pull the full service descriptor from disk and build out a full service model entry 
+ * for all layers or whether we create a skeleton/shell entry that can be filled out later.
+ * Usually we want to do the latter.
+ */
+function getServiceModelIndexEntry(serviceId, lightweight=true) {
   //look in the transaction index first and return it if it's there.
   if (DEBUG) xdmp.trace("GDS-DEBUG", "getServiceModelIndexEntry(): Looking for serviceId " + serviceId);
   if (serviceModelIndex[serviceId]) {
@@ -232,18 +313,22 @@ function getServiceModelIndexEntry(serviceId, deep=false) {
     //if we're looking for the full model doc and we've already retrieved it,
     //return it.  Otherwise fall into the next block of code where we'll
     //retrieve the full doc.
-    if ((!deep) || (deep && entry.serviceModel != null))
+    if ((lightweight) || (!lightweight && entry.serviceModel != null))
       return entry;
   }
+
+  //If we got here, there's no index entry for the service model so we either pull it via a search
+  //or create a skeleton entry for it, depending on the value of the 'lightweight' param.  Either way
+  //we need this query.
   let modelQuery = cts.andQuery([
     cts.collectionQuery(SERVICE_DESCRIPTOR_COLLECTION),
     cts.jsonPropertyValueQuery("name", serviceId, ["exact"])
   ]);
 
-  if (deep) {
-    //if not, we always run a cts:search.  If we recently ran a search for the doc, it'll
-    //still be in cache and is just as fast as a server field, and if the doc changed 
-    //we'll get the latest copy
+  if (!lightweight) {
+    //if lightweight==false, we always run a cts:search.  If we recently ran a search for the doc, it'll
+    //still be in cache and is just as fast as a server field, and if the doc changed on disk
+    //we'll always get the latest copy this way.
     if (DEBUG) xdmp.trace("GDS-DEBUG", "getServiceModelIndexEntry(): serviceModelIndex[serviceId] not found, executing search");
     const modelDoc = fn.head(
       cts.search(modelQuery)
@@ -257,8 +342,8 @@ function getServiceModelIndexEntry(serviceId, deep=false) {
   else {
     if (DEBUG) xdmp.trace("GDS-DEBUG", "getServiceModelIndexEntry(): serviceModelIndex[serviceId] not found, creating shallow index entry");
     
-    //in this case we just make a shell entry to hold the layer index.  This
-    //avoids pulling the full descriptor doc.
+    // if lightweight == true, we just make a shell entry to hold the layer index.  This
+    //avoids the overhead of pulling the full descriptor doc.
     let uri = fn.head(cts.uris(null, null, modelQuery));
     if (DEBUG) xdmp.trace("GDS-DEBUG", "getServiceModelIndexEntry(): serviceModelIndex[serviceId]: uri = " + uri);
     setServiceModelIndexEntry(null, uri, serviceId);
@@ -267,6 +352,14 @@ function getServiceModelIndexEntry(serviceId, deep=false) {
   return serviceModelIndex[serviceId];
 }
 
+/**
+ * This function wraps a service descriptor doc in an index entry.  If modelDoc is null, it will use
+ * the uri and serviceName params to create a lightweight shell entry.
+ * 
+ * @param modelDoc {Node} the service model document from disk, may be null if uri and service name are provided
+ * @param uri {String} @default [null] The uri of the service model document. Used when creating a lightweight entry.    
+ * @param serviceName {String} @default [null] The service's service name/id. Used when creating a lightweight Entry.
+ */
 function setServiceModelIndexEntry(modelDoc, uri = null, serviceName = null) {
   if (modelDoc == null && uri != null) {
     if (DEBUG) xdmp.trace("GDS-DEBUG", "setServiceModelIndexEntry(); creating shallow index entry")
@@ -294,6 +387,11 @@ function setServiceModelIndexEntry(modelDoc, uri = null, serviceName = null) {
   }
 }
 
+/**
+ * Returns the layer model for the given service name/id and layer id.
+ * @param serviceName {String} the service name/id
+ * @param layerId {int} the layer number.
+ */
 function getLayerModel(serviceName, layerId) {
   if (DEBUG) xdmp.trace("GDS-DEBUG", "Starting getLayerModel");
 
@@ -319,6 +417,12 @@ function setFieldDescriptors(layer, serviceModel) {
   }
 }
 
+/**
+ * Saves a new service model to the database.
+ * @param serviceId {String} the service name/id
+ * @param model {Object} the service model
+ * @param uri {String} the uri to save the service descriptor to.
+ */
 function saveServiceModel(serviceId, model, uri) {
   declareUpdate();
   // TODO: add validate model before saving
@@ -365,6 +469,14 @@ function saveServiceModel(serviceId, model, uri) {
   xdmp.documentInsert(_uri, _model, options);
 }
 
+/**
+ * Retreive a view hash from the server field cache.  The key should be of the following
+ * form:  "[schema].[view name]".  This relies on the server-field-cache.xqy code that
+ * allows us to store items in the server field for a specific amount of time and then
+ * they get booted out.  This lets us refresh the view hashes every so often.
+ * 
+ * @param viewNameKey {String} key for the view hash in the form "schemaName.viewName"
+ */
 function getCachedViewHash(viewNameKey) {
     let cachedViewHash = fn.head(sfc.get(viewNameKey));
     //if it's in the serer field cache, use that
@@ -375,7 +487,17 @@ function getCachedViewHash(viewNameKey) {
     return cachedViewHash;
 }
 
-function getCachedHashOrDeferCalculation(viewNameKey, viewHashes, viewInfo) {
+/**
+ * Return cached view hashes.  In the case where we don't have a cached value for it, we will
+ * add the schema.view name to the viewsNeedingHashesCalculated parameter so we can calculate all the view hashes we
+ * need in one call.
+ * 
+ * @param viewNameKey {String} key for the view hash in the form "schemaName.viewName"/
+ * @param viewHashes {Object} an object to hold the view hashes
+ * @param viewsNeedingHashesCalculated {Array} array that will hold any schema.view combinations that need a 
+ * hash calculated
+ */
+function getCachedHashOrDeferCalculation(viewNameKey, viewHashes, viewsNeedingHashesCalculated) {
     //if it's in the transaction's index, use that
     if (DEBUG) xdmp.trace("GDS-DEBUG", "Looking for viewHash for " + viewNameKey + " in transaction cache...");
     if (viewHashIndex[viewNameKey] != null) {
@@ -392,7 +514,7 @@ function getCachedHashOrDeferCalculation(viewNameKey, viewHashes, viewInfo) {
         //if not, we have to calculate it
         else {
             if (DEBUG) xdmp.trace("GDS-DEBUG", "Deferring calculation of viewHash for " + viewNameKey + "...");
-            viewInfo.push(viewNameKey);
+            viewsNeedingHashesCalculated.push(viewNameKey);
         }
     }
 }
@@ -400,21 +522,21 @@ function getCachedHashOrDeferCalculation(viewNameKey, viewHashes, viewInfo) {
 /**
  * 
  * @param layerModelIndexEntry the layer index entry.
- * The intent of this function is to return the locally cached
+ * This function returns the locally cached
  * current hashes for the views referenced by the layer.  We will
  * evaluate whether they match the layer's pre-calculated hashes in
  * the viewUpdated() function.
  */
 function getViewHashes(layerModelIndexEntry) {
     let layer = layerModelIndexEntry.layerModel;
-    let viewInfo = [];
+    let viewsNeedingHashesCalculated = [];
     let viewHashes = {};
 
     //If the layerModel index entry already has hashes pre-calculated, we'll
     //look at those and return them
     if (layerModelIndexEntry.viewHashes != null && Object.keys(layerModelIndexEntry.viewHashes).length > 0) {
         for (let viewNameKey in layerModelIndexEntry.viewHashes) {
-            getCachedHashOrDeferCalculation(viewNameKey, viewHashes, viewInfo);
+            getCachedHashOrDeferCalculation(viewNameKey, viewHashes, viewsNeedingHashesCalculated);
         }
     }
     //if there are no viewHashes, we have to look to see if there
@@ -422,24 +544,25 @@ function getViewHashes(layerModelIndexEntry) {
     else {
         if (layer.source == "view" || layer.dataSources == null) {
             let viewNameKey = layer.schema + "." + layer.view;
-            getCachedHashOrDeferCalculation(viewNameKey, viewHashes, viewInfo);
+            getCachedHashOrDeferCalculation(viewNameKey, viewHashes, viewsNeedingHashesCalculated);
         }
         if (layer.dataSources && Array.isArray(layer.dataSources)) {
           for (let ds of layer.dataSources) {
               if (ds.source == "view") {
                   let viewNameKey = ds.schema + "." + ds.view;
-                  getCachedHashOrDeferCalculation(viewNameKey, viewHashes, viewInfo);
+                  getCachedHashOrDeferCalculation(viewNameKey, viewHashes, viewsNeedingHashesCalculated);
               }
           }
         }
     }
 
-    if (DEBUG) xdmp.trace("GDS-DEBUG", Sequence.from(["viewInfo:", viewInfo, "viewHashes:", viewHashes]));
-    if (viewInfo.length > 0) {
+    if (DEBUG) xdmp.trace("GDS-DEBUG", Sequence.from(["viewsNeedingHashesCalculated:", viewsNeedingHashesCalculated, "viewHashes:", viewHashes]));
+    if (viewsNeedingHashesCalculated.length > 0) {
         //only go calculate hashes if we haven't done so already in this transaction
-        //TODO:  !!!!if we got here, we need to update the layerModel document metadata!!!!
-        if (DEBUG) xdmp.trace("GDS-DEBUG", Sequence.from(["calculating view hashes", viewInfo]));
-        let retrievedViewHashes = fn.head(xdmp.invoke("/ext/view-hash.xqy", { input: Sequence.from(viewInfo) }));
+        if (DEBUG) xdmp.trace("GDS-DEBUG", Sequence.from(["calculating view hashes", viewsNeedingHashesCalculated]));
+
+        //We calculate these in xquery because it is WAY faster than javascript
+        let retrievedViewHashes = fn.head(xdmp.invoke("/ext/view-hash.xqy", { input: Sequence.from(viewsNeedingHashesCalculated) }));
         if (DEBUG) xdmp.trace("GDS-DEBUG", Sequence.from(["retrieved view hashes", retrievedViewHashes]));
         for (let key in retrievedViewHashes) {
             let hashStr = retrievedViewHashes[key].toString()
@@ -454,11 +577,20 @@ function getViewHashes(layerModelIndexEntry) {
     return viewHashes;
 }
 
+
+/**
+ * This function determines if the view has been updated since the layer model index entry
+ * was rendered.
+ * @param layerModelIndexEntry {Object} the layer model index entry to check
+ */
 function viewUpdated(layerModelIndexEntry) {
   if (DEBUG) xdmp.trace("GDS-DEBUG", "Starting viewUpdated");
+
+  //if we have no view hashes then we always need to check
   if (layerModelIndexEntry.viewHashes == null)
     return true;
   
+  //get the hashes for the view(s) this layer is based on
   let viewHashes = getViewHashes(layerModelIndexEntry);
   if (Object.keys(viewHashes).length != Object.keys(layerModelIndexEntry.viewHashes).length) {
     if (xdmp.traceEnabled("GDS-DEBUG")) {
@@ -467,6 +599,7 @@ function viewUpdated(layerModelIndexEntry) {
       if (DEBUG) xdmp.trace("GDS-DEBUG", "layer viewhashes length:");
       if (DEBUG) xdmp.trace("GDS-DEBUG", Object.keys(layerModelIndexEntry.viewHashes).length);
     }
+    //if the lengths of the layer's view hashes and the introspected view hashes are different, return true
     return true;
   }
   for (let key in viewHashes) {
@@ -476,6 +609,7 @@ function viewUpdated(layerModelIndexEntry) {
         xdmp.trace("GDS-DEBUG", layerModelIndexEntry.viewHashes);
         xdmp.trace("GDS-DEBUG", viewHashes);
       }
+      //if any of the view hashes are different, return true
       return true;
     }
   }
@@ -483,11 +617,24 @@ if (DEBUG) xdmp.trace("GDS-DEBUG", "layer views up-to-date");
 return false;
 }
 
+/**
+ * Returns the schema that the layer is based on.  If the descriptor/layer has no schema
+ * or view specified, return the serviceName as a placeholder schema name.
+ * @param layerDesc {Object} the layer descriptor
+ * @param serviceName {String} the service name/id the layer belongs to
+ */
 function getSchema(layerDesc, serviceName) {
   if (DEBUG) xdmp.trace("GDS-DEBUG", "Starting getSchema");
   return layerDesc.schema || serviceName;
 }
 
+/**
+ * Generates an array of field descriptors for the overall layer.  This will
+ * combine any joined views to create a single array of column names and datatypes.
+ * 
+ * @param layerModel {Object} the layer model for the service layer
+ * @param serviceName {String} the service name/id
+ */
 function generateFieldDescriptors(layerModel, serviceName) {
   if (DEBUG) xdmp.trace("GDS-DEBUG", "Starting generateFieldDescriptors");
   if (layerModel.view === undefined) {
@@ -497,6 +644,11 @@ function generateFieldDescriptors(layerModel, serviceName) {
   }
 }
 
+/**
+ * Create field descriptors for a layer that uses a view.
+ * @param layerModel {Object} the layer model for the service layer
+ * @param serviceName {String} the service name/id
+ */
 function generateFieldDescriptorsFromViewAndJoins(layerModel, serviceName) {
   if (DEBUG) xdmp.trace("GDS-DEBUG", "Starting generateFieldDescriptorsFromViewAndJoins");
   const fields = [];
@@ -513,6 +665,11 @@ function generateFieldDescriptorsFromViewAndJoins(layerModel, serviceName) {
   return fields;
 }
 
+/**
+ * Create field descriptors from a set of joined dataSources
+ * @param layerModel {Object} the layer model for the service layer
+ * @param serviceName {String} the service name/id
+ */
 function generateFieldDescriptorsFromDataSourcesArray(layerModel, serviceName) {
   if (DEBUG) xdmp.trace("GDS-DEBUG", "Starting generateFieldDescriptorsFromDataSourcesArray");
   const fields = [];
@@ -542,6 +699,10 @@ function generateFieldDescriptorsFromDataSourcesArray(layerModel, serviceName) {
   return fields;
 }
 
+/**
+ * Create field descriptors from the join array
+ * @param layerModel {Object} the layer model for the service layer
+ */
 function generateJoinFieldDescriptorsFromViewAndJoins(layerModel) {
   if (DEBUG) xdmp.trace("GDS-DEBUG", "Starting generateJoinFieldDescriptorsFromViewAndJoins");
   const fields = [];
@@ -555,6 +716,10 @@ function generateJoinFieldDescriptorsFromViewAndJoins(layerModel) {
   return fields;
 }
 
+/**
+ * Create field descriptors from a single dataSource array element
+ * @param dataSource {Object} a single dataSources array element from the layer's dataSources aray
+ */
 function generateJoinFieldDescriptorsFromDataSource(dataSource) {
   if (DEBUG) xdmp.trace("GDS-DEBUG", "Starting generateJoinFieldDescriptorsFromDataSource");
   const fields = [];
@@ -566,6 +731,11 @@ function generateJoinFieldDescriptorsFromDataSource(dataSource) {
   return fields;
 }
 
+/**
+ * Create field descriptors for a dataSource based on a view definition
+ * @param viewDef {Object} a view definition returned by tde.getView()
+ * @param dataSource {String} the service name/id
+ */
 function generateFieldDescriptorsFromViewDef(viewDef, dataSource) {
   if (DEBUG) xdmp.trace("GDS-DEBUG", "Starting generateFieldDescriptorsFromViewDef");
   const fields = [];
@@ -586,6 +756,13 @@ function generateFieldDescriptorsFromViewDef(viewDef, dataSource) {
   return fields;
 }
 
+/**
+ * 
+ * @param fieldName {String} the column name
+ * @param scalarType {String} the colunn's data type
+ * @param alias {String} the Esri alias that will be used for this field
+ * @param includeFields Unused
+ */
 function createFieldDescriptor(fieldName, scalarType, alias, includeFields) {
   if (DEBUG) xdmp.trace("GDS-DEBUG", "Starting createFieldDescriptor");
   let fieldDescriptor = {
@@ -601,6 +778,10 @@ function createFieldDescriptor(fieldName, scalarType, alias, includeFields) {
   return fieldDescriptor;
 }
 
+/**
+ * Returns the Esri datatype for the supplied XML Schema datatype localname 
+ * @param datatype the localname of the XML Schema datatype
+ */
 function getFieldType(datatype) {
   if (DEBUG) xdmp.trace("GDS-DEBUG", "Starting getFieldType");
   switch(datatype) {
@@ -655,6 +836,15 @@ function getFieldType(datatype) {
   }
 }
 
+/**
+ * Generates a layer descriptor for the supplied layer id.  This function should be used only to 
+ * back the Esri catalog request for the layer descriptor itself.  It should not be used to return
+ * the layer descriptor for data requests because it generates the full service descriptor and all 
+ * layer descriptors beneath it, making it relatively inefficient.
+ * 
+ * @param serviceName {String} The service name/id
+ * @param layerNumber {int} the layer number
+ */
 function generateLayerDescriptor(serviceName, layerNumber) {
   if (DEBUG) xdmp.trace("GDS-DEBUG", "Starting generateLayerDescriptor");
   if (DEBUG) xdmp.trace("GDS-DEBUG", "generating layer descriptor for " + serviceName + ":" + layerNumber);
@@ -673,11 +863,19 @@ function generateLayerDescriptor(serviceName, layerNumber) {
   }
 }
 
-
+/**
+ * Generates a service descriptor for the supplied service id.  This function should be used only to 
+ * back the Esri catalog request for the service descriptor itself.  It should not be used to return
+ * the service descriptor for data requests because it generates the full service descriptor and all 
+ * layer descriptors beneath it, making it relatively inefficient.
+ * 
+ * @param serviceName {String} The service name/id
+ * @param layerNumber {int} the layer number
+ */
 function generateServiceDescriptor(serviceName, layerNumber) {
   if (DEBUG) xdmp.trace("GDS-DEBUG", "Starting generateServiceDescriptor");
 
-  let serviceModelIndexEntry = getServiceModelIndexEntry(serviceName, true);
+  let serviceModelIndexEntry = getServiceModelIndexEntry(serviceName, false);
 
   if (serviceModelIndexEntry.descriptor == null) {
     if (DEBUG) xdmp.trace("GDS-DEBUG", "generating service descriptor for " + serviceName + (layerNumber == null || layerNumber == undefined ? ", all layers" : ", layer " + layerNumber));
@@ -724,7 +922,14 @@ function generateServiceDescriptor(serviceName, layerNumber) {
   return serviceModelIndexEntry.descriptor;
 }
 
-
+/**
+ * Transforms the on-disk service model document into a descriptor that can be returned
+ * to the client for the catalog service calls.
+ * 
+ * @param serviceModel {Node} the service descriptor document from the db
+ * @param serviceName {String} the service name/id
+ * @param layerNumber {int} the layer number
+ */
 function transformServiceModelToDescriptor(serviceModel, serviceName, layerNumber) {
   const desc = {
     description: serviceModel.info.description,
@@ -754,6 +959,12 @@ function transformServiceModelToDescriptor(serviceModel, serviceName, layerNumbe
   return desc;
 }
 
+/**
+ * Builds a descriptor that can be used to answer the Esri catalog service requests for
+ * the layer definition.
+ * @param serviceName {String} the service name/id
+ * @param layerModel {Object} the layer model for the layer
+ */
 function _buildOneLayerDescriptor(serviceName, layerModel) {
     if (DEBUG) xdmp.trace("GDS-DEBUG", Sequence.from(["layerModel:", layerModel.id]));
     const layer = {
