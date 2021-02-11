@@ -20,7 +20,7 @@ const DEBUG = xdmp.traceEnabled("GDS-DEBUG");
  * the layer model several times during a transaction and this allows us easy/fast
  * access to it.
  */
-var serviceModelIndex = {
+const serviceModelIndex = {
   
 };
 
@@ -30,7 +30,7 @@ var serviceModelIndex = {
  * This object gives us a fast transaction-level index for the hashes associated with
  * each view in the service/layer models.
  */
-var viewHashIndex = {
+const viewHashIndex = {
   
 }
 
@@ -401,24 +401,11 @@ function getLayerModel(serviceName, layerId) {
   return layerModelIndexEntry.layerModel;
 }
 
-function setFieldDescriptors(layer, serviceModel) {
-  if (layer.gdsMetadata == null || layer.gdsMetadata.columnDefs == null || viewUpdated(layer)) {
-    if (DEBUG) xdmp.trace("GDS-DEBUG", "view(s) updated, regenerating field descriptors");
-    let columnDefs = generateFieldDescriptors(layer, serviceName)
-    if (layer.gdsMetadata == null) layer.gdsMetadata = {};
-    layer.gdsMetadata.viewHashes = getViewHashes(layer);
-    layer.gdsMetadata.columnDefs = columnDefs;
-
-    // xdmp.invokeFunction(function() {
-    //   saveServiceModel(serviceName, serviceModel);
-    // },
-    // {isolation:"different-transaction"}
-    // );
-  }
-}
-
 /**
- * Saves a new service model to the database.
+ * Saves a new service model to the database.  This function assumes that at some point
+ * earlier in the transaction, sm.getServiceModel(id, false) has been called with the
+ * second paramater set to false to load a heavyweight full service model, or that we
+ * are saving a brand new service model to the db.
  * @param serviceId {String} the service name/id
  * @param model {Object} the service model
  * @param uri {String} the uri to save the service descriptor to.
@@ -429,7 +416,7 @@ function saveServiceModel(serviceId, model, uri) {
   if (model == null) {
     throw "model is null";
   }
-  
+
   let _uri;
   let _model = model;
   
@@ -980,10 +967,6 @@ function _buildOneLayerDescriptor(serviceName, layerModel) {
     let layerModelIndexEntry = getLayerModelIndexEntry(serviceName, layerModel.id);
     layer.metadata.fields = layerModelIndexEntry.columnDefs;
 
-//    setFieldDescriptors(layerModel, serviceModel);
-
-    // add the list of fields to the metadata
-//   layer.metadata.fields = layerModel.gdsMetadata.columnDefs;
     return layer;
 }
 
