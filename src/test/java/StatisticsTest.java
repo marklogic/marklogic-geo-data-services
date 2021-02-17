@@ -3,7 +3,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.RestAssured;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class StatisticsTest  extends AbstractFeatureServiceTest{
 
@@ -120,8 +120,8 @@ public class StatisticsTest  extends AbstractFeatureServiceTest{
                 .body("statistics[0].min_urltone", is(-21.77f))
                 .body("statistics[0].max_urltone", is(16.23f))
                 .body("statistics[0].avg_urltone", is(-1.1373726299497f))
-                .body("statistics[0].stddev_urltone", is(3.6335345176664f))
-                .body("statistics[0].var_urltone", is(13.2025730910732f))
+                .body("statistics[0].stddev_urltone", allOf(greaterThanOrEqualTo(3.6330f), lessThanOrEqualTo(3.6340f)))
+                .body("statistics[0].var_urltone", allOf(greaterThanOrEqualTo(13.2020f), lessThanOrEqualTo(13.2030f)))
         ;
     }
 }
