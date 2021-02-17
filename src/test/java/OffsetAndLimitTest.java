@@ -17,7 +17,7 @@ public class OffsetAndLimitTest extends AbstractFeatureServiceTest {
                 .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .post(url)
+                .post()
             .then()
                 .log().ifError()
                 .log().all()
