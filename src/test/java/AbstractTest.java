@@ -1,4 +1,6 @@
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
+import io.restassured.path.json.config.JsonPathConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.*;
@@ -25,5 +27,11 @@ public abstract class AbstractTest {
 
     Log getLogger() {
         return LogFactory.getLog(AbstractTest.class);
+    }
+
+    public JsonPath getJson(String requestFile) {
+        String pathToFile = "/" + getClass().getName() + "/" + requestFile;
+        getLogger().info("pathToFile: " + pathToFile);
+        return new JsonPath(AbstractFeatureServiceTest.class.getResource(pathToFile)).using(new JsonPathConfig(JsonPathConfig.NumberReturnType.BIG_DECIMAL));
     }
 }

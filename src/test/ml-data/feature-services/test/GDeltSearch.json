@@ -1,0 +1,96 @@
+{
+  "info" : {
+    "name" : "GDeltSearch",
+    "description" : "Test feature"
+  },
+
+  "search": {
+    "options": "example-gkg-options",
+    "docTransform": "example-gkg-transform"
+  },
+
+  "layers" : [
+    {
+      "id": 0,
+      "name" : "GKG",
+      "description": "All GDelt articles",
+      "geometryType": "Point",
+      "idField": "OBJECTID",
+      "displayField": "name",
+      "extent" : {
+        "xmin" : -180,
+        "ymin" : -90,
+        "xmax" : 180,
+        "ymax" : 90,
+        "spatialReference" : {
+          "wkid" : 4326,
+          "latestWkid" : 4326
+        }
+      },
+      "schema": "GDeltGKG",
+      "view" : "Article",
+      "geometry" : {
+        "type" : "Point",
+        "format" : "geojson",
+        "coordinateSystem" : "wgs84",
+        "xpath" : "//geometry"
+      },
+      "search": {
+        "geoConstraint": "Location"
+      },
+      "readOnly": true
+    },
+    {
+      "id": 1,
+      "name" : "Layer save slot",
+      "geometryType": "Point",
+      "idField": "OBJECTID",
+      "displayField": "name",
+      "extent" : {
+        "xmin" : -180,
+        "ymin" : -90,
+        "xmax" : 180,
+        "ymax" : 90,
+        "spatialReference" : {
+          "wkid" : 4326,
+          "latestWkid" : 4326
+        }
+      },
+      "schema": "GDeltGKG",
+      "view" : "Article",
+      "geometry" : {
+        "type" : "Point",
+        "format" : "geojson",
+        "coordinateSystem" : "wgs84",
+        "xpath" : "//geometry"
+      }
+    },
+    {
+      "id": 2,
+      "name" : "Read-only layer",
+      "description": "",
+      "geometryType": "Point",
+      "idField": "OBJECTID",
+      "displayField": "name",
+      "extent" : {
+        "xmin" : -180,
+        "ymin" : -90,
+        "xmax" : 180,
+        "ymax" : 90,
+        "spatialReference" : {
+          "wkid" : 4326,
+          "latestWkid" : 4326
+        }
+      },
+      "schema": "GDeltGKG",
+      "view" : "Article",
+      "geometry" : {
+        "type" : "Point",
+        "format" : "geojson",
+        "coordinateSystem" : "wgs84",
+        "xpath" : "//geometry"
+      },
+      "readOnly": true
+    }
+  ]
+}

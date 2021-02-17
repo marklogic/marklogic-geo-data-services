@@ -90,6 +90,8 @@ task loadGDeltTestData(type: com.marklogic.gradle.task.MlcpTask) {
   output_collections = "example-gkg,test-data"
   output_permissions = "rest-reader,read,rest-writer,update"
   output_uri_replace = ".*/data/test/,'/'"
+  transform_module = "/transform-gkg.sjs"
+  transform_function = "transformGKG"
 }
 
 task loadGeoLocationTestData(type: com.marklogic.gradle.task.MlcpTask) {

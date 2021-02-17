@@ -9,7 +9,7 @@ public class ModelServiceTests extends AbstractTest {
         RestAssured.basePath = "/LATEST/resources/modelService";
     }
 
-    private String[] expectedModels = new String[] { "GeoLocation", "GDeltGKG", "DataSourceArrayExample" };
+    private String[] expectedModels = new String[] { "GeoLocation", "GDeltGKG", "GDeltSearch", "DataSourceArrayExample" };
 
     @Test
     public void allModels() {
@@ -21,6 +21,22 @@ public class ModelServiceTests extends AbstractTest {
                 .log().ifValidationFails()
                 .body("models.size()", equalTo(expectedModels.length))
                 .body("models.keySet()", hasItems(expectedModels))
+        ;
+    }
+
+    @Test
+    public void allSearchEnabledModels() {
+        RestAssured
+            .given()
+                .queryParam("rs:filter", "search")
+            .when()
+                .get()
+            .then()
+                .log().ifError()
+                .statusCode(200)
+                .log().ifValidationFails()
+                .body("models.size()", equalTo(1))
+                .body("models.keySet()", hasItem("GDeltSearch" ))
         ;
     }
 
