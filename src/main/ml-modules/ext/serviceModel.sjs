@@ -419,14 +419,14 @@ function saveServiceModel(serviceId, model, uri) {
 
   let _uri;
   let _model = model;
-  
+
   if (serviceModelIndex[serviceId] == null && uri != null) {
     //this is a brand new model
     _uri = uri;
   }
   else if (serviceModelIndex[serviceId] != null && (uri == null || uri == undefined)) {
     //we loaded the model from disk in this transaction, get the uri from the serviceModelIndex
-    _uri = xdmp.nodeUri(serviceModelIndex[serviceId]);
+    _uri = serviceModelIndex[serviceId].uri;
   }
   else {
     //we have some situation we don't expect
