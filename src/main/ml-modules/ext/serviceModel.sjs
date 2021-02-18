@@ -371,7 +371,8 @@ function setServiceModelIndexEntry(modelDoc, uri = null, serviceName = null) {
     };
   } 
   else {
-    let modelObj = modelDoc.toObject();
+    //modelDoc could actually be an Object or a database Document so set modelObj accordingly
+    let modelObj = modelDoc.toObject != null ? modelDoc.toObject() : modelDoc
     let serviceId = modelObj.info.name;
     if (serviceModelIndex[serviceId] != null) {
       serviceModelIndex[serviceId].serviceModel = modelObj;
@@ -452,7 +453,7 @@ function saveServiceModel(serviceId, model, uri) {
     quality: xdmp.documentGetQuality(_uri)
   };
 
-  serviceModelIndex[_uri] = _model;
+  setServiceModelIndexEntry(model, _uri, serviceId);
   xdmp.documentInsert(_uri, _model, options);
 }
 
@@ -864,9 +865,9 @@ function generateServiceDescriptor(serviceName, layerNumber) {
 
   let serviceModelIndexEntry = getServiceModelIndexEntry(serviceName, false);
 
-  if (serviceModelIndexEntry.descriptor == null) {
+  if (serviceModelIndexEntry.serviceDescriptor == null) {
     if (DEBUG) xdmp.trace("GDS-DEBUG", "generating service descriptor for " + serviceName + (layerNumber == null || layerNumber == undefined ? ", all layers" : ", layer " + layerNumber));
-    serviceModelIndexEntry.descriptor = transformServiceModelToDescriptor(serviceModelIndexEntry.serviceModel, serviceName, layerNumber);
+    serviceModelIndexEntry.serviceDescriptor = transformServiceModelToDescriptor(serviceModelIndexEntry.serviceModel, serviceName, layerNumber);
   } 
   else {
     if (DEBUG) xdmp.trace("GDS-DEBUG", "using cached service descriptor for " + serviceName);
@@ -874,7 +875,7 @@ function generateServiceDescriptor(serviceName, layerNumber) {
     //if we're looking for all layers, we have to make sure that all of them have
     //already been generated
     let serviceModel = serviceModelIndexEntry.serviceModel;
-    let descriptor = serviceModelIndexEntry.descriptor;
+    let descriptor = serviceModelIndexEntry.serviceDescriptor;
 
     //if we're asking for the full service descriptor, build any layer descriptors that are missing
     if (layerNumber == null || layerNumber == undefined) {
@@ -906,7 +907,7 @@ function generateServiceDescriptor(serviceName, layerNumber) {
         }
     }
   }
-  return serviceModelIndexEntry.descriptor;
+  return serviceModelIndexEntry.serviceDescriptor;
 }
 
 /**
