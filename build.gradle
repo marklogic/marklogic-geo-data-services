@@ -111,10 +111,11 @@ task loadGeoLocationTestData(type: com.marklogic.gradle.task.MlcpTask) {
  */
 
 task resetAndTest {
-    dependsOn 'mlClearContentDatabase', 'mlRedeploy', 'loadTestData', 'test'
+    dependsOn 'mlClearContentDatabase', 'mlRedeploy', 'loadTestData', 'cleanTest', 'test'
     tasks.findByName('mlRedeploy').mustRunAfter 'mlClearContentDatabase'
     tasks.findByName('loadTestData').mustRunAfter 'mlRedeploy'
-    tasks.findByName('test').mustRunAfter 'loadTestData'
+    tasks.findByName('cleanTest').mustRunAfter 'loadTestData'
+    tasks.findByName('test').mustRunAfter 'cleanTest'
 }
 
 /*
