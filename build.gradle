@@ -106,7 +106,16 @@ task loadGeoLocationTestData(type: com.marklogic.gradle.task.MlcpTask) {
   output_uri_replace = ".*/data/test/,'/'"
 }
 
+/*
+ * "Full reset" and test.  To run, include the argument -Pconfirm=true (required by mlClearContentDatabase)
+ */
 
+task resetAndTest {
+    dependsOn 'mlClearContentDatabase', 'mlRedeploy', 'loadTestData', 'test'
+    tasks.findByName('mlRedeploy').mustRunAfter 'mlClearContentDatabase'
+    tasks.findByName('loadTestData').mustRunAfter 'mlRedeploy'
+    tasks.findByName('test').mustRunAfter 'loadTestData'
+}
 
 /*
  * Tasks needed for deploying a gradle plugin to BinTray
