@@ -14,6 +14,7 @@ const SERVICE_DESCRIPTOR_COLLECTION = 'http://marklogic.com/feature-services';
 const MAX_RECORD_COUNT = 5000;
 
 const DEBUG = xdmp.traceEnabled("GDS-DEBUG");
+const TRACE = xdmp.traceEnabled("GDS-TRACE")
 
 /**
  * This is a transaction-level index to hold service/layer models.  We reference
@@ -353,6 +354,32 @@ function getServiceModelIndexEntry(serviceId, lightweight=true) {
 }
 
 /**
+ * This function makes a quick lookup table between the geoserver layer names and
+ * layer ID's.  This provides a good interface between most of the functions in this
+ * module that rely on layer ID's and geoserver, which cares about layer names vs ids.
+ * 
+ * @param serviceModelIndexEntry The service model index entry for the service model
+ */
+function buildGeoServerLayerIdMap(serviceModelIndexEntry) {
+  if (DEBUG) xdmp.trace("GDS-DEBUG", Sequence.from([
+    "buildGeoServerLayerIdMap(); entered"
+  ]));
+
+  if (TRACE) {
+    xdmp.trace("GDS-TRACE", Sequence.from([
+      "serviceModelIndexEntry", serviceModelIndexEntry
+    ]));
+  }
+
+  let modelObj = serviceModelIndexEntry.serviceModel;
+  for (let l of modelObj.layers) {
+    if (l.geoServerMetadata && l.geoServerMetadata.geoServerLayerName) {
+      serviceModelIndexEntry.geoServerLayerMap[l.geoServerMetadata.geoServerLayerName] = l.id;
+    }
+  }
+}
+
+/**
  * This function wraps a service descriptor doc in an index entry.  If modelDoc is null, it will use
  * the uri and serviceName params to create a lightweight shell entry.
  * 
@@ -361,12 +388,25 @@ function getServiceModelIndexEntry(serviceId, lightweight=true) {
  * @param serviceName {String} @default [null] The service's service name/id. Used when creating a lightweight Entry.
  */
 function setServiceModelIndexEntry(modelDoc, uri = null, serviceName = null) {
+  if (DEBUG) xdmp.trace("GDS-DEBUG", Sequence.from([
+    "setServiceModelIndexEntry(): entered"
+  ]));
+
+  if (TRACE) {
+    xdmp.trace("GDS-TRACE", Sequence.from([
+      "modelDoc:", modelDoc,
+      "uri:", uri,
+      "serviceName:", serviceName
+    ]));
+  }
+
   if (modelDoc == null && uri != null) {
-    if (DEBUG) xdmp.trace("GDS-DEBUG", "setServiceModelIndexEntry(); creating shallow index entry")
+    if (DEBUG) xdmp.trace("GDS-DEBUG", "setServiceModelIndexEntry(); creating shallow index entry");
     serviceModelIndex[serviceName] = {
       serviceModel:null,
       serviceDescriptor:null,
       layerModelIndex:{},
+      geoServerLayerMap:{},
       uri:uri
     };
   } 
@@ -374,16 +414,20 @@ function setServiceModelIndexEntry(modelDoc, uri = null, serviceName = null) {
     let modelObj = modelDoc.toObject();
     let serviceId = modelObj.info.name;
     if (serviceModelIndex[serviceId] != null) {
+      if (DEBUG) xdmp.trace("GDS-DEBUG", "setServiceModelIndexEntry(); updating existing shallow serviceModelIndex entry with model doc");
       serviceModelIndex[serviceId].serviceModel = modelObj;
     }
     else {
+      if (DEBUG) xdmp.trace("GDS-DEBUG", "setServiceModelIndexEntry(); setting new serviceModelIndex deep entry");
       serviceModelIndex[serviceId] = {
           serviceModel:modelObj,
           serviceDescriptor:null,
           layerModelIndex:{},
+          geoServerLayerMap:{},
           uri:xdmp.nodeUri(modelDoc)
         };
     }
+  buildGeoServerLayerIdMap(serviceModelIndex[serviceId]);
   }
 }
 
@@ -970,6 +1014,45 @@ function _buildOneLayerDescriptor(serviceName, layerModel) {
     return layer;
 }
 
+/**
+ * This function gets the geoserver layer schema for a particular geoserver layer name.
+ * This function does its own searches/etc and sets the serviceModelIndex entry for the 
+ * service model returned.  This function only gets called as part of a geoserver request
+ * for the layer schema, which is always done as a separate transaction.
+ * @param layerName The GeoServer-specific layer name
+ */
+function getGeoServerLayerSchema(layerName) {
+  let serviceModel = fn.head(cts.search(
+    cts.andQuery([
+      cts.collectionQuery(SERVICE_DESCRIPTOR_COLLECTION),
+      cts.jsonPropertyValueQuery("geoServerLayerName", layerName)
+    ])
+  ));
+
+  if (!serviceModel) {
+    xdmp.trace("GDS-DEBUG", "Unable to find service descriptor with geoServerLayerName of " + layerName);
+    throw "No layer info found for: " + layerName;
+  }
+
+  //this function will build a map of geoserver layer names to layer id's
+  setServiceModelIndexEntry(serviceModel);
+  let serviceId = serviceModel.root.info.name;
+  let layerId = serviceModelIndex[serviceId].geoServerLayerMap[layerName];
+
+  if (layerId == null) {
+    xdmp.trace("GDS-DEBUG", "No layer info found for: " + layerName);
+    throw "No layer info found for: " + layerName;
+  }
+  let layer = generateLayerDescriptor(serviceId, layerId);
+  if (layer == null) {
+    xdmp.trace("GDS-DEBUG", "No layer info found for: " + layerName);
+    throw "No layer info found for: " + layerName;
+  }
+
+  layer.serviceName = serviceModel.root.info.name;
+  return layer;
+}
+
 exports.getServiceModels = module.amp(getServiceModels);
 exports.getServiceModel = module.amp(getServiceModel);
 exports.getLayerModel = module.amp(getLayerModel);
@@ -977,3 +1060,4 @@ exports.saveServiceModel = module.amp(saveServiceModel);
 exports.generateLayerDescriptor = module.amp(generateLayerDescriptor);
 exports.generateServiceDescriptor = module.amp(generateServiceDescriptor);
 exports.getColumnDefs = module.amp(getColumnDefs);
+exports.getGeoServerLayerSchema = module.amp(getGeoServerLayerSchema);
