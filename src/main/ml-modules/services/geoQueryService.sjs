@@ -90,14 +90,19 @@ function getGeoServerData(req) {
     return getGeoServerLayerNames();
   }
   else if (req.geoserver.method == "getLayerSchema") {
-    return getGeoServerLayerSchema(req.geoserver.layerName);
+    return sm.getGeoServerLayerSchema(req.geoserver.layerName);
   }
 }
 
 function getGeoServerLayerNames() {
   const collection = "http://marklogic.com/feature-services";
   let layerNames = [];
-  for (let descriptorDoc of cts.search(cts.collectionQuery(collection))) {
+  for (let descriptorDoc of cts.search(
+    cts.andQuery([
+      cts.collectionQuery(collection),
+      cts.jsonPropertyScopeQuery("geoServerLayerName", cts.trueQuery())
+    ])
+    )) {
     let descriptor = descriptorDoc.toObject();
 
     for (let layer of descriptor.layers) {
@@ -106,32 +111,6 @@ function getGeoServerLayerNames() {
     }
   }
   return layerNames;
-}
-
-function getGeoServerLayerSchema(layerName) {
-  
-  let geoserverModels = sm.getServiceModels("geoserver");
-  let model = geoserverModels.find(m => m.layers.find(l => l.geoServerMetadata && l.geoServerMetadata.geoServerLayerName === layerName));
-  if (!model) {
-    xdmp.trace("GDS-DEBUG", "Unable to find service descriptor with geoServerLayerName of " + layerName);
-    throw "No layer info found for: " + layerName;
-  }
-
-  let serviceDesc = sm.transformServiceModelToDescriptor(model, model.info.name);
-
-  let layer = null;
-  if (serviceDesc) {
-    xdmp.trace("GDS-DEBUG", "Found layer: " + layerName);
-    layer =
-      serviceDesc.layers.find((l) => {
-        return l.metadata && l.metadata.geoServerMetadata && l.metadata.geoServerMetadata.geoServerLayerName == layerName;
-      });
-    layer.serviceName = model.info.name;
-  } else {
-    xdmp.trace("GDS-DEBUG", "No layer info found for: " + layerName);
-    throw "No layer info found for: " + layerName;
-  }
-  return layer;
 }
 
 function getDateTime(durationOrTimestamp) {
