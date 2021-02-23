@@ -1,0 +1,15 @@
+{
+  "params": {
+    "id": "GDeltSearch"
+  },
+  "search": {
+    "viewport": {
+      "box": {
+        "n": 45,
+        "s": -45,
+        "w": -90,
+        "e": 90
+      }
+    }
+  }
+}

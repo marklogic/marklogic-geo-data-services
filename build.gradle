@@ -61,13 +61,11 @@ test {
         println "host: " + mlHost
         println "port: " + mlRestPort
         println "user: " + mlUsername
-        println "service: " + serviceName
     }
     systemProperty "feature.host", mlHost
     systemProperty "feature.port", mlRestPort
     systemProperty "feature.user", mlUsername
     systemProperty "feature.password", mlPassword
-    systemProperty "feature.service", serviceName
     systemProperty "gds.version", project.version
 }
 
@@ -92,6 +90,8 @@ task loadGDeltTestData(type: com.marklogic.gradle.task.MlcpTask) {
   output_collections = "example-gkg,test-data"
   output_permissions = "rest-reader,read,rest-writer,update"
   output_uri_replace = ".*/data/test/,'/'"
+  transform_module = "/transform-gkg.sjs"
+  transform_function = "transformGKG"
 }
 
 task loadGeoLocationTestData(type: com.marklogic.gradle.task.MlcpTask) {
@@ -106,7 +106,17 @@ task loadGeoLocationTestData(type: com.marklogic.gradle.task.MlcpTask) {
   output_uri_replace = ".*/data/test/,'/'"
 }
 
+/*
+ * "Full reset" and test.  To run, include the argument -Pconfirm=true (required by mlClearContentDatabase)
+ */
 
+task resetAndTest {
+    dependsOn 'mlClearContentDatabase', 'mlRedeploy', 'loadTestData', 'cleanTest', 'test'
+    tasks.findByName('mlRedeploy').mustRunAfter 'mlClearContentDatabase'
+    tasks.findByName('loadTestData').mustRunAfter 'mlRedeploy'
+    tasks.findByName('cleanTest').mustRunAfter 'loadTestData'
+    tasks.findByName('test').mustRunAfter 'cleanTest'
+}
 
 /*
  * Tasks needed for deploying a gradle plugin to BinTray
