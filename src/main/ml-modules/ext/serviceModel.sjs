@@ -411,7 +411,8 @@ function setServiceModelIndexEntry(modelDoc, uri = null, serviceName = null) {
     };
   } 
   else {
-    let modelObj = modelDoc.toObject();
+    //modelDoc could actually be an Object or a database Document so set modelObj accordingly
+    let modelObj = modelDoc.toObject != null ? modelDoc.toObject() : modelDoc
     let serviceId = modelObj.info.name;
     if (serviceModelIndex[serviceId] != null) {
       if (DEBUG) xdmp.trace("GDS-DEBUG", "setServiceModelIndexEntry(); updating existing shallow serviceModelIndex entry with model doc");
@@ -463,14 +464,14 @@ function saveServiceModel(serviceId, model, uri) {
 
   let _uri;
   let _model = model;
-  
+
   if (serviceModelIndex[serviceId] == null && uri != null) {
     //this is a brand new model
     _uri = uri;
   }
   else if (serviceModelIndex[serviceId] != null && (uri == null || uri == undefined)) {
     //we loaded the model from disk in this transaction, get the uri from the serviceModelIndex
-    _uri = xdmp.nodeUri(serviceModelIndex[serviceId]);
+    _uri = serviceModelIndex[serviceId].uri;
   }
   else {
     //we have some situation we don't expect
@@ -496,7 +497,7 @@ function saveServiceModel(serviceId, model, uri) {
     quality: xdmp.documentGetQuality(_uri)
   };
 
-  serviceModelIndex[_uri] = _model;
+  setServiceModelIndexEntry(model, _uri, serviceId);
   xdmp.documentInsert(_uri, _model, options);
 }
 
@@ -908,9 +909,9 @@ function generateServiceDescriptor(serviceName, layerNumber) {
 
   let serviceModelIndexEntry = getServiceModelIndexEntry(serviceName, false);
 
-  if (serviceModelIndexEntry.descriptor == null) {
+  if (serviceModelIndexEntry.serviceDescriptor == null) {
     if (DEBUG) xdmp.trace("GDS-DEBUG", "generating service descriptor for " + serviceName + (layerNumber == null || layerNumber == undefined ? ", all layers" : ", layer " + layerNumber));
-    serviceModelIndexEntry.descriptor = transformServiceModelToDescriptor(serviceModelIndexEntry.serviceModel, serviceName, layerNumber);
+    serviceModelIndexEntry.serviceDescriptor = transformServiceModelToDescriptor(serviceModelIndexEntry.serviceModel, serviceName, layerNumber);
   } 
   else {
     if (DEBUG) xdmp.trace("GDS-DEBUG", "using cached service descriptor for " + serviceName);
@@ -918,7 +919,7 @@ function generateServiceDescriptor(serviceName, layerNumber) {
     //if we're looking for all layers, we have to make sure that all of them have
     //already been generated
     let serviceModel = serviceModelIndexEntry.serviceModel;
-    let descriptor = serviceModelIndexEntry.descriptor;
+    let descriptor = serviceModelIndexEntry.serviceDescriptor;
 
     //if we're asking for the full service descriptor, build any layer descriptors that are missing
     if (layerNumber == null || layerNumber == undefined) {
@@ -950,7 +951,7 @@ function generateServiceDescriptor(serviceName, layerNumber) {
         }
     }
   }
-  return serviceModelIndexEntry.descriptor;
+  return serviceModelIndexEntry.serviceDescriptor;
 }
 
 /**

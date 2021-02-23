@@ -1,0 +1,22 @@
+{
+  "params": {
+    "id": "GDeltSearch",
+    "layers": {
+      "0": {
+        "layerId": 1,
+        "name": "New saved layer",
+        "description": "New saved layer"
+      }
+    }
+  },
+  "search": {
+    "viewport": {
+      "box": {
+        "n": 45,
+        "s": -45,
+        "w": -90,
+        "e": 90
+      }
+    }
+  }
+}
