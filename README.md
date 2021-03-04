@@ -13,7 +13,7 @@ MarkLogic Geo Data Services (GDS) enables a rich set of geospatial query capabil
 If you already have an existing project with Geo Data Services and wish to upgrade, all you need to do is update the version of your dependencies in `build.gradle`, as specified in the **Installation** section.
 
 ```
-com.marklogic:marklogic-geo-data-services-modules:1.1.2
+com.marklogic:marklogic-geo-data-services-modules:1.2.0
 ```
 
 After updating, run `./gradlew mlRedeploy` to update MarkLogic.  
@@ -34,7 +34,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath "com.marklogic:marklogic-geo-data-services-modules:1.1.2"
+    classpath "com.marklogic:marklogic-geo-data-services-modules:1.3.4"
   }
 }
 plugins {
@@ -46,7 +46,7 @@ repositories {
 }
 
 dependencies {
-  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.1.2"
+  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.3.4"
 }
 ```
 

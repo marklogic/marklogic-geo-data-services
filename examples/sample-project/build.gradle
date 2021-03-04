@@ -35,7 +35,7 @@ configurations {
 }
 
 dependencies {
-  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.3.3-beta"
+  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.3.4"
   mlcp "com.marklogic:mlcp:9.0.9"
 
   /**
