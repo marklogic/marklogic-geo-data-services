@@ -17,7 +17,7 @@ public class AliasTest extends AbstractFeatureServiceTest {
 				.body(postBody.prettyPrint())
 			.when()
 				.log().uri()
-				.post(url)
+				.post()
 			.then()
 				.log().ifError()
 				.statusCode(200)

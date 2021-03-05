@@ -34,7 +34,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath "com.marklogic:marklogic-geo-data-services-modules:1.2.0"
+    classpath "com.marklogic:marklogic-geo-data-services-modules:1.3.4"
   }
 }
 plugins {
@@ -46,7 +46,7 @@ repositories {
 }
 
 dependencies {
-  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.2.0"
+  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.3.4"
 }
 ```
 

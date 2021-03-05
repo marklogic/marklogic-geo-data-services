@@ -11,14 +11,14 @@ buildscript {
     mavenLocal()
   }
   dependencies {
-    classpath "com.marklogic:marklogic-geo-data-services-modules:1.2.0"
+    classpath "com.marklogic:marklogic-geo-data-services-modules:1.3.4"
     classpath "com.google.code.gson:gson:2.8.6"
   }
 }
 
 plugins {
   id "net.saliman.properties" version "1.5.1"
-  id "com.marklogic.ml-gradle" version "3.15.2"
+  id "com.marklogic.ml-gradle" version "4.0.1"
 }
 
 repositories {
@@ -35,7 +35,7 @@ configurations {
 }
 
 dependencies {
-  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.2.0"
+  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.3.4"
   mlcp "com.marklogic:mlcp:9.0.9"
 
   /**

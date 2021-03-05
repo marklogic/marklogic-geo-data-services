@@ -22,7 +22,7 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
                 .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .post(url)
+                .post()
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -41,7 +41,7 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
                 .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .post(url)
+                .post()
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -84,7 +84,7 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
                 //TODO missing .body("units", is("esriDecimalDegrees"))
                 //TODO missing .body("syncEnabled", is(false))
 
-                .body("layers.size()", is(7))
+                .body("layers.size()", is(8))
                 .body("layers.metadata.name", hasItems("GKG level 1", "GKG level 2", "GKG level 3"))
             ;
 
@@ -102,7 +102,7 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
                 .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .post(url)
+                .post()
             .then()
                 .log().ifError()
                 .statusCode(200)
@@ -145,12 +145,12 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
                 .body(postBody.prettyPrint())
             .when()
                 .log().uri()
-                .post(url)
+                .post()
             .then()
                 .log().ifError()
                 .statusCode(200)
                 .log().ifValidationFails()
-                .body("layers.size()", is(7))
+                .body("layers.size()", is(8))
                 .body("layers.metadata.name", hasItems("GKG level 1", "GKG level 2", "GKG level 3","GKG level 4"))
             ;
 

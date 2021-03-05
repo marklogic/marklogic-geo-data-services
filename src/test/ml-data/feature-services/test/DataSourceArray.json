@@ -3,21 +3,7 @@
     "name": "DataSourceArrayExample",
     "description": "GDelt GKG data. Georesolution values are 1=country, 2=US State / non-US ADM1, 3=city/landmark."
   },
-
-  "search": {
-    "Articles": {
-      "options": "example-gkg-options",
-      "geometryType": "Point",
-      "geoConstraint": "Location",
-      "values": "points",
-      "docTransform": "example-gkg-transform",
-      "schema": "GDeltGKG",
-      "view": "Article"
-    }
-  },
-
-  "layers": [
-    {
+  "layers": [{
       "id": 0,
       "name": "GKG level 1",
       "description": "GDelt GKG article data at geores 1 (country)",
@@ -38,13 +24,23 @@
       "view": "Article",
       "boundingQuery": {
         "jsonPropertyValueQuery": {
-          "property": ["geores"],
-          "value": [1],
-          "options": ["lang=en"],
+          "property": [
+            "geores"
+          ],
+          "value": [
+            1
+          ],
+          "options": [
+            "lang=en"
+          ],
           "weight": 0
         }
       },
-      "readOnly": true
+      "readOnly": true,
+      "geoServerMetadata": {
+        "geoServerLayerName": "DataSourceArrayExample_0_Points",
+        "coordinateSystem": "EPSG:4326"
+      }
     },
     {
       "id": 1,
@@ -67,13 +63,23 @@
       "view": "Article",
       "boundingQuery": {
         "jsonPropertyValueQuery": {
-          "property": ["geores"],
-          "value": [2],
-          "options": ["lang=en"],
+          "property": [
+            "geores"
+          ],
+          "value": [
+            2
+          ],
+          "options": [
+            "lang=en"
+          ],
           "weight": 0
         }
       },
-      "readOnly": true
+      "readOnly": true,
+      "geoServerMetadata": {
+        "geoServerLayerName": "DataSourceArrayExample_1_Points",
+        "coordinateSystem": "EPSG:4326"
+      }
     },
     {
       "id": 2,
@@ -96,13 +102,23 @@
       "view": "Article",
       "boundingQuery": {
         "jsonPropertyValueQuery": {
-          "property": ["geores"],
-          "value": [3],
-          "options": ["lang=en"],
+          "property": [
+            "geores"
+          ],
+          "value": [
+            3
+          ],
+          "options": [
+            "lang=en"
+          ],
           "weight": 0
         }
       },
-      "readOnly": true
+      "readOnly": true,
+      "geoServerMetadata": {
+        "geoServerLayerName": "DataSourceArrayExample_2_Points",
+        "coordinateSystem": "EPSG:4326"
+      }
     },
     {
       "id": 3,
@@ -125,13 +141,23 @@
       "view": "Region",
       "boundingQuery": {
         "jsonPropertyValueQuery": {
-          "property": ["geores"],
-          "value": [4],
-          "options": ["lang=en"],
+          "property": [
+            "geores"
+          ],
+          "value": [
+            4
+          ],
+          "options": [
+            "lang=en"
+          ],
           "weight": 0
         }
       },
-      "readOnly": true
+      "readOnly": true,
+      "geoServerMetadata": {
+        "geoServerLayerName": "DataSourceArrayExample_3_Polygons",
+        "coordinateSystem": "EPSG:4326"
+      }
     },
     {
       "id": 4,
@@ -152,29 +178,41 @@
       },
       "schema": "GDeltGKG",
       "view": "Article",
-      "joins": [
-        {
-          "source": "sparql",
-          "query": "select ?OBJECT_ID ?sparql_url WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . }",
-          "joinOn": {
-            "left": "url",
-            "right": "sparql_url"
+      "joins": [{
+        "source": "sparql",
+        "query": "select ?OBJECT_ID ?sparql_url WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . }",
+        "joinOn": {
+          "left": "url",
+          "right": "sparql_url"
+        },
+        "fields": {
+          "OBJECT_ID": {
+            "scalarType": "string"
           },
-          "fields": {
-            "OBJECT_ID": { "scalarType": "string" },
-            "sparql_url": { "scalarType": "string" }
+          "sparql_url": {
+            "scalarType": "string"
           }
         }
-      ],
+      }],
       "boundingQuery": {
         "jsonPropertyValueQuery": {
-          "property": ["geores"],
-          "value": [1],
-          "options": ["lang=en"],
+          "property": [
+            "geores"
+          ],
+          "value": [
+            1
+          ],
+          "options": [
+            "lang=en"
+          ],
           "weight": 0
         }
       },
-      "readOnly": true
+      "readOnly": true,
+      "geoServerMetadata": {
+        "geoServerLayerName": "DataSourceArrayExample_4_Points",
+        "coordinateSystem": "EPSG:4326"
+      }
     },
     {
       "id": 5,
@@ -195,29 +233,41 @@
       },
       "schema": "GDeltGKG",
       "view": "Article",
-      "joins": [
-        {
-          "source": "sparql",
-          "query": "select ?OBJECT_ID ?sparql_url WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . }",
-          "joinOn": {
-            "left": "OBJECTID",
-            "right": "OBJECT_ID"
+      "joins": [{
+        "source": "sparql",
+        "query": "select ?OBJECT_ID ?sparql_url WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . }",
+        "joinOn": {
+          "left": "OBJECTID",
+          "right": "OBJECT_ID"
+        },
+        "fields": {
+          "OBJECT_ID": {
+            "scalarType": "long"
           },
-          "fields": {
-            "OBJECT_ID": { "scalarType": "long" },
-            "sparql_url": { "scalarType": "string" }
+          "sparql_url": {
+            "scalarType": "string"
           }
         }
-      ],
+      }],
       "boundingQuery": {
         "jsonPropertyValueQuery": {
-          "property": ["geores"],
-          "value": [1],
-          "options": ["lang=en"],
+          "property": [
+            "geores"
+          ],
+          "value": [
+            1
+          ],
+          "options": [
+            "lang=en"
+          ],
           "weight": 0
         }
       },
-      "readOnly": true
+      "readOnly": true,
+      "geoServerMetadata": {
+        "geoServerLayerName": "DataSourceArrayExample_5_Points",
+        "coordinateSystem": "EPSG:4326"
+      }
     },
     {
       "id": 6,
@@ -236,22 +286,30 @@
           "latestWkid": 4326
         }
       },
-      "dataSources": [
-        {
-          "source": "view",
-          "schema": "GDeltGKG",
-          "view": "Article"
-        }
-      ],
+      "dataSources": [{
+        "source": "view",
+        "schema": "GDeltGKG",
+        "view": "Article"
+      }],
       "boundingQuery": {
         "jsonPropertyValueQuery": {
-          "property": ["geores"],
-          "value": [1],
-          "options": ["lang=en"],
+          "property": [
+            "geores"
+          ],
+          "value": [
+            1
+          ],
+          "options": [
+            "lang=en"
+          ],
           "weight": 0
         }
       },
-      "readOnly": true
+      "readOnly": true,
+      "geoServerMetadata": {
+        "geoServerLayerName": "DataSourceArrayExample_6_Points",
+        "coordinateSystem": "EPSG:4326"
+      }
     },
     {
       "id": 7,
@@ -270,8 +328,7 @@
           "latestWkid": 4326
         }
       },
-      "dataSources": [
-        {
+      "dataSources": [{
           "source": "view",
           "schema": "GDeltGKG",
           "view": "Article"
@@ -284,20 +341,34 @@
             "right": "OBJECT_ID"
           },
           "fields": {
-            "OBJECT_ID": { "scalarType": "long" },
-            "sparql_url": { "scalarType": "string" }
+            "OBJECT_ID": {
+              "scalarType": "long"
+            },
+            "sparql_url": {
+              "scalarType": "string"
+            }
           }
         }
       ],
       "boundingQuery": {
         "jsonPropertyValueQuery": {
-          "property": ["geores"],
-          "value": [1],
-          "options": ["lang=en"],
+          "property": [
+            "geores"
+          ],
+          "value": [
+            1
+          ],
+          "options": [
+            "lang=en"
+          ],
           "weight": 0
         }
       },
-      "readOnly": true
+      "readOnly": true,
+      "geoServerMetadata": {
+        "geoServerLayerName": "DataSourceArrayExample_7_Points",
+        "coordinateSystem": "EPSG:4326"
+      }
     },
     {
       "id": 8,
@@ -316,18 +387,34 @@
           "latestWkid": 4326
         }
       },
-      "dataSources": [
-        {
-          "source": "sparql",
-          "query": "select ?OBJECTID ?sparql_url ?DocId WHERE { ?OBJECTID <http://marklogic.com/objectid> ?sparql_url . ?OBJECTID <http://marklogic.com/uri> ?DocId }",
-          "fields": {
-            "OBJECTID": { "scalarType": "long" },
-            "sparql_url": { "scalarType": "string" },
-            "DocId": { "scalarType": "string" }
+      "geometry": {
+        "format": "geojson",
+        "coordinateSystem": "wgs84",
+        "source": {
+          "documentUriColumn": "DocId",
+          "xpath": "//geometry"
+        }
+      },
+      "dataSources": [{
+        "source": "sparql",
+        "query": "select ?OBJECTID ?sparql_url ?DocId WHERE { ?OBJECTID <http://marklogic.com/objectid> ?sparql_url . ?OBJECTID <http://marklogic.com/uri> ?DocId }",
+        "fields": {
+          "OBJECTID": {
+            "scalarType": "long"
+          },
+          "sparql_url": {
+            "scalarType": "string"
+          },
+          "DocId": {
+            "scalarType": "string"
           }
         }
-      ],
-      "readOnly": true
+      }],
+      "readOnly": true,
+      "geoServerMetadata": {
+        "geoServerLayerName": "DataSourceArrayExample_8_Points",
+        "coordinateSystem": "EPSG:4326"
+      }
     },
     {
       "id": 9,
@@ -346,14 +433,19 @@
           "latestWkid": 4326
         }
       },
-      "dataSources": [
-        {
+      "dataSources": [{
           "source": "sparql",
           "query": "select ?OBJECT_ID ?sparql_url ?DocId WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . ?OBJECT_ID <http://marklogic.com/uri> ?DocId }",
           "fields": {
-            "OBJECT_ID": { "scalarType": "long" },
-            "sparql_url": { "scalarType": "string" },
-            "DocId": { "scalarType": "string" }
+            "OBJECT_ID": {
+              "scalarType": "long"
+            },
+            "sparql_url": {
+              "scalarType": "string"
+            },
+            "DocId": {
+              "scalarType": "string"
+            }
           }
         },
         {
@@ -374,7 +466,11 @@
           }
         }
       ],
-      "readOnly": true
+      "readOnly": true,
+      "geoServerMetadata": {
+        "geoServerLayerName": "DataSourceArrayExample_9_Points",
+        "coordinateSystem": "EPSG:4326"
+      }
     },
     {
       "id": 10,
@@ -393,14 +489,19 @@
           "latestWkid": 4326
         }
       },
-      "dataSources": [
-        {
+      "dataSources": [{
           "source": "sparql",
           "query": "select ?OBJECT_ID ?sparql_url ?DocId WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . ?OBJECT_ID <http://marklogic.com/uri> ?DocId }",
           "fields": {
-            "OBJECT_ID": { "scalarType": "long" },
-            "sparql_url": { "scalarType": "string" },
-            "DocId": { "scalarType": "string" }
+            "OBJECT_ID": {
+              "scalarType": "long"
+            },
+            "sparql_url": {
+              "scalarType": "string"
+            },
+            "DocId": {
+              "scalarType": "string"
+            }
           }
         },
         {
@@ -413,7 +514,11 @@
           }
         }
       ],
-      "readOnly": true
+      "readOnly": true,
+      "geoServerMetadata": {
+        "geoServerLayerName": "DataSourceArrayExample_10_Points",
+        "coordinateSystem": "EPSG:4326"
+      }
     },
     {
       "id": 11,
@@ -432,14 +537,19 @@
           "latestWkid": 4326
         }
       },
-      "dataSources": [
-        {
+      "dataSources": [{
           "source": "sparql",
           "query": "select ?OBJECT_ID ?sparql_url ?DocId WHERE { ?OBJECT_ID <http://marklogic.com/objectid> ?sparql_url . ?OBJECT_ID <http://marklogic.com/uri> ?DocId }",
           "fields": {
-            "OBJECT_ID": { "scalarType": "long" },
-            "sparql_url": { "scalarType": "string" },
-            "DocId": { "scalarType": "string" }
+            "OBJECT_ID": {
+              "scalarType": "long"
+            },
+            "sparql_url": {
+              "scalarType": "string"
+            },
+            "DocId": {
+              "scalarType": "string"
+            }
           }
         },
         {
@@ -454,13 +564,272 @@
       ],
       "boundingQuery": {
         "jsonPropertyValueQuery": {
-          "property": ["geores"],
-          "value": [4],
-          "options": ["lang=en"],
+          "property": [
+            "geores"
+          ],
+          "value": [
+            4
+          ],
+          "options": [
+            "lang=en"
+          ],
           "weight": 0
         }
       },
-      "readOnly": true
+      "readOnly": true,
+      "geoServerMetadata": {
+        "geoServerLayerName": "DataSourceArrayExample_11_Polygons",
+        "coordinateSystem": "EPSG:4326"
+      }
+    },
+    {
+      "id": 12,
+      "name": "GKG Left Outer Join",
+      "description": "GDelt article data with Left Outer Join",
+      "geometryType": "Point",
+      "idField": "OBJECTID",
+      "displayField": "name",
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        }
+      },
+      "dataSources": [{
+          "source": "view",
+          "schema": "GDeltGKG",
+          "view": "Article",
+          "fragmentIdColumn": "FRAGMENT_ID_Article",
+          "fields": {
+            "OBJECTID": {
+              "scalarType": "long"
+            }
+          },
+          "includeFields": [
+            "OBJECTID"
+          ]
+        },
+        {
+          "source": "view",
+          "schema": "GdeltGKG",
+          "view": "Article_Join",
+          "fragmentIdColumn": "FRAGMENT_ID_Article_Join",
+          "joinOn": {
+            "left": "FRAGMENT_ID_Article",
+            "right": "FRAGMENT_ID_Article_Join",
+            "joinType": "left outer"
+          },
+          "fields": {
+            "name_join": {
+              "scalarType": "string"
+            }
+          },
+          "includeFields": [
+            "name_join"
+          ]
+        }
+      ],
+      "boundingQuery": {
+        "wordQuery": {
+          "text": "Ukraine"
+        }
+      },
+      "readOnly": true,
+      "geoServerMetadata": {
+        "geoServerLayerName": "DataSourceArrayExample_12_Points",
+        "coordinateSystem": "EPSG:4326"
+      }
+    },
+    {
+      "id": 13,
+      "name": "GKG Full Join",
+      "description": "GDelt article data with Full Join",
+      "geometryType": "Point",
+      "idField": "OBJECTID",
+      "displayField": "name",
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        }
+      },
+      "dataSources": [{
+          "source": "view",
+          "schema": "GDeltGKG",
+          "view": "Article",
+          "fragmentIdColumn": "FRAGMENT_ID_Article",
+          "fields": {
+            "OBJECTID": {
+              "scalarType": "long"
+            }
+          },
+          "includeFields": [
+            "OBJECTID"
+          ]
+        },
+        {
+          "source": "view",
+          "schema": "GdeltGKG",
+          "view": "Article_Join",
+          "fragmentIdColumn": "FRAGMENT_ID_Article_Join",
+          "joinOn": {
+            "left": "FRAGMENT_ID_Article",
+            "right": "FRAGMENT_ID_Article_Join",
+            "joinType": "full outer"
+          },
+          "fields": {
+            "name_join": {
+              "scalarType": "string"
+            }
+          },
+          "includeFields": [
+            "name_join"
+          ]
+        }
+      ],
+      "boundingQuery": {
+        "wordQuery": {
+          "text": "Ukraine"
+        }
+      },
+      "readOnly": true,
+      "geoServerMetadata": {
+        "geoServerLayerName": "DataSourceArrayExample_13_Points",
+        "coordinateSystem": "EPSG:4326"
+      }
+    },
+    {
+      "id": 14,
+      "name": "GKG Cross Product Join",
+      "description": "GDelt article data with Cross Product Join",
+      "geometryType": "Point",
+      "idField": "OBJECTID",
+      "displayField": "name",
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        }
+      },
+      "dataSources": [{
+          "source": "view",
+          "schema": "GDeltGKG",
+          "view": "Article",
+          "fragmentIdColumn": "FRAGMENT_ID_Article",
+          "fields": {
+            "OBJECTID": {
+              "scalarType": "long"
+            }
+          },
+          "includeFields": [
+            "OBJECTID"
+          ]
+        },
+        {
+          "source": "view",
+          "schema": "GdeltGKG",
+          "view": "Article_Join",
+          "fragmentIdColumn": "FRAGMENT_ID_Article_Join",
+          "joinFunction": "joinCrossProduct",
+          "joinOn": {
+            "left": "FRAGMENT_ID_Article",
+            "right": "FRAGMENT_ID_Article_Join",
+            "joinType": "join cross product"
+          },
+          "fields": {
+            "name_join": {
+              "scalarType": "string"
+            }
+          },
+          "includeFields": [
+            "name_join"
+          ]
+        }
+      ],
+      "boundingQuery": {
+        "wordQuery": {
+          "text": "Ukraine"
+        }
+      },
+      "readOnly": true,
+      "geoServerMetadata": {
+        "geoServerLayerName": "DataSourceArrayExample_14_Points",
+        "coordinateSystem": "EPSG:4326"
+      }
+    },
+    {
+      "id": 15,
+      "name": "GKG Invalid Join",
+      "description": "GDelt article data with Invalid Join",
+      "geometryType": "Point",
+      "idField": "OBJECTID",
+      "displayField": "name",
+      "extent": {
+        "xmin": -180,
+        "ymin": -90,
+        "xmax": 180,
+        "ymax": 90,
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        }
+      },
+      "dataSources": [{
+          "source": "view",
+          "schema": "GDeltGKG",
+          "view": "Article",
+          "fragmentIdColumn": "FRAGMENT_ID_Article",
+          "fields": {
+            "OBJECTID": {
+              "scalarType": "long"
+            }
+          },
+          "includeFields": [
+            "OBJECTID"
+          ]
+        },
+        {
+          "source": "view",
+          "schema": "GdeltGKG",
+          "view": "Article_Join",
+          "fragmentIdColumn": "FRAGMENT_ID_Article_Join",
+          "joinOn": {
+            "left": "FRAGMENT_ID_Article",
+            "right": "FRAGMENT_ID_Article_Join",
+            "joinType": "join invalid"
+          },
+          "fields": {
+            "name_join": {
+              "scalarType": "string"
+            }
+          },
+          "includeFields": [
+            "name_join"
+          ]
+        }
+      ],
+      "boundingQuery": {
+        "wordQuery": {
+          "text": "Ukraine"
+        }
+      },
+      "readOnly": true,
+      "geoServerMetadata": {
+        "geoServerLayerName": "DataSourceArrayExample_15_Points",
+        "coordinateSystem": "EPSG:4326"
+      }
     }
   ]
 }
