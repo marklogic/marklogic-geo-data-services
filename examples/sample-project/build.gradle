@@ -1,4 +1,3 @@
-import java.nio.file.Files
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import org.apache.commons.io.FilenameUtils
@@ -7,27 +6,24 @@ import com.google.gson.stream.JsonReader
 
 buildscript {
   repositories {
-    jcenter()
-    mavenLocal()
+    mavenCentral()
   }
   dependencies {
-    classpath "com.marklogic:marklogic-geo-data-services-modules:1.3.4"
-    classpath "com.google.code.gson:gson:2.8.6"
+    classpath "com.google.code.gson:gson:2.10.1"
   }
 }
 
 plugins {
   id "net.saliman.properties" version "1.5.1"
-  id "com.marklogic.ml-gradle" version "4.0.1"
+  id "com.marklogic.ml-gradle" version "4.4.0"
 }
 
 repositories {
-  jcenter()
-
-  // Needed for some mlcp dependencies, such as commons-csv:1.5.1-marklogic
-  maven { url "http://developer.marklogic.com/maven2/" }
-
   mavenLocal()
+  mavenCentral()
+
+  // Needed for some mlcp dependencies
+  maven { url "https://developer.marklogic.com/maven2/" }
 }
 
 configurations {
@@ -35,19 +31,14 @@ configurations {
 }
 
 dependencies {
-  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.3.4"
-  mlcp "com.marklogic:mlcp:9.0.9"
+  // Results in the GDS modules/config/plugin being installed via mlDeploy
+  mlBundle "com.marklogic:marklogic-geo-data-services:1.4-SNAPSHOT"
 
-  /**
-    * mlcp uses Log4j for logging, and if Log4j can't find a configuration file, it will complain and you'll
-    * get none of mlcp's usually-useful logging. It is recommended then that your Gradle configuration for
-    * mlcp include a directory or some other resource that provides a log4j.properties file.
-    */
-  mlcp files("lib")
+  // For loading example data
+  mlcp "com.marklogic:mlcp:10.0.9.5"
+  mlcp files("mlcp-logging")
 }
 
-// We are not using the ml-data capability of ml-gradle because we are loading from zip files.
-// Prior to running this command, please execute `gradle mlDeploy`.
 task loadExampleData(dependsOn: [
   "loadGDeltExampleData",
   "loadZipCodeBoundaryExampleData"

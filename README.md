@@ -13,7 +13,7 @@ MarkLogic Geo Data Services (GDS) enables a rich set of geospatial query capabil
 If you already have an existing project with Geo Data Services and wish to upgrade, all you need to do is update the version of your dependencies in `build.gradle`, as specified in the **Installation** section.
 
 ```
-com.marklogic:marklogic-geo-data-services-modules:1.3.4
+com.marklogic:marklogic-geo-data-services-modules:1.4.0
 ```
 
 After updating, run `./gradlew mlRedeploy` to update MarkLogic.  
@@ -29,24 +29,16 @@ Please see the _examples_ directory for sample projects making use of this proje
 ### Update your build.gradle file
 
 ```
-buildscript {
-  repositories {
-    jcenter()
-  }
-  dependencies {
-    classpath "com.marklogic:marklogic-geo-data-services-modules:1.3.4"
-  }
-}
 plugins {
-  id "net.saliman.properties" version "1.5.1"
-  id "com.marklogic.ml-gradle" version "3.15.2"
+  id "com.marklogic.ml-gradle" version "4.4.0"
 }
+
 repositories {
-  jcenter()
+  mavenCentral()
 }
 
 dependencies {
-  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.3.4"
+  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.4.0"
 }
 ```
 
@@ -71,6 +63,7 @@ And then create, the following `src/main/ml-config/databases/schemas-database.js
 Geo Data Services relies on a [MarkLogic native plugin](https://docs.marklogic.com/guide/app-dev/native-plugins) to perform standard deviation and variance calculations. The Variance plugin will be built using the build system's gcc. The MarkLogic CPU architecture and OS must match the build system for the variance plugin to install successfully.
 
 > Note: The native plugin is a C++ program required to support standard deviation and variance aggregation calls for the feature service. gcc is used to build the plugin and then it is installed to MarkLogic via the management API. Because of this _the connector build must run on a machine that is the same platform that the MarkLogic cluster is running on_.  If the build is run on a Windows machine, you can disable the plugin from being built by adding `mlPluginInstallationEnabled=false` to your `gradle.properties`.
+
 
 ## Configure your Geo Data Services
 
@@ -199,33 +192,3 @@ Using **curl**:
 ```bash
 curl --anyauth -u user:password -X POST 'localhost:8095/v1/resources/geoQueryService' --header 'Content-Type: application/json' --data-raw '{"params":{"id":"GDeltExample","layer":"0","method":"query"},"query":{"returnGeometry":true,"resultRecordCount":10,"extension":{"geometry":{"type":"Polygon","coordinates":[[[-126.966248,23.944841],[-66.321716,23.944841],[-66.321716,49.424374],[-126.966248,49.424374]]]}}}}'
 ```
-
-## Contributing
-
-Geo Data Services is an open source project and we welcome contributions to improve it. Please submit issues for bugs or enhancement requests and, even better, fork it and submit PRs with changes!
-
-### Testing
-
-Use the following steps to install GDS as a standalone project and run the tests:
-
-1. Configure `gradle-test.properties` for your environment
-2. Run `./gradlew -PenvironmentName=test mlDeploy`
-3. Run `./gradlew -PenvironmentName=test loadTestData`
-4. Run `./gradlew -PenvironmentName=test test`
-
-### Testing with MarkLogic Koop Provider
-
-You can make use of the koop-provider-marklogic project to test the MarkLogic Geo Data Services though the MarkLogic Koop Connector. The [koop-provider-marklogic](https://github.com/koopjs/koop-provider-marklogic) project expects this repository to be deployed, the associated test data, and users & roles to be deployed (see: [Testing](#Testing)).
-Once that is complete, configure the `gradle-test.properties` in koop-provider-marklogic for your environment and run the following in two different command line sessions to begin the tests.
-
-#### __Command Line 1__
-
-1. Configure `/config/<environment>.json`
-2. Install `npm install`
-3. Environment Setting `export NODE_ENV=<environment>`
-4. Start Koop `node server.js`
-
-#### __Command Line 2__
-
-1. `cd test`
-2. `../gradlew -PenvironmentName=test test`

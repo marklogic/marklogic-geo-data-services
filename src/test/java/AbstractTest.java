@@ -14,7 +14,7 @@ public abstract class AbstractTest {
     @Before
     public void setup() {
         this.host = System.getProperty("feature.host", "localhost");
-        this.port = Integer.valueOf(System.getProperty("feature.port", "9080"));
+        this.port = Integer.valueOf(System.getProperty("feature.port", "8096"));
         
         RestAssured.baseURI = "http://" + this.host;
         RestAssured.port = this.port;

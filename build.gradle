@@ -1,57 +1,38 @@
-buildscript {
-    repositories {
-        maven { url "http://developer.marklogic.com/maven2/" }
-        jcenter()
-        mavenLocal()
-    }
-    dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
-    }
-}
-
 plugins {
     id "java"
     id "maven-publish"
+    id "signing"
     id "net.saliman.properties" version "1.5.1"
-    id "com.marklogic.ml-gradle" version "4.0.1"
+
+    // Used to deploy the test app
+    id "com.marklogic.ml-gradle" version "4.4.0"
 }
 
-apply plugin: "maven-publish"
-apply plugin: 'com.jfrog.bintray'
+group = "com.marklogic"
+version = "1.4-SNAPSHOT"
 
-
-
-/*
- * Tasks needed for gradle test
- */
 repositories {
-    maven { url "https://plugins.gradle.org/m2/" }
-    maven { url "http://repository.cloudera.com/artifactory/cloudera-repos/" }
-    maven { url "http://developer.marklogic.com/maven2/" }
-
-    jcenter()
     mavenLocal()
+    mavenCentral()
+
+    // Needed for some mlcp dependencies; mlcp is used for loading data for the test app
+    maven { url "https://developer.marklogic.com/maven2/" }
 }
+
 configurations {
-    mlcp {
-        resolutionStrategy {
-            force "xml-apis:xml-apis:1.4.01"
-        }
-    }
+    mlcp
 }
+
 dependencies {
-    mlcp "com.marklogic:mlcp:9.0.8"
+    mlcp "com.marklogic:mlcp:10.0.9.5"
     mlcp "org.apache.commons:commons-csv:1.2"
-    mlcp "com.marklogic:marklogic-mapreduce2:2.2.3"
-    mlcp files("log")
-    
-    testImplementation "com.google.guava:guava:27.1-jre"
-    testImplementation "io.rest-assured:json-path:3.0.6"
-    testImplementation "io.rest-assured:rest-assured:3.0.6"
-    testImplementation "io.rest-assured:json-schema-validator:3.0.6"
-    testImplementation "junit:junit:4.12"
+    mlcp files("mlcp-logging")
+
+    testImplementation "io.rest-assured:json-path:5.3.0"
+    testImplementation "io.rest-assured:rest-assured:5.3.0"
+    testImplementation "io.rest-assured:json-schema-validator:5.3.0"
+    testImplementation "junit:junit:4.13.2"
     testImplementation "com.googlecode.json-simple:json-simple:1.1.1"
-    testImplementation "org.gradle:gradle-tooling-api:2.1"
 }
 
 // Build our test environment's properties
@@ -68,12 +49,6 @@ test {
     systemProperty "feature.password", mlPassword
     systemProperty "gds.version", project.version
 }
-
-
-
-/*
- * Tasks needed for deploying test data
- */
 
 task loadTestData(dependsOn: [
   "loadGDeltTestData",
@@ -106,11 +81,8 @@ task loadGeoLocationTestData(type: com.marklogic.gradle.task.MlcpTask) {
   output_uri_replace = ".*/data/test/,'/'"
 }
 
-/*
- * "Full reset" and test.  To run, include the argument -Pconfirm=true (required by mlClearContentDatabase)
- */
-
 task resetAndTest {
+    description = "Full reset and test.  To run, include the argument -Pconfirm=true (required by mlClearContentDatabase)"
     dependsOn 'mlClearContentDatabase', 'mlRedeploy', 'loadTestData', 'cleanTest', 'test'
     tasks.findByName('mlRedeploy').mustRunAfter 'mlClearContentDatabase'
     tasks.findByName('loadTestData').mustRunAfter 'mlRedeploy'
@@ -119,78 +91,89 @@ task resetAndTest {
 }
 
 /*
- * Tasks needed for deploying a gradle plugin to BinTray
+ * Tasks needed for deploying a gradle plugin to Maven Central
  */
 
-// Defines a configuration for the MarkLogic modules; used by the modulesZip task below
+// Defines a configuration for the MarkLogic modules; used by the modulesJar task below
 configurations {
     modules
 }
+
 task sourcesJar(type: Jar) {
-    description = "Create a jar of the modules to meet jcenter's requirements for publishing"
+    description = "Create a jar of the modules to meet Maven Central's requirements for publishing"
     classifier "sources"
     from "src/main/ml-modules"
     destinationDir file("build/libs")
 }
 
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier "javadoc"
+    from javadoc
+}
+
 task modulesJar(type: Jar) {
-    description = "Jar up the marklogic-geo-data-services MarkLogic modules into a package that can be published"
+    description = "Jar up the marklogic-unit-test MarkLogic modules into a package that can be published"
     from("src/main/ml-config") {
         into("marklogic-geo-data-services-modules/ml-config")
     }
-    // Not including ml-data since the user will need to specify their own
     from("src/main/ml-modules") {
         into("marklogic-geo-data-services-modules/ml-modules")
     }
     from("src/main/ml-plugins") {
         into("marklogic-geo-data-services-modules/ml-plugins")
     }
-    // Not including ml-schemas since the user will need to specify their own
     destinationDir file("build/libs")
     baseName "marklogic-geo-data-services-modules"
 }
 
-// Define the artifacts, in addition to the jar registered by the "java" plugin
 artifacts {
-    modules modulesJar
+    archives sourcesJar, javadocJar, modulesJar
+}
+signing {
+    sign configurations.archives
 }
 
-// Setup publishing of both a jar (containing the src/main/java code) and the modules zip
-// Can eventually include a test jar (containing some src/test/java code) if desired
-// Run "gradle publishtomavenlocal" to publish these locally
-publishing.publications {
-    sourcesJava(MavenPublication) {
-        groupId "com.marklogic"
-        artifactId "marklogic-geo-data-services-modules"
-        artifact sourcesJar
+publishing {
+    publications {
+        mainJava(MavenPublication) {
+            pom {
+                name = "${group}:${project.name}"
+                description = "Geo Data Services supporting Esri Koop Provider"
+                packaging = "jar"
+                url = "https://github.com/marklogic-community/${project.name}"
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "marklogic"
+                        name = "MarkLogic Github Contributors"
+                        email = "general@developer.marklogic.com"
+                        organization = "MarkLogic"
+                        organizationUrl = "https://www.marklogic.com"
+                    }
+                }
+                scm {
+                    url = "git@github.com:marklogic-community/${project.name}.git"
+                    connection = "scm:git@github.com:marklogic-community/${project.name}.git"
+                    developerConnection = "scm:git@github.com:marklogic-community/${project.name}.git"
+                }
+            }
+            artifact sourcesJar
+            artifact javadocJar
+            artifact modulesJar
+        }
     }
-    mainModules(MavenPublication) {
-        groupId "com.marklogic"
-        artifactId "marklogic-geo-data-services-modules"
-        artifact modulesJar
-    }
-}
-
-if (project.hasProperty("myBintrayUser")) {
-    bintray {
-        println "Publishing to BinTray:"
-        println "myBintrayUser: " + project.myBintrayUser
-        println "myBintrayKey: " + project.myBintrayKey
-        println "name: " + project.name
-        println "version: " + project.version
-
-        user = project.myBintrayUser
-        key = project.myBintrayKey
-        publications = ["sourcesJava", "mainModules"]
-        pkg {
-            repo = "Maven"
-            name = project.name
-            userOrg = "marklogic-community"
-            licenses = ["Apache-2.0"]
-            vcsUrl = "https://github.com/marklogic-community/marklogic-geo-data-services.git"
-            version {
-                name = project.version
-                released = new Date()
+    repositories {
+        maven {
+            name = "central"
+            url = mavenCentralUrl
+            credentials {
+                username mavenCentralUsername
+                password mavenCentralPassword
             }
         }
     }
