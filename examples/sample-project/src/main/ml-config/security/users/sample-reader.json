@@ -3,6 +3,7 @@
   "password": "sample-reader",
   "role": [
     "geo-data-services-reader",
+    "geo-data-services-writer",
     "rest-extension-user"
   ]
 }
