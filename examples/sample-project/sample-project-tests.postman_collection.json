@@ -1,0 +1,100 @@
+{
+	"info": {
+		"_postman_id": "9a8f5226-75b6-47f8-82c5-bed8ccdfe93a",
+		"name": "sample-project-tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22653241"
+	},
+	"item": [
+		{
+			"name": "Get model service info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/modelService",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"modelService"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get layer 0 descriptor",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"params\": {\n        \"id\": \"GDeltExample\",\n        \"layer\": 0\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/geoQueryService",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"geoQueryService"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "digest",
+		"digest": [
+			{
+				"key": "password",
+				"value": "sample-reader",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "sample-reader",
+				"type": "string"
+			},
+			{
+				"key": "algorithm",
+				"value": "MD5",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8096/v1/resources",
+			"type": "string"
+		}
+	]
+}

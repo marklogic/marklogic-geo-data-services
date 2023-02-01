@@ -1,18 +1,29 @@
-# Sample Project (marklogic-geo-data-services)
-The intent of this sample project is to provide a basic layout using the ml-gradle (3.13.0) directory layout and to include the marklogic-geo-data-services project as an mlBundle.
+The intent of this project is to both demonstrate how a ml-gradle-based project can depend on 
+marklogic-geo-data-services via the `mlBundle` Gradle configuration and also to facilitate manual testing during 
+development. 
 
 ## Deploying
-To deploy this project, configure gradle.properties for your environment and run `gradle mlDeploy`. The mlDeploy will take care of deploying the MarkLogic database configuration, users, roles, data templates, REST Services, and feature-service configuration. The test data is located under the data directory and is loaded to MarkLogic with the following command, `gradle loadExampleData`.
 
-## Accessing
-The configured feature-services are available at the following REST paths:
+To deploy this project, do the following:
 
-### top-level service descriptor
-```
-GET http://localhost:8040/LATEST/resources/KoopSearchServices
-Content-type: application/json
-Authorization: Digest admin admin
-```
+1. Follow the instructions in this repository's CONTRIBUTING.md file for publishing marklogic-geo-data-services to 
+   your local Maven repository. 
+2. In this project directory, Create `gradle-local.properties` and set `mlUsername` and `mlPassword` to your admin or 
+   admin-like username and password.
+3. Run `./gradlew -i downloadExampleData mlDeploy loadExampleData` . 
+
+Note that after downloading and loading the example data, you can run `mlDeploy` by itself whenever you want to update
+the application deployed by this project.
+
+## Testing
+
+To test this project, [install Postman](https://www.postman.com/downloads/) and then import the 
+`sample-project-tests.postman_collection.json` file in this project directory. You'll need to create a workspace first 
+so that you can import the file. You can then run each of the requests in the collection.
+
+
+# TODO Replace everything below with more requests in the Postman collection
+
 
 ### layer 0 descriptor:
 ```
