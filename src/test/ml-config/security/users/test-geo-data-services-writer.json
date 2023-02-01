@@ -1,5 +1,10 @@
 {
   "user-name": "test-geo-data-services-writer",
   "password": "test-geo-data-services-writer",
-  "role": ["geo-data-services-writer"]
+  "description": "User for running GDS automated tests",
+  "role": [
+    "geo-data-services-reader",
+    "geo-data-services-writer",
+    "rest-extension-user"
+  ]
 }

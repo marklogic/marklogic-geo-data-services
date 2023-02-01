@@ -1,5 +1,9 @@
 {
-  "user-name" : "sample-writer",
-  "password" : "sample-writer",
-  "role" : [ "geo-data-services-writer" ]
+  "user-name": "sample-writer",
+  "password": "sample-writer",
+  "role": [
+    "geo-data-services-reader",
+    "geo-data-services-writer",
+    "rest-extension-user"
+  ]
 }

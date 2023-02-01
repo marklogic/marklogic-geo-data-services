@@ -6,9 +6,10 @@
  * we need to avoid the use of server fields for the layer models themselves.  
  */
 
+const ampedFunctions = require("/marklogic-geo-data-services/ampedFunctions.sjs");
 const err = require('/ext/error.sjs');
-const trace = require('/ext/trace.sjs');
 const sfc = require('/ext/server-field-cache.xqy');
+const trace = require('/ext/trace.sjs');
 
 const SERVICE_DESCRIPTOR_COLLECTION = 'http://marklogic.com/feature-services';
 const MAX_RECORD_COUNT = 5000;
@@ -153,7 +154,7 @@ function getLayerModelIndexEntryFromDb(serviceModelEntry, layerId) {
         }
         */
     let layerMetadataField =
-        fn.head(xdmp.invokeFunction(function () {
+        fn.head(ampedFunctions.invokeFunction(function () {
             return xdmp.documentGetMetadataValue(serviceModelEntry.uri, "layer_" + layerId + "_model");
         }, { isolation: "different-transaction" }
         ));
@@ -241,7 +242,7 @@ function getColumnDefs(serviceName, layerId) {
  * @param layerModelIndexEntry {Object} the layerModel index entry to be stored to the db
  */
 function saveLayerModelIndexEntryInDb(uri, layerModelIndexEntry) {
-    xdmp.invokeFunction(function() {
+    ampedFunctions.invokeFunction(function() {
         declareUpdate();
         let metadata = xdmp.documentGetMetadata(uri) || {};
         metadata["layer_" + layerModelIndexEntry.layerId + "_model"] = layerModelIndexEntry;
@@ -594,7 +595,7 @@ function getViewHashes(layerModelIndexEntry) {
         if (DEBUG) xdmp.trace("GDS-DEBUG", Sequence.from(["calculating view hashes", viewsNeedingHashesCalculated]));
 
         //We calculate these in xquery because it is WAY faster than javascript
-        let retrievedViewHashes = fn.head(xdmp.invoke("/ext/view-hash.xqy", { input: Sequence.from(viewsNeedingHashesCalculated) }));
+        let retrievedViewHashes = fn.head(ampedFunctions.invoke("/ext/view-hash.xqy", { input: Sequence.from(viewsNeedingHashesCalculated) }));
         if (DEBUG) xdmp.trace("GDS-DEBUG", Sequence.from(["retrieved view hashes", retrievedViewHashes]));
         for (let key in retrievedViewHashes) {
             let hashStr = retrievedViewHashes[key].toString()

@@ -1,6 +1,6 @@
 {
   "role-name": "geo-data-services-model-cache-role",
-  "description": "Enables reading and updating the service descriptor/model cache.",
+  "description": "Enables reading and updating the service descriptor/model cache; intended to be granted via amps and not directly inherited",
   "role": [],
   "privilege": [
     {
@@ -11,6 +11,11 @@
     {
       "privilege-name":"xdmp:set-server-field",
       "action": "http://marklogic.com/xdmp/privileges/xdmp-set-server-field",
+      "kind": "execute"
+    },
+    {
+      "privilege-name": "xdmp:get-session-field",
+      "action": "http://marklogic.com/xdmp/privileges/xdmp-get-session-field",
       "kind": "execute"
     }
   ]

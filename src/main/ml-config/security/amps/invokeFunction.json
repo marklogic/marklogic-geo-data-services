@@ -1,0 +1,9 @@
+{
+  "namespace": "",
+  "local-name": "invokeFunction",
+  "document-uri": "/marklogic-geo-data-services/ampedFunctions.sjs",
+  "modules-database": "%%MODULES_DATABASE%%",
+  "role": [
+    "geo-data-services-internal"
+  ]
+}
