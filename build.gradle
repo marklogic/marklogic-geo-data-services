@@ -35,18 +35,17 @@ dependencies {
     testImplementation "com.googlecode.json-simple:json-simple:1.1.1"
 }
 
-// Build our test environment's properties
 test {
     doFirst {
         println "Running tests using the following properties:"
         println "host: " + mlHost
         println "port: " + mlRestPort
-        println "user: " + mlUsername
+        println "user: " + testUsername
     }
     systemProperty "feature.host", mlHost
     systemProperty "feature.port", mlRestPort
-    systemProperty "feature.user", mlUsername
-    systemProperty "feature.password", mlPassword
+    systemProperty "feature.user", testUsername
+    systemProperty "feature.password", testPassword
     systemProperty "gds.version", project.version
 }
 

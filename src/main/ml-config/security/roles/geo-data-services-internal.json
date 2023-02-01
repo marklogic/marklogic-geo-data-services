@@ -1,0 +1,11 @@
+{
+  "role-name": "geo-data-services-internal",
+  "description": "Intended to grant privileges via amps; should not be directly inherited",
+  "privilege": [
+    {
+      "privilege-name": "xdmp-invoke",
+      "action": "http://marklogic.com/xdmp/privileges/xdmp-invoke",
+      "kind": "execute"
+    }
+  ]
+}
