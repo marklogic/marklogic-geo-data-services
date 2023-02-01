@@ -19,8 +19,8 @@ public abstract class AbstractTest {
         RestAssured.baseURI = "http://" + this.host;
         RestAssured.port = this.port;
 
-        this.username = System.getProperty("feature.username", "admin");
-        this.password = System.getProperty("feature.password", "admin");
+        this.username = System.getProperty("feature.username", "test-geo-data-services-writer");
+        this.password = System.getProperty("feature.password", "test-geo-data-services-writer");
         
         RestAssured.authentication = basic(this.username, this.password);
     }
