@@ -26,6 +26,26 @@
 		{
 			"name": "Get layer 0 descriptor",
 			"request": {
+				"auth": {
+					"type": "digest",
+					"digest": [
+						{
+							"key": "password",
+							"value": "sample-writer",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "sample-writer",
+							"type": "string"
+						},
+						{
+							"key": "algorithm",
+							"value": "MD5",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -93,7 +113,7 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://localhost:8096/v1/resources",
+			"value": "http://localhost:8095/v1/resources",
 			"type": "string"
 		}
 	]
