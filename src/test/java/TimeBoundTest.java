@@ -27,7 +27,7 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
                 .then()
                     .log().ifError()
                     .statusCode(200)
-                    .log().all()
+                    
                     .body(isValidFeatureCollection())
                     .extract().response()
             ;

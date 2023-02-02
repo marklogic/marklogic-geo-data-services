@@ -21,7 +21,7 @@ public class GroupByTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .log().ifValidationFails()
                 .body(isValidFeatureCollection())
                 //TODO missing .body("displayFieldName", is(""))
@@ -55,7 +55,7 @@ public class GroupByTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .log().ifValidationFails()
                 .body(isValidFeatureCollection())
                 .body("statistics.size()", is(9061))
@@ -92,7 +92,7 @@ public class GroupByTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .log().ifValidationFails()
                 .body(isValidFeatureCollection())
                 .body("statistics.size()", is(2455))
@@ -115,7 +115,7 @@ public class GroupByTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .log().ifValidationFails()
                 .body(isValidFeatureCollection())
                 .body("statistics.size()", is(2))

@@ -24,7 +24,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana"))
@@ -44,7 +44,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana"))
@@ -66,7 +66,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana","West Bengal","Assam","Tripura"))
@@ -86,7 +86,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
                 .body("features.geometry.size()", is(17))
@@ -108,7 +108,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(5))
                 .body("features.properties.name", hasItems("Himachal Pradesh","Uttar Pradesh","Jammu and Kashmir","Rajasthan","Haryana"))
@@ -128,7 +128,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(5))
                 .body("features.geometry.size()", is(5))
@@ -150,7 +150,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(0))
             ;
@@ -169,7 +169,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.properties.name", hasItems("Gujarat"))
@@ -189,7 +189,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.geometry.size()", is(1))
@@ -212,7 +212,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana"))            ;
@@ -231,7 +231,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana"))
@@ -253,7 +253,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(17))     
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana","West Bengal","Assam","Tripura"))
@@ -273,7 +273,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
                 .body("features.geometry.size()", is(17))
@@ -295,7 +295,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(5))    
                 .body("features.properties.name", hasItems("Himachal Pradesh","Uttar Pradesh","Jammu and Kashmir","Rajasthan","Haryana"))
@@ -315,7 +315,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(5))
                 .body("features.geometry.size()", is(5))
@@ -338,7 +338,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(0))    
             ;
@@ -357,7 +357,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.properties.name", hasItems("Gujarat"))
@@ -377,7 +377,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.geometry.size()", is(1))
@@ -399,7 +399,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Rajasthan"))
@@ -419,7 +419,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.geometry.size()", is(1))
@@ -441,7 +441,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(0))
             ;
@@ -460,7 +460,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Odisha"))
@@ -480,7 +480,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.geometry.size()", is(1))
@@ -502,7 +502,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
                 .body("features.geometry.size()", is(17))
