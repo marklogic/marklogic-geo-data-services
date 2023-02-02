@@ -22,7 +22,7 @@ public class FieldsTest extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .log().ifValidationFails()
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(5))

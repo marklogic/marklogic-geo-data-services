@@ -21,7 +21,7 @@ public class LimitExceedTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .log().ifValidationFails()
                 .body(isValidFeatureCollection())
                 .body("metadata.limitExceeded", is(true))
@@ -43,7 +43,7 @@ public class LimitExceedTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .log().ifValidationFails()
                 .body(isValidFeatureCollection())
                 .body("metadata.limitExceeded", is(false))
@@ -65,7 +65,7 @@ public class LimitExceedTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .log().ifValidationFails()
                 .body(isValidFeatureCollection())
                 .body("metadata.limitExceeded", is(true))
@@ -87,7 +87,7 @@ public class LimitExceedTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .log().ifValidationFails()
                 .body(isValidFeatureCollection())
                 .body("metadata.limitExceeded", is(true))

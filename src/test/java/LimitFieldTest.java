@@ -21,7 +21,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .post()
             .then()
                 .log().ifError()
-                .log().all()
+                
                 .statusCode(200)
                 .log().ifValidationFails()
                 .body(isValidFeatureCollection())
@@ -70,7 +70,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .post()
             .then()
                 .log().ifError()
-                .log().all()
+                
                 .statusCode(200)
                 .log().ifValidationFails()
                 .body(isValidFeatureCollection())
@@ -91,7 +91,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .post()
             .then()
                 .log().ifError()
-                .log().all()
+                
                 .statusCode(200)
                 .log().ifValidationFails()
                 .body(isValidFeatureCollection())
@@ -112,7 +112,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .post()
             .then()
                 .log().ifError()
-                .log().all()
+                
                 .statusCode(200)
                 .log().ifValidationFails()
                 .body(isValidFeatureCollection())
@@ -133,7 +133,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .post()
             .then()
                 .log().ifError()
-                .log().all()
+                
                 .statusCode(200)
                 .log().ifValidationFails()
                 .body(isValidFeatureCollection())
@@ -154,7 +154,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .post()
             .then()
                 .log().ifError()
-                .log().all()
+                
                 .statusCode(200)
                 .log().ifValidationFails()
                 .body(isValidFeatureCollection())

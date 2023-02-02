@@ -21,7 +21,7 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-13340.0579808794f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(3183.36201912057f))
@@ -45,7 +45,7 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-61804.899857712f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-44763.169857712f))
@@ -69,7 +69,7 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-141140.379126623f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-124345.619126623f))
@@ -93,7 +93,7 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(1))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(2.99261807854486f))
@@ -118,7 +118,7 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(37))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(160.936078759448f))
@@ -142,7 +142,7 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(37))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(160.936078759448f))
@@ -167,7 +167,7 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(1))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(6437))
@@ -192,7 +192,7 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(37))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(7805))
@@ -216,7 +216,7 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(0))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(3042))
@@ -242,7 +242,7 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-21.77f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-14.17f))
@@ -267,7 +267,7 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-15.72f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-13.206f))
@@ -291,7 +291,7 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-21.77f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-19.87f))
@@ -317,7 +317,7 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-21.77f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-8.48f))
@@ -342,7 +342,7 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-15.72f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-4.64f))
@@ -367,7 +367,7 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-21.77f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-10.82f))

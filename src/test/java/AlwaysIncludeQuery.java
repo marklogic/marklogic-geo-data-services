@@ -20,7 +20,7 @@ public class AlwaysIncludeQuery extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .log().all()
+                
                 .log().ifValidationFails()
                 .body(isValidFeatureCollection())
                 //this is a count of layers 0 + 1
