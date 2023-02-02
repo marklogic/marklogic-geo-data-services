@@ -24,19 +24,5 @@ This will put a copy of the marklogic-geo-data-services library in your local Ma
 
 # Testing with MarkLogic Koop Provider
 
-TODO This will be updated and verified soon as part of 1.4.0.
-
-You can make use of the koop-provider-marklogic project to test the MarkLogic Geo Data Services though the MarkLogic Koop Connector. The [koop-provider-marklogic](https://github.com/koopjs/koop-provider-marklogic) project expects this repository to be deployed, the associated test data, and users & roles to be deployed (see: [Testing](#Testing)).
-Once that is complete, configure the `gradle-test.properties` in koop-provider-marklogic for your environment and run the following in two different command line sessions to begin the tests.
-
-#### __Command Line 1__
-
-1. Configure `/config/<environment>.json`
-2. Install `npm install`
-3. Environment Setting `export NODE_ENV=<environment>`
-4. Start Koop `node server.js`
-
-#### __Command Line 2__
-
-1. `cd test`
-2. `../gradlew -PenvironmentName=test test`
+Clone the https://github.com/koopjs/koop-provider-marklogic repository, checkout the develop branch, and read the 
+CONTRIBUTING.md file.
