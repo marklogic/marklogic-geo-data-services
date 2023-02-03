@@ -1,10 +1,7 @@
-
-import io.restassured.http.ContentType;
-import io.restassured.path.json.JsonPath;
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 
 public class GeoServerTest extends AbstractFeatureServiceTest{
@@ -17,17 +14,7 @@ public class GeoServerTest extends AbstractFeatureServiceTest{
     @Test
     public void testGetLayerNames() {
         JsonPath postBody = getJson("testGetLayerNames.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body("0", is("DataSourceArrayExample_0_Points"))
                 .body("1", is("DataSourceArrayExample_1_Points"))
                 .body("2", is("DataSourceArrayExample_2_Points"))
@@ -50,17 +37,7 @@ public class GeoServerTest extends AbstractFeatureServiceTest{
     @Test
     public void testGetLayerSchema() {
         JsonPath postBody = getJson("testGetLayerSchema.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body("metadata.id", is(0))
         ;
     }
@@ -68,102 +45,42 @@ public class GeoServerTest extends AbstractFeatureServiceTest{
     @Test
     public void testViewAsRoot() {
         JsonPath postBody = getJson("testViewAsRoot.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body("metadata.id", is(5));
     }
 
     @Test
     public void testDataSourceWithViewAsRoot() {
         JsonPath postBody = getJson("testDataSourceWithViewAsRoot.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body("metadata.id", is(6));
     }
 
     @Test
     public void testDataSourcesWithLeftOuterJoin() {
         JsonPath postBody = getJson("testDataSourcesWithLeftOuterJoin.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body("metadata.id", is(12));
     }
 
     @Test
     public void testDataSourcesWithFullOuterJoin() {
         JsonPath postBody = getJson("testDataSourcesWithFullOuterJoin.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body("metadata.id", is(13));
     }
 
     @Test
     public void testDataSourceWithViewAsRootAndSparqlJoin() {
         JsonPath postBody = getJson("testDataSourceWithViewAsRootAndSparqlJoin.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body("metadata.id", is(7));
     }
 
     @Test
     public void testDataSourceWithSparqlAsRoot() {
         JsonPath postBody = getJson("testDataSourceWithSparqlAsRoot.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body("metadata.id", is(8));
     }
 
@@ -172,51 +89,21 @@ public class GeoServerTest extends AbstractFeatureServiceTest{
     @Test
     public void testDataSourceWithSparqlAsRootAndViewJoinWithFieldsElement() {
         JsonPath postBody = getJson("testDataSourceWithSparqlAsRootAndViewJoinWithFieldsElement.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body("metadata.id", is(9));
     }
 
     @Test
     public void testDataSourceWithSparqlAsRootAndViewJoinWithoutFieldsElement() {
         JsonPath postBody = getJson("testDataSourceWithSparqlAsRootAndViewJoinWithoutFieldsElement.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body("metadata.id", is(10));
     }
 
     @Test
     public void testDataSourceWithSparqlAsRootAndViewJoinWithoutFieldsElementStats() {
         JsonPath postBody = getJson("testDataSourceWithSparqlAsRootAndViewJoinWithoutFieldsElementStats.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body("metadata.id", is(11));
     }
 }

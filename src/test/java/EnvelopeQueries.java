@@ -1,7 +1,4 @@
-
-import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
-import io.restassured.RestAssured;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.hasItems;
@@ -15,17 +12,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
     @Test
     public void testEnvelopeIntersects1() {
         JsonPath postBody = getJson("testEnvelopeIntersects1.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(9))
                 .body("features.properties.name", hasItems("MarkLogic HQ","Museum","Restaurant","Shopping Center","MarkLogic Neighborhood", "Wildlife Refuge","Airport","Hwy 101","Holly St"))
@@ -36,17 +23,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
     @Test
     public void testEnvelopeIntersects2() {
         JsonPath postBody = getJson("testEnvelopeIntersects2.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(6))
                 .body("features.properties.name", hasItems("Museum","MarkLogic Neighborhood", "Wildlife Refuge","Airport","Hwy 101","Holly St"))
@@ -57,17 +34,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
     @Test
     public void testEnvelopeIntersects3() {
         JsonPath postBody = getJson("testEnvelopeIntersects3.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Shopping Center"))
@@ -78,17 +45,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
     @Test
     public void testEnvelopeIntersects4() {
         JsonPath postBody = getJson("testEnvelopeIntersects4.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(4))
                 .body("features.properties.name", hasItems("MarkLogic HQ","MarkLogic Neighborhood", "Wildlife Refuge","Airport"))
@@ -99,17 +56,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
     @Test
     public void testEnvelopeIntersects5() {
         JsonPath postBody = getJson("testEnvelopeIntersects5.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(2))
                 .body("features.properties.name", hasItems("Restaurant","MarkLogic Neighborhood"))
@@ -120,17 +67,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
     @Test
     public void testEnvelopeIntersects6() {
         JsonPath postBody = getJson("testEnvelopeIntersects6.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(0))
         ;
@@ -141,17 +78,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
     @Test
     public void testEnvelopeContains1() {
         JsonPath postBody = getJson("testEnvelopeContains1.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("MarkLogic Neighborhood"))
@@ -162,17 +89,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
     @Test
     public void testEnvelopeContains2() {
         JsonPath postBody = getJson("testEnvelopeContains2.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(2))
                 .body("features.properties.name", hasItems("MarkLogic Neighborhood","Airport"))
@@ -183,17 +100,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
     @Test
     public void testEnvelopeContains3() {
         JsonPath postBody = getJson("testEnvelopeContains3.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("MarkLogic Neighborhood"))

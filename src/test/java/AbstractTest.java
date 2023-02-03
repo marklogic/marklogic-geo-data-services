@@ -1,13 +1,16 @@
 import io.restassured.RestAssured;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.path.json.config.JsonPathConfig;
+import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.*;
+import org.junit.Before;
 
-import static io.restassured.RestAssured.*;
+import static io.restassured.RestAssured.basic;
 
 public abstract class AbstractTest {
     private String host, username, password;
@@ -27,6 +30,23 @@ public abstract class AbstractTest {
         RestAssured.authentication = basic(this.username, this.password);
         RestAssured.filters(new RequestLoggingFilter(LogDetail.URI));
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
+    }
+
+    protected final ValidatableResponse postQuery(JsonPath postBody) {
+        return postForResponse(postBody).then().statusCode(200);
+    }
+
+    protected final ValidatableResponse postQueryForError(JsonPath postBody) {
+        return postForResponse(postBody).then().statusCode(500);
+    }
+
+    protected final Response postForResponse(JsonPath postBody) {
+        return RestAssured
+                   .given()
+                   .contentType(ContentType.JSON)
+                   .body(postBody.prettyPrint())
+                   .when()
+                   .post();
     }
 
     Log getLogger() {

@@ -1,6 +1,4 @@
-import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
-import io.restassured.RestAssured;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -10,17 +8,7 @@ public class GroupByTest extends AbstractFeatureServiceTest{
     @Test
     public void testGkgGroupBy() {
         JsonPath postBody = getJson("testGkgGroupBy.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
 
                 .body(isValidFeatureCollection())
@@ -44,17 +32,7 @@ public class GroupByTest extends AbstractFeatureServiceTest{
     @Test
     public void testGroupByTwoFields() {
         JsonPath postBody = getJson("testGroupByTwoFields.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
 
                 .body(isValidFeatureCollection())
@@ -81,17 +59,7 @@ public class GroupByTest extends AbstractFeatureServiceTest{
     @Test
     public void testGroupByOrderByCount() {
         JsonPath postBody = getJson("testGroupByOrderByCount.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
 
                 .body(isValidFeatureCollection())
@@ -104,17 +72,7 @@ public class GroupByTest extends AbstractFeatureServiceTest{
     @Test
     public void testGroupByWithFilter() {
         JsonPath postBody = getJson("testGroupByWithFilter.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
 
                 .body(isValidFeatureCollection())

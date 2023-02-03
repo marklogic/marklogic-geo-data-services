@@ -1,10 +1,12 @@
-import io.restassured.http.ContentType;
-import io.restassured.path.json.JsonPath;
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 
 public class StatisticsTest  extends AbstractFeatureServiceTest{
 
@@ -13,17 +15,7 @@ public class StatisticsTest  extends AbstractFeatureServiceTest{
 
         try {
             JsonPath postBody = getJson("testAverageTone.json");
-
-            RestAssured
-                .given()
-                    .contentType(ContentType.JSON)
-                    .body(postBody.prettyPrint())
-                .when()
-
-                    .post()
-                .then()
-
-                    .statusCode(200)
+        postQuery(postBody)
 
 
                     .body(isValidFeatureCollection())
@@ -52,17 +44,7 @@ public class StatisticsTest  extends AbstractFeatureServiceTest{
 
         try{
             JsonPath postBody = getJson("testAverageMinMaxTone.json");
-
-            RestAssured
-                .given()
-                    .contentType(ContentType.JSON)
-                    .body(postBody.prettyPrint())
-                .when()
-
-                    .post()
-                .then()
-
-                    .statusCode(200)
+        postQuery(postBody)
 
 
                     .body(isValidFeatureCollection())
@@ -92,17 +74,7 @@ public class StatisticsTest  extends AbstractFeatureServiceTest{
     @Ignore("This is failing on Jenkins because the variance library doesn't seem to be getting loaded")
     public void testStddevAndVarUrltone() {
         JsonPath postBody = getJson("testStddevAndVarUrltone.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
 
                 .body(isValidFeatureCollection())

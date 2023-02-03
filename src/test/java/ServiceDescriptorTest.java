@@ -1,6 +1,4 @@
-import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
-import io.restassured.RestAssured;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.hasItems;
@@ -15,17 +13,7 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
         String expectedVersion = System.getProperty("gds.version");
 
         JsonPath postBody = getJson("testServiceDescriptor.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body("$version", is(expectedVersion))
         ;
@@ -34,17 +22,7 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
     @Test
     public void testServiceDescriptor() {
         JsonPath postBody = getJson("testServiceDescriptor.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 //TODO missing .body("currentVersion", is(10.51f))
                 //TODO missing .body("serviceDescription", notNullValue())
@@ -95,17 +73,7 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
     @Test
     public void testLayerDescriptor() {
         JsonPath postBody = getJson("testLayerDescriptor.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body("metadata.id", is(0))
                 .body("metadata.name", is("GKG level 1"))
@@ -138,17 +106,7 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
     @Test
     public void testLayers() {
         JsonPath postBody = getJson("testLayers.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body("layers.size()", is(8))
                 .body("layers.metadata.name", hasItems("GKG level 1", "GKG level 2", "GKG level 3","GKG level 4"))
@@ -158,5 +116,3 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
       // other specific fields we want to inspect
     }
 }
-
-

@@ -1,9 +1,8 @@
-import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
-import io.restassured.RestAssured;
-import java.io.UnsupportedEncodingException;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
+
+import java.io.UnsupportedEncodingException;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
@@ -14,17 +13,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
     @Test
     public void testLineStringCrosses1() throws UnsupportedEncodingException, ParseException {
         JsonPath postBody = getJson("testLineStringCrosses1.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Holly St"));
@@ -34,17 +23,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
     @Test
     public void testLineStringCrosses2() throws UnsupportedEncodingException, ParseException {
         JsonPath postBody = getJson("testLineStringCrosses2.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(2))
                 .body("features.properties.name", hasItems("Hwy 101", "Holly St"));
@@ -55,17 +34,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
     @Test
     public void testLineStringCrosses3() throws UnsupportedEncodingException, ParseException {
         JsonPath postBody = getJson("testLineStringCrosses3.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(6))
                 .body("features.properties.name", hasItems("MarkLogic Neighborhood", "Shopping Center", "Wildlife Refuge",
@@ -77,17 +46,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
     @Test
     public void testLineStringCrosses4() throws UnsupportedEncodingException, ParseException {
         JsonPath postBody = getJson("testLineStringCrosses4.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Wildlife Refuge"));
@@ -100,17 +59,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
     @Test
     public void testLineStringIntersect1() throws UnsupportedEncodingException, ParseException {
         JsonPath postBody = getJson("testLineStringIntersect1.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Wildlife Refuge"));
@@ -120,17 +69,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
     @Test
     public void testLineStringIntersect2() throws UnsupportedEncodingException, ParseException {
         JsonPath postBody = getJson("testLineStringIntersect2.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(2))
                 .body("features.properties.name", hasItems("Wildlife Refuge", "MarkLogic Neighborhood"));
@@ -141,17 +80,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
     @Test
     public void testLineStringIntersect3() throws UnsupportedEncodingException, ParseException {
         JsonPath postBody = getJson("testLineStringIntersect3.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(4))
                 .body("features.properties.name", hasItems("Airport", "Wildlife Refuge", "MarkLogic Neighborhood", "Hwy 101"));
@@ -162,17 +91,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
     @Test
     public void testLineStringIntersect4() throws UnsupportedEncodingException, ParseException {
         JsonPath postBody = getJson("testLineStringIntersect4.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("MarkLogic Neighborhood"));
@@ -183,17 +102,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest {
     @Test
     public void testLineStringIntersect5() throws UnsupportedEncodingException, ParseException {
         JsonPath postBody = getJson("testLineStringIntersect5.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("MarkLogic Neighborhood"));

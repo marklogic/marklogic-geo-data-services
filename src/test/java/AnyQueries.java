@@ -1,9 +1,8 @@
-import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
-import io.restassured.RestAssured;
-import java.io.UnsupportedEncodingException;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
+
+import java.io.UnsupportedEncodingException;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
@@ -14,14 +13,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyPolygon1() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testAnyPolygon1.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+		postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(14))
 				.body("features.properties.name",
@@ -33,14 +25,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyGeometryPolygon1() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testAnyGeometryPolygon1.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(14))
 				.body("features.properties.name",
@@ -54,14 +39,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyPolygon2() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testAnyPolygon2.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(17))
 				.body("features.properties.name",
@@ -73,14 +51,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyGeometryPolygon2() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testAnyGeometryPolygon2.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(17))
 				.body("features.geometry.size()", is(17))
@@ -94,14 +65,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyPolygon3() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testAnyPolygon3.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(5))
 				.body("features.properties.name",
@@ -111,14 +75,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyGeometryPolygon3() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testAnyGeometryPolygon3.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(5))
 				.body("features.geometry.size()", is(5))
@@ -130,14 +87,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyPolygon4() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testAnyPolygon4.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
 	}
@@ -145,14 +95,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyPolygon5() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testAnyPolygon5.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features.properties.name", hasItems("Gujarat"));
@@ -161,14 +104,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyGeometryPolygon5() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testAnyGeometryPolygon5.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features.geometry.size()", is(1))
@@ -180,14 +116,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyEnvelope1() {
 		JsonPath postBody = getJson("testAnyEnvelope1.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(14))
 				.body("features.properties.name",
@@ -199,14 +128,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyGeometryEnvelope1() {
 		JsonPath postBody = getJson("testAnyGeometryEnvelope1.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(14))
 				.body("features.properties.name",
@@ -220,14 +142,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyEnvelope2() {
 		JsonPath postBody = getJson("testAnyEnvelope2.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(17))
 				.body("features.properties.name",
@@ -239,14 +154,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyGeometryEnvelope2() {
 		JsonPath postBody = getJson("testAnyGeometryEnvelope2.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(17))
 				.body("features.geometry.size()", is(17))
@@ -260,14 +168,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyEnvelope3() {
 		JsonPath postBody = getJson("testAnyEnvelope3.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(5))
 				.body("features.properties.name",
@@ -277,14 +178,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyGeometryEnvelope3() {
 		JsonPath postBody = getJson("testAnyGeometryEnvelope3.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(5))
 				.body("features.geometry.size()", is(5))
@@ -296,14 +190,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyEnvelope4() {
 		JsonPath postBody = getJson("testAnyEnvelope4.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
 	}
@@ -311,14 +198,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyEnvelope5() {
 		JsonPath postBody = getJson("testAnyEnvelope5.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features.properties.name", hasItems("Gujarat"));
@@ -327,14 +207,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyGeometryEnvelope5() {
 		JsonPath postBody = getJson("testAnyGeometryEnvelope5.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features.geometry.size()", is(1))
@@ -346,14 +219,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyPoint1() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testAnyPoint1.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Rajasthan"));
@@ -362,14 +228,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyGeometryPoint1() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testAnyGeometryPoint1.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features.geometry.size()", is(1))
@@ -380,14 +239,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyPoint2() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testAnyPoint2.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
 	}
@@ -395,14 +247,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyPoint3() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testAnyPoint3.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Odisha"));
@@ -411,14 +256,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyGeometryPoint3() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testAnyGeometryPoint3.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features.geometry.size()", is(1))
@@ -429,14 +267,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testAnyAllFields() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testAnyAllFields.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				.post()
-			.then()
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(17))
 				.body("features.geometry.size()", is(17))
