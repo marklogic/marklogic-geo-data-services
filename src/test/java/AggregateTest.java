@@ -1,6 +1,6 @@
+import com.marklogic.gds.Query;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.path.json.JsonPath;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -9,12 +9,14 @@ public class AggregateTest extends AbstractFeatureServiceTest {
 
     @Test
     public void testGkgObjectIds() {
-        JsonPath postBody = getJson("gkgObjectIds.json");
-
         RestAssured
             .given()
                 .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
+                .body(new Query(0)
+                    .withObjectIds("56577", "56576")
+                    .returnCountOnly()
+                    .toString()
+                )
             .when()
                 .log().uri()
                 .post()
