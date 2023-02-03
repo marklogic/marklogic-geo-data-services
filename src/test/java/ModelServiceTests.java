@@ -1,7 +1,10 @@
-import org.junit.Test;
 import io.restassured.RestAssured;
+import org.junit.Test;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 
 public class ModelServiceTests extends AbstractTest {
     public void setup() {

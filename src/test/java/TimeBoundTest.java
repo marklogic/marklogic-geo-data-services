@@ -1,9 +1,10 @@
+import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import io.restassured.RestAssured;
-import java.util.List;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
@@ -13,21 +14,10 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
 
     @Test
     public void testTimeBound() {
-
         JsonPath postBody = getJson("gkgTimeBound.json");
-
-        Response response =
-            RestAssured
-                .given()
-                    .contentType(ContentType.JSON)
-                    .body(postBody.prettyPrint())
-                .when()
-
-                    .post()
-                .then()
-
+        Response response = postForResponse(postBody);
+        response.then()
                     .statusCode(200)
-
                     .body(isValidFeatureCollection())
                     .extract().response()
             ;
@@ -49,21 +39,10 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
     // https://doc.arcgis.com/en/operations-dashboard/help/url-parameters.htm
     @Test
     public void testTimeBoundLeftOpen() {
-
         JsonPath postBody = getJson("gkgTimeBoundLeftOpen.json");
-
-        Response response =
-            RestAssured
-                .given()
-                    .contentType(ContentType.JSON)
-                    .body(postBody.prettyPrint())
-                .when()
-
-                    .post()
-                .then()
-
+        Response response = postForResponse(postBody);
+        response.then()
                     .statusCode(200)
-
                     .body(isValidFeatureCollection())
                     .extract().response()
             ;
@@ -82,21 +61,10 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
 
     @Test
     public void testTimeBoundRightOpen() {
-
         JsonPath postBody = getJson("gkgTimeBoundRightOpen.json");
-
-        Response response =
-            RestAssured
-                .given()
-                    .contentType(ContentType.JSON)
-                    .body(postBody.prettyPrint())
-                .when()
-
-                    .post()
-                .then()
-
+        Response response = postForResponse(postBody);
+        response.then()
                     .statusCode(200)
-
                     .body(isValidFeatureCollection())
                     .extract().response()
             ;
@@ -114,21 +82,10 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
 
     @Test
     public void testTimeBoundInstant() {
-
         JsonPath postBody = getJson("gkgTimeBoundInstant.json");
-
-        Response response =
-            RestAssured
-                .given()
-                    .contentType(ContentType.JSON)
-                    .body(postBody.prettyPrint())
-                .when()
-
-                    .post()
-                .then()
-
+        Response response = postForResponse(postBody);
+        response.then()
                     .statusCode(200)
-
                     .body(isValidFeatureCollection())
                     .extract().response()
             ;
@@ -147,21 +104,10 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
 
     @Test
     public void testTimeBoundNull() {
-
         JsonPath postBody = getJson("gkgTimeBoundNull.json");
-
-        Response response =
-            RestAssured
-                .given()
-                    .contentType(ContentType.JSON)
-                    .body(postBody.prettyPrint())
-                .when()
-
-                    .post()
-                .then()
-
+        Response response = postForResponse(postBody);
+        response.then()
                     .statusCode(200)
-
                     .body(isValidFeatureCollection())
                     .extract().response()
             ;
@@ -171,5 +117,3 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
         assertTrue(jsonResponse.size() >= 20);
     }
 }
-
-//"24457","24973","5632","24974","27161","56371","49518","49416","32295","32309","32296","47923","32293","8384","44483","32724","22445","22455","1807","5538"

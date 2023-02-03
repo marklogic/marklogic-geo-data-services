@@ -1,6 +1,4 @@
-import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
-import io.restassured.RestAssured;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -9,17 +7,7 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
     @Test
     public void testViewAsRoot() {
         JsonPath postBody = getJson("testViewAsRoot.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
 
@@ -35,17 +23,7 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
     @Test
     public void testDataSourceWithViewAsRoot() {
         JsonPath postBody = getJson("testDataSourceWithViewAsRoot.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                     .body(isValidFeatureCollection())
 
@@ -66,17 +44,7 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
     @Test
     public void testDataSourcesWithLeftOuterJoin() {
         JsonPath postBody = getJson("testDataSourcesWithLeftOuterJoin.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
 
@@ -90,17 +58,7 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
     @Test
     public void testDataSourcesWithFullOuterJoin() {
         JsonPath postBody = getJson("testDataSourcesWithFullOuterJoin.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
 
@@ -114,51 +72,19 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
     @Test
     public void testDataSourcesWithCrossProductJoin() {
         JsonPath postBody = getJson("testDataSourcesWithCrossProductJoin.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-                //
-                .statusCode(500)
-        ;
+        postQueryForError(postBody);
     }
 
     @Test
     public void testDataSourcesWithInvalidJoin() {
         JsonPath postBody = getJson("testDataSourcesWithInvalidJoin.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-                //
-                .statusCode(500)
-        ;
+        postQueryForError(postBody);
     }
 
     @Test
     public void testDataSourceWithViewAsRootAndSparqlJoin() {
         JsonPath postBody = getJson("testDataSourceWithViewAsRootAndSparqlJoin.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
 
@@ -174,17 +100,7 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
     @Test
     public void testDataSourceWithSparqlAsRoot() {
         JsonPath postBody = getJson("testDataSourceWithSparqlAsRoot.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
 
@@ -201,17 +117,7 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
     @Test
     public void testDataSourceWithSparqlAsRootAndViewJoinWithFieldsElement() {
         JsonPath postBody = getJson("testDataSourceWithSparqlAsRootAndViewJoinWithFieldsElement.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
 
@@ -227,17 +133,7 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
     @Test
     public void testDataSourceWithSparqlAsRootAndViewJoinWithoutFieldsElement() {
         JsonPath postBody = getJson("testDataSourceWithSparqlAsRootAndViewJoinWithoutFieldsElement.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
 
@@ -261,17 +157,7 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
     @Test
     public void testDataSourceWithSparqlAsRootAndViewJoinWithoutFieldsElementStats() {
         JsonPath postBody = getJson("testDataSourceWithSparqlAsRootAndViewJoinWithoutFieldsElementStats.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
 

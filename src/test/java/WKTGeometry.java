@@ -1,11 +1,11 @@
-import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
-import io.restassured.RestAssured;
-import java.io.UnsupportedEncodingException;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.hasItems; import static org.hamcrest.Matchers.is;
+import java.io.UnsupportedEncodingException;
+
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 
 public class WKTGeometry  extends AbstractFeatureServiceTest {
 
@@ -21,17 +21,7 @@ public class WKTGeometry  extends AbstractFeatureServiceTest {
     @Test
     public void testXPathExtraction() throws UnsupportedEncodingException, ParseException {
         JsonPath postBody = getJson("testXPathExtraction.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].geometry.coordinates.size()", is(1))
@@ -52,17 +42,7 @@ public class WKTGeometry  extends AbstractFeatureServiceTest {
     @Test
     public void testColumnExtraction() throws UnsupportedEncodingException, ParseException {
         JsonPath postBody = getJson("testColumnExtraction.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].geometry.coordinates.size()", is(1))

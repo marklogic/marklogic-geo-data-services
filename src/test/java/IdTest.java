@@ -1,6 +1,4 @@
-import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
-import io.restassured.RestAssured;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -10,17 +8,7 @@ public class IdTest extends AbstractFeatureServiceTest {
     @Test
     public void testGkgIdsOnly() {
         JsonPath postBody = getJson("gkgIdsOnly.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 //TODO missing .body("objectIdField", is("OBJECTID"))
@@ -30,17 +18,7 @@ public class IdTest extends AbstractFeatureServiceTest {
     @Test
     public void testGkgObjectIds() {
         JsonPath postBody = getJson("gkgObjectIds.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
 
                 .body(isValidFeatureCollection())

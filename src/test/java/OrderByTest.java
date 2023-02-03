@@ -1,6 +1,4 @@
-import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
-import io.restassured.RestAssured;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -10,17 +8,7 @@ public class OrderByTest extends AbstractFeatureServiceTest {
 	@Test
     public void testGkgOrderbyTop10() {
         JsonPath postBody = getJson("testGkgOrderbyTop10.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(10))
@@ -50,17 +38,7 @@ public class OrderByTest extends AbstractFeatureServiceTest {
     @Test
     public void testGkgOrderbyLeadingWhitespace() {
         JsonPath postBody = getJson("testGkgOrderbyLeadingWhitespace.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 //TODO missing .body("objectIdFieldName", is("OBJECTID"))

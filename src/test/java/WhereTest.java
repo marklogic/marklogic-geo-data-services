@@ -1,6 +1,4 @@
-import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
-import io.restassured.RestAssured;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.containsString;
@@ -13,17 +11,7 @@ public class WhereTest extends AbstractFeatureServiceTest{
 	@Test
     public void testGkgCountWhere() {
         JsonPath postBody = getJson("testGkgCountWhere.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("count", is(197))
@@ -33,17 +21,7 @@ public class WhereTest extends AbstractFeatureServiceTest{
 	@Test
     public void testGkgWhereISNOTNULL() {
         JsonPath postBody = getJson("testGkgWhereISNOTNULL.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("count", is(38765))
@@ -53,17 +31,7 @@ public class WhereTest extends AbstractFeatureServiceTest{
 	@Test
     public void testGkgWhereISNULL() {
         JsonPath postBody = getJson("testGkgWhereISNULL.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("count", is(0))
@@ -73,17 +41,7 @@ public class WhereTest extends AbstractFeatureServiceTest{
 	@Test
     public void testGkgWhereIn() {
         JsonPath postBody = getJson("testGkgWhereIn.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 //TODO missing .body("objectIdFieldName", is("OBJECTID"))
@@ -122,17 +80,7 @@ public class WhereTest extends AbstractFeatureServiceTest{
 	@Test
     public void testGkgWhereNotIn() {
         JsonPath postBody = getJson("testGkgWhereNotIn.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("count", is(38763))
@@ -142,17 +90,7 @@ public class WhereTest extends AbstractFeatureServiceTest{
 	@Test
     public void testGkgtoDateWhere() {
         JsonPath postBody = getJson("testGkgtoDateWhere.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("count", is(5427))
@@ -162,17 +100,7 @@ public class WhereTest extends AbstractFeatureServiceTest{
     @Test
     public void testOneField() {
         JsonPath postBody = getJson("testOneField.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(29))
@@ -183,17 +111,7 @@ public class WhereTest extends AbstractFeatureServiceTest{
     @Test
     public void testOrTwoFields() {
         JsonPath postBody = getJson("testOrTwoFields.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(177))
@@ -204,17 +122,7 @@ public class WhereTest extends AbstractFeatureServiceTest{
     @Test
     public void testBetweenDates1() {
         JsonPath postBody = getJson("testBetweenDates1.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("count", is(33338))
@@ -224,17 +132,7 @@ public class WhereTest extends AbstractFeatureServiceTest{
     @Test
     public void testBetweenDates2() {
         JsonPath postBody = getJson("testBetweenDates2.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("count", is(5427))
@@ -244,17 +142,7 @@ public class WhereTest extends AbstractFeatureServiceTest{
     @Test
     public void testBetweenDatesNoMatch() {
         JsonPath postBody = getJson("testBetweenDatesNoMatch.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("count", is(0))
@@ -264,17 +152,7 @@ public class WhereTest extends AbstractFeatureServiceTest{
     @Test
     public void testGreaterThanDate() {
         JsonPath postBody = getJson("testGreaterThanDate.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("count", is(5427))
@@ -284,17 +162,7 @@ public class WhereTest extends AbstractFeatureServiceTest{
     @Test
     public void testGreaterThanTimestamp() {
         JsonPath postBody = getJson("testGreaterThanTimestamp.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("count", is(33462))
@@ -304,17 +172,7 @@ public class WhereTest extends AbstractFeatureServiceTest{
     @Test
     public void testLike() {
         JsonPath postBody = getJson("testLike.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(227))
@@ -325,17 +183,7 @@ public class WhereTest extends AbstractFeatureServiceTest{
     @Test
     public void testCombinedSearch() {
         JsonPath postBody = getJson("testCombinedSearch.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(29))
@@ -345,21 +193,10 @@ public class WhereTest extends AbstractFeatureServiceTest{
     @Test
     public void testCombinedSearchFalse() {
         JsonPath postBody = getJson("testCombinedSearchFalse.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(0))
         ;
     }
 }
-

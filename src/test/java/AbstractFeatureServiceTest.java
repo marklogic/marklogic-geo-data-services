@@ -1,7 +1,7 @@
 import io.restassured.RestAssured;
 import io.restassured.module.jsv.JsonSchemaValidator;
 
-import static io.restassured.module.jsv.JsonSchemaValidator.*;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;
 
 public abstract class AbstractFeatureServiceTest extends AbstractTest  {
     private static JsonSchemaValidator geoJsonFeatureCollectionValidator = null;

@@ -1,6 +1,4 @@
-import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
-import io.restassured.RestAssured;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -10,18 +8,7 @@ public class OffsetAndLimitTest extends AbstractFeatureServiceTest {
 	@Test
     public void testGkgOffsetAndLimit() {
         JsonPath postBody = getJson("testGkgOffsetAndLimit.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
 

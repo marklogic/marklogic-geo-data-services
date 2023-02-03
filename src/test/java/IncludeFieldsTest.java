@@ -1,6 +1,4 @@
-import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
-import io.restassured.RestAssured;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -10,17 +8,7 @@ public class IncludeFieldsTest extends AbstractFeatureServiceTest {
     @Test
     public void testIncludeFieldsInFirstDataSourcesObject() {
         JsonPath postBody = getJson("testIncludeFieldsInFirstDataSourcesObject.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
 
                 .body(isValidFeatureCollection())
@@ -43,17 +31,7 @@ public class IncludeFieldsTest extends AbstractFeatureServiceTest {
     @Test
     public void testIncludeFieldsInOriginalSource() {
         JsonPath postBody = getJson("testIncludeFieldsInOriginalSource.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
 
                 .body(isValidFeatureCollection())

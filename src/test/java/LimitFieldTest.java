@@ -1,6 +1,4 @@
-import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
-import io.restassured.RestAssured;
 import org.hamcrest.core.IsNull;
 import org.junit.Test;
 
@@ -11,18 +9,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
 	@Test
     public void testGkgLimitFields() {
         JsonPath postBody = getJson("testGkgLimitFields.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 //TODO missing .body("objectIdFieldName", is("OBJECTID"))
@@ -60,18 +47,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
     @Test
     public void testGkgAllLimitFields() {
         JsonPath postBody = getJson("testGkgAllLimitFields.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(5000))
@@ -81,18 +57,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
     @Test
     public void testGkgLimitResultRecordCount1() {
         JsonPath postBody = getJson("testGkgLimitResultRecordCount1.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(3500))
@@ -102,18 +67,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
     @Test
     public void testGkgLimitResultRecordCount2() {
         JsonPath postBody = getJson("testGkgLimitResultRecordCount2.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(7000))
@@ -123,18 +77,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
     @Test
     public void testGkgLimitResultRecordCount3() {
         JsonPath postBody = getJson("testGkgLimitResultRecordCount3.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(4000))
@@ -144,22 +87,10 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
     @Test
     public void testGkgLimitReturnIdsOnly0() {
         JsonPath postBody = getJson("testGkgLimitReturnIdsOnly0.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-
-                .statusCode(200)
+        postQuery(postBody)
 
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(10))
         ;
     }
 }
-

@@ -1,9 +1,8 @@
-import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
-import io.restassured.RestAssured;
-import java.io.UnsupportedEncodingException;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
+
+import java.io.UnsupportedEncodingException;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
@@ -16,16 +15,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonIntersects1() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonIntersects1.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				//
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Wildlife Refuge"));
@@ -36,16 +26,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonIntersects2() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonIntersects2.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-				//
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(2))
 				.body("features.properties.name", hasItems("Holly St", "MarkLogic Neighborhood"));
@@ -56,16 +37,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonIntersects3() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonIntersects3.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(3))
 				.body("features.properties.name", hasItems("Airport", "Holly St", "MarkLogic Neighborhood"));
@@ -76,16 +48,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonIntersects4() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonIntersects4.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(3))
 				.body("features.properties.name", hasItems("Hwy 101", "Holly St", "MarkLogic Neighborhood"));
@@ -95,16 +58,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonIntersects5() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonIntersects5.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
 	}
@@ -113,16 +67,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonIntersects6() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonIntersects6.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("MarkLogic Neighborhood"));
@@ -132,16 +77,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonIntersects7() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonIntersects7.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(2))
 				.body("features.properties.name", hasItems("Restaurant", "MarkLogic Neighborhood"));
@@ -153,16 +89,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonWithin1() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonWithin1.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Restaurant"));
@@ -172,16 +99,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonWithin2() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonWithin2.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Airport"));
@@ -192,16 +110,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonWithin3() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonWithin3.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(6))
 				.body("features.properties.name",
@@ -213,16 +122,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonWithin4() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonWithin4.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
 	}
@@ -232,16 +132,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonWithin5() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonWithin5.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Wildlife Refuge"));
@@ -252,16 +143,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonWithin6() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonWithin6.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
 	}
@@ -271,16 +153,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonWithin7() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonWithin7.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
 	}
@@ -291,16 +164,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonContains1() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonContains1.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Wildlife Refuge"));
@@ -310,16 +174,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonContains2() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonContains2.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(2))
 				.body("features.properties.name", hasItems("MarkLogic Neighborhood", "Airport"));
@@ -330,16 +185,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonContains3() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonContains3.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("MarkLogic Neighborhood"));
@@ -350,16 +196,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonTouches1() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonTouches1.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Hwy 101"));
@@ -369,16 +206,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonTouches2() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonTouches2.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
 	}
@@ -387,16 +215,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonTouches3() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonTouches3.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
 	}
@@ -406,16 +225,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonOverlaps1() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonOverlaps1.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("MarkLogic Neighborhood"));
@@ -424,16 +234,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	@Test
 	public void testPolygonOverlaps2() throws UnsupportedEncodingException, ParseException {
 		JsonPath postBody = getJson("testPolygonOverlaps2.json");
-		RestAssured
-			.given()
-				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
-			.when()
-
-				.post()
-			.then()
-
-				.statusCode(200)
+        postQuery(postBody)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Wildlife Refuge"));

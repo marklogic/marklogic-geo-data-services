@@ -1,7 +1,5 @@
-import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
-import io.restassured.RestAssured;
-import org.junit.*;
+import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -11,17 +9,7 @@ public class FieldsTest extends AbstractFeatureServiceTest {
     @Test
     public void testAllFields() {
         JsonPath postBody = getJson("testAllFields.json");
-
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
-            .when()
-
-                .post()
-            .then()
-
-                .statusCode(200)
+        postQuery(postBody)
 
 
                 .body(isValidFeatureCollection())
