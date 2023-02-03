@@ -6,6 +6,9 @@ plugins {
 
     // Used to deploy the test app
     id "com.marklogic.ml-gradle" version "4.4.0"
+
+    // Only used for testing
+    id "org.sonarqube" version "3.5.0.2730"
 }
 
 group = "com.marklogic"
@@ -47,6 +50,7 @@ test {
     systemProperty "feature.user", testUsername
     systemProperty "feature.password", testPassword
     systemProperty "gds.version", project.version
+    systemProperty "sonar.projectVersion", project.version
 }
 
 task loadTestData(dependsOn: [
