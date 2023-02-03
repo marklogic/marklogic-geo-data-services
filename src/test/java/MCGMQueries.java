@@ -20,10 +20,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
@@ -40,10 +40,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
@@ -62,10 +62,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
@@ -82,10 +82,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
@@ -104,10 +104,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(5))
@@ -124,10 +124,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(5))
@@ -146,10 +146,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(0))
@@ -165,10 +165,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
@@ -185,10 +185,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
@@ -208,10 +208,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
@@ -228,10 +228,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
@@ -250,10 +250,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
@@ -270,10 +270,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
@@ -292,10 +292,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(5))
@@ -312,10 +312,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(5))
@@ -335,10 +335,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(0))
@@ -354,10 +354,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
@@ -374,10 +374,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
@@ -397,10 +397,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
@@ -417,10 +417,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
@@ -439,10 +439,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(0))
@@ -458,10 +458,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
@@ -478,10 +478,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
@@ -500,10 +500,10 @@ public class MCGMQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(17))

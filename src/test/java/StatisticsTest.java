@@ -19,13 +19,13 @@ public class StatisticsTest  extends AbstractFeatureServiceTest{
                     .contentType(ContentType.JSON)
                     .body(postBody.prettyPrint())
                 .when()
-                    .log().uri()
+
                     .post()
                 .then()
-                    .log().ifError()
+
                     .statusCode(200)
-                    
-                    .log().ifValidationFails()
+
+
                     .body(isValidFeatureCollection())
                     //TODO missing .body("displayFieldName", is(""))
                     //TODO missing .body("fieldAliases.domain", is("domain"))
@@ -58,13 +58,13 @@ public class StatisticsTest  extends AbstractFeatureServiceTest{
                     .contentType(ContentType.JSON)
                     .body(postBody.prettyPrint())
                 .when()
-                    .log().uri()
+
                     .post()
                 .then()
-                    .log().ifError()
+
                     .statusCode(200)
-                    
-                    .log().ifValidationFails()
+
+
                     .body(isValidFeatureCollection())
                     //TODO missing .body("displayFieldName", is(""))
                     //TODO missing .body("fieldAliases.domain", is("domain"))
@@ -98,13 +98,13 @@ public class StatisticsTest  extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
-                .log().ifValidationFails()
+
+
                 .body(isValidFeatureCollection())
                 //TODO missing .body("displayFieldName", is(""))
                 //TODO missing .body("fieldAliases.count_urltone", is("count_urltone"))

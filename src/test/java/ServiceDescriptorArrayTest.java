@@ -15,12 +15,12 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
 
                 .body("features.size()", is(5))
@@ -41,12 +41,12 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                    .log().ifValidationFails()
+
                     .body(isValidFeatureCollection())
 
                     .body("features.size()", is(5))
@@ -72,12 +72,12 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
 
                 .body("features.size()", is(1502))
@@ -96,12 +96,12 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
 
                 .body("features.size()", is(67622))
@@ -120,10 +120,10 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                //.log().ifError()
+                //
                 .statusCode(500)
         ;
     }
@@ -137,10 +137,10 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                //.log().ifError()
+                //
                 .statusCode(500)
         ;
     }
@@ -154,12 +154,12 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
 
                 .body("features.size()", is(5))
@@ -180,12 +180,12 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
 
                 .body("features.size()", is(5))
@@ -207,12 +207,12 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
 
                 .body("features.size()", is(5))
@@ -233,12 +233,12 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
 
                 .body("features.size()", is(5))
@@ -267,12 +267,12 @@ public class ServiceDescriptorArrayTest extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
 
                 .body("statistics.size()", is(2))

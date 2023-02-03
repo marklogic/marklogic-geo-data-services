@@ -17,13 +17,13 @@ public class FieldsTest extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
-                .log().ifValidationFails()
+
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(5))
                 .body("features[0].properties.OBJECTID", notNullValue())

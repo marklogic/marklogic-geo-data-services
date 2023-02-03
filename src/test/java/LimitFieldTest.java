@@ -17,13 +17,13 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
-                
+
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 //TODO missing .body("objectIdFieldName", is("OBJECTID"))
                 //TODO missing .body("globalIdFieldName", is(""))
@@ -66,13 +66,13 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
-                
+
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(5000))
         ;
@@ -87,13 +87,13 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
-                
+
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(3500))
         ;
@@ -108,13 +108,13 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
-                
+
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(7000))
         ;
@@ -129,13 +129,13 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
-                
+
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(4000))
         ;
@@ -150,13 +150,13 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
-                
+
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(10))
         ;

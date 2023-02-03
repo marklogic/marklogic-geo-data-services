@@ -16,12 +16,9 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-13340.0579808794f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(3183.36201912057f))
@@ -40,12 +37,9 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-61804.899857712f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-44763.169857712f))
@@ -64,12 +58,9 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-141140.379126623f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-124345.619126623f))
@@ -88,12 +79,9 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(1))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(2.99261807854486f))
@@ -113,12 +101,9 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(37))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(160.936078759448f))
@@ -137,12 +122,9 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(37))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(160.936078759448f))
@@ -162,12 +144,9 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(1))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(6437))
@@ -187,12 +166,9 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(37))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(7805))
@@ -211,23 +187,20 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(0))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(3042))
                 //TODO .body("minValue", is(0))
                 //TODO .body("type", is("classBreaks"))   maybe change to hasProperty()
-                .body("statistics.classBreaks.size()", is(20))                
+                .body("statistics.classBreaks.size()", is(20))
             ;
     }
 
-    //gkgToneEqualInterval0 
-    
+    //gkgToneEqualInterval0
+
     @Test
     public void gkgToneEqualInterval0 () {
         JsonPath postBody = getJson("gkgToneEqualInterval0.json");
@@ -237,18 +210,15 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-21.77f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-14.17f))
                 //TODO .body("minValue", is(-21.77f))
                 //TODO .body("type", is("classBreaks"))   maybe change to hasProperty()
-                .body("statistics.classBreaks.size()", is(5))                
+                .body("statistics.classBreaks.size()", is(5))
             ;
     }
 
@@ -262,18 +232,15 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-15.72f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-13.206f))
                 //TODO .body("minValue", is(-15.72f))
                 //TODO .body("type", is("classBreaks"))   maybe change to hasProperty()
-                .body("statistics.classBreaks.size()", is(10))   
+                .body("statistics.classBreaks.size()", is(10))
             ;
     }
 
@@ -286,23 +253,20 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-21.77f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-19.87f))
                 //TODO .body("minValue", is(-21.77f))
                 //TODO .body("type", is("classBreaks"))   maybe change to hasProperty()
-                .body("statistics.classBreaks.size()", is(20))                
+                .body("statistics.classBreaks.size()", is(20))
             ;
     }
 
     //gkgToneQuantile
-     
+
     @Test
     public void gkgToneQuantile0 () {
         JsonPath postBody = getJson("gkgToneQuantile0.json");
@@ -312,22 +276,19 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-21.77f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-8.48f))
                 //TODO .body("minValue", is(-21.77f))
                 //TODO .body("type", is("classBreaks"))   maybe change to hasProperty()
-                .body("statistics.classBreaks.size()", is(10))                
+                .body("statistics.classBreaks.size()", is(10))
             ;
     }
 
-    
+
     @Test
     public void gkgToneQuantile1 () {
         JsonPath postBody = getJson("gkgToneQuantile1.json");
@@ -337,12 +298,9 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-15.72f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-4.64f))
@@ -352,7 +310,7 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             ;
     }
 
-    
+
     @Test
     public void gkgToneQuantile2 () {
         JsonPath postBody = getJson("gkgToneQuantile2.json");
@@ -362,18 +320,15 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-21.77f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-10.82f))
                 //TODO .body("minValue", is(-21.77f))
                 //TODO .body("type", is("classBreaks"))   maybe change to hasProperty()
-                .body("statistics.classBreaks.size()", is(20))                
+                .body("statistics.classBreaks.size()", is(20))
             ;
     }
 }

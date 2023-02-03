@@ -16,13 +16,13 @@ public class OffsetAndLimitTest extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
-                
+
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
 
                 .body("features.size()", is(10))

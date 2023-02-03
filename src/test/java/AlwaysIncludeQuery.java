@@ -14,13 +14,9 @@ public class AlwaysIncludeQuery extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(new Query(7).returnCountOnly().toString())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-
-                .log().ifValidationFails()
                 .body(isValidFeatureCollection())
                 //this is a count of layers 0 + 1
                 .body("count", is(38765 + 3557))

@@ -18,10 +18,10 @@ public class DataTypes extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body("metadata.fields.find { it.name == 'domain' }.length", is(1024))
         ;

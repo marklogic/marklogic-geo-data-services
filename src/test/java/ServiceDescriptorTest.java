@@ -21,12 +21,12 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body("$version", is(expectedVersion))
         ;
     }
@@ -40,12 +40,12 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 //TODO missing .body("currentVersion", is(10.51f))
                 //TODO missing .body("serviceDescription", notNullValue())
                 //TODO missing .body("hasVersionedData", is(false))
@@ -101,12 +101,12 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body("metadata.id", is(0))
                 .body("metadata.name", is("GKG level 1"))
                 //TODO missing .body("metadata.type", is("Feature Layer"))
@@ -144,12 +144,12 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body("layers.size()", is(8))
                 .body("layers.metadata.name", hasItems("GKG level 1", "GKG level 2", "GKG level 3","GKG level 4"))
             ;

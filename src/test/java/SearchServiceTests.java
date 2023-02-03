@@ -28,9 +28,9 @@ public class SearchServiceTests extends AbstractTest {
             .when()
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body("total", equalTo(67613))
                 .body("results.size()", greaterThan(0))
                 .body("facets.GeoResolution.facetValues.size()", greaterThan(0))
@@ -52,9 +52,9 @@ public class SearchServiceTests extends AbstractTest {
             .when()
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body("total", equalTo(30454))
                 .body("results.size()", greaterThan(0))
                 .body("facets.GeoResolution.facetValues.size()", greaterThan(0))
@@ -82,9 +82,9 @@ public class SearchServiceTests extends AbstractTest {
             .when()
                 .put("/LATEST/resources/geoSearchService")
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body("id", equalTo(modelId))
                 .body("layers.0.layerId", equalTo(1))
                 .body("layers.0.name", equalTo(expectedLayerName))
@@ -97,9 +97,9 @@ public class SearchServiceTests extends AbstractTest {
             .when()
                 .get("/LATEST/resources/modelService")
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body("info.name", equalTo(modelId))
                 .body("layers.size()", equalTo(3))
                 .body("layers[1].name", equalTo(expectedLayerName))

@@ -18,13 +18,9 @@ public class AggregateTest extends AbstractFeatureServiceTest {
                     .toString()
                 )
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                .log().ifValidationFails()
-
                 .body("features.size()", is(0))
                 .body("count", is(2))
         ;

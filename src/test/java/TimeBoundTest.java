@@ -16,18 +16,18 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
 
         JsonPath postBody = getJson("gkgTimeBound.json");
 
-        Response response = 
+        Response response =
             RestAssured
                 .given()
                     .contentType(ContentType.JSON)
                     .body(postBody.prettyPrint())
                 .when()
-                    .log().uri()
+
                     .post()
                 .then()
-                    .log().ifError()
+
                     .statusCode(200)
-                    
+
                     .body(isValidFeatureCollection())
                     .extract().response()
             ;
@@ -45,25 +45,25 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
         }
     }
 
-    // Support numeric parameters as described in 
+    // Support numeric parameters as described in
     // https://doc.arcgis.com/en/operations-dashboard/help/url-parameters.htm
     @Test
     public void testTimeBoundLeftOpen() {
 
         JsonPath postBody = getJson("gkgTimeBoundLeftOpen.json");
 
-        Response response = 
+        Response response =
             RestAssured
                 .given()
                     .contentType(ContentType.JSON)
                     .body(postBody.prettyPrint())
                 .when()
-                    .log().uri()
+
                     .post()
                 .then()
-                    .log().ifError()
+
                     .statusCode(200)
-                    .log().ifValidationFails()
+
                     .body(isValidFeatureCollection())
                     .extract().response()
             ;
@@ -85,18 +85,18 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
 
         JsonPath postBody = getJson("gkgTimeBoundRightOpen.json");
 
-        Response response = 
+        Response response =
             RestAssured
                 .given()
                     .contentType(ContentType.JSON)
                     .body(postBody.prettyPrint())
                 .when()
-                    .log().uri()
+
                     .post()
                 .then()
-                    .log().ifError()
+
                     .statusCode(200)
-                    .log().ifValidationFails()
+
                     .body(isValidFeatureCollection())
                     .extract().response()
             ;
@@ -117,18 +117,18 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
 
         JsonPath postBody = getJson("gkgTimeBoundInstant.json");
 
-        Response response = 
+        Response response =
             RestAssured
                 .given()
                     .contentType(ContentType.JSON)
                     .body(postBody.prettyPrint())
                 .when()
-                    .log().uri()
+
                     .post()
                 .then()
-                    .log().ifError()
+
                     .statusCode(200)
-                    .log().ifValidationFails()
+
                     .body(isValidFeatureCollection())
                     .extract().response()
             ;
@@ -150,18 +150,18 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
 
         JsonPath postBody = getJson("gkgTimeBoundNull.json");
 
-        Response response = 
+        Response response =
             RestAssured
                 .given()
                     .contentType(ContentType.JSON)
                     .body(postBody.prettyPrint())
                 .when()
-                    .log().uri()
+
                     .post()
                 .then()
-                    .log().ifError()
+
                     .statusCode(200)
-                    .log().ifValidationFails()
+
                     .body(isValidFeatureCollection())
                     .extract().response()
             ;
