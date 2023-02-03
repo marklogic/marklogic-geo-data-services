@@ -21,17 +21,17 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(9))
                 .body("features.properties.name", hasItems("MarkLogic HQ","Museum","Restaurant","Shopping Center","MarkLogic Neighborhood", "Wildlife Refuge","Airport","Hwy 101","Holly St"))
         ;
     }
-    
+
     //testEnvelopeAirportIntersects
     @Test
     public void testEnvelopeIntersects2() {
@@ -42,17 +42,17 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(6))
                 .body("features.properties.name", hasItems("Museum","MarkLogic Neighborhood", "Wildlife Refuge","Airport","Hwy 101","Holly St"))
-        ; 
-    }	
-    
+        ;
+    }
+
     //testEnvelopeShoppingCentreIntersects
     @Test
     public void testEnvelopeIntersects3() {
@@ -63,17 +63,17 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Shopping Center"))
-        ; 
+        ;
     }
-    
+
     //testEnvelopeWildlifeRefugeIntersects
     @Test
     public void testEnvelopeIntersects4() {
@@ -84,15 +84,15 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(4))
                 .body("features.properties.name", hasItems("MarkLogic HQ","MarkLogic Neighborhood", "Wildlife Refuge","Airport"))
-        ; 
+        ;
     }
 
     //testEnvelopeAroundPointIntersects
@@ -105,17 +105,17 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(2))
                 .body("features.properties.name", hasItems("Restaurant","MarkLogic Neighborhood"))
-        ; 
+        ;
     }
-    
+
     //testEnvelopeEmptyIntersects
     @Test
     public void testEnvelopeIntersects6() {
@@ -126,16 +126,16 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(0))
-        ; 
+        ;
     }
-    
+
     //=========================Contains============================================
     //Inside single Envelope - Expected : MarkLogic Neighborhood
     @Test
@@ -147,17 +147,17 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("MarkLogic Neighborhood"))
-        ; 
+        ;
     }
-    
+
     //Inside two Envelope - Expected : MarkLogic Neighborhood , Airport
     @Test
     public void testEnvelopeContains2() {
@@ -168,10 +168,10 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(2))
@@ -179,7 +179,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
         ;
     }
 
-    //Inside a Envelope and intersecting 2 other features - Expected : MarkLogic Neighborhood 
+    //Inside a Envelope and intersecting 2 other features - Expected : MarkLogic Neighborhood
     @Test
     public void testEnvelopeContains3() {
         JsonPath postBody = getJson("testEnvelopeContains3.json");
@@ -189,14 +189,14 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("MarkLogic Neighborhood"))
-        ; 
+        ;
     }
 }

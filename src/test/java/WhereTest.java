@@ -19,12 +19,12 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("count", is(197))
         ;
@@ -39,12 +39,12 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("count", is(38765))
         ;
@@ -59,12 +59,12 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("count", is(0))
         ;
@@ -79,12 +79,12 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 //TODO missing .body("objectIdFieldName", is("OBJECTID"))
                 //TODO missing .body("globalIdFieldName", is(""))
@@ -128,12 +128,12 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("count", is(38763))
         ;
@@ -148,12 +148,12 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("count", is(5427))
         ;
@@ -168,12 +168,12 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(29))
                 .body("features.properties.domain", everyItem(isOneOf("nikkei.com")))
@@ -189,12 +189,12 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(177))
                 .body("features.properties.domain", everyItem(isOneOf("livetradingnews.com", "nikkei.com")))
@@ -210,12 +210,12 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("count", is(33338))
         ;
@@ -230,12 +230,12 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("count", is(5427))
         ;
@@ -250,12 +250,12 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("count", is(0))
         ;
@@ -270,12 +270,12 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("count", is(5427))
         ;
@@ -290,12 +290,12 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("count", is(33462))
         ;
@@ -310,12 +310,12 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(227))
                 .body("features.properties.domain", everyItem(containsString("journal")))
@@ -331,12 +331,12 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(29))
         ;
@@ -351,12 +351,12 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(0))
         ;

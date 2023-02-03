@@ -16,9 +16,9 @@ public class ModelServiceTests extends AbstractTest {
         RestAssured
             .get()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body("models.size()", equalTo(expectedModels.length))
                 .body("models.keySet()", hasItems(expectedModels))
         ;
@@ -32,9 +32,9 @@ public class ModelServiceTests extends AbstractTest {
             .when()
                 .get()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                .log().ifValidationFails()
+
                 .body("models.size()", equalTo(1))
                 .body("models.keySet()", hasItem("GDeltSearch" ))
         ;
@@ -49,9 +49,9 @@ public class ModelServiceTests extends AbstractTest {
                 .when()
                     .get()
                 .then()
-                    .log().ifError()
+
                     .statusCode(200)
-                    .log().ifValidationFails()
+
                     .body("info.name", equalTo(model))
                     .body("layers.size()", greaterThan(0))
             ;

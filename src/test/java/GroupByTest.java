@@ -16,13 +16,13 @@ public class GroupByTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
-                .log().ifValidationFails()
+
+
                 .body(isValidFeatureCollection())
                 //TODO missing .body("displayFieldName", is(""))
                 //TODO missing .body("fieldAliases.domain", is("domain"))
@@ -50,13 +50,13 @@ public class GroupByTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
-                .log().ifValidationFails()
+
+
                 .body(isValidFeatureCollection())
                 .body("statistics.size()", is(9061))
                 .body(
@@ -87,13 +87,13 @@ public class GroupByTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
-                .log().ifValidationFails()
+
+
                 .body(isValidFeatureCollection())
                 .body("statistics.size()", is(2455))
                 .body("statistics[0].domain", is("fax.al"))
@@ -110,13 +110,13 @@ public class GroupByTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
-                .log().ifValidationFails()
+
+
                 .body(isValidFeatureCollection())
                 .body("statistics.size()", is(2))
                 .body("statistics.find { it.domain == '4-traders.com' }.objectid_count", is(178))

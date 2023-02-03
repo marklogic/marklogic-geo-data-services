@@ -23,10 +23,10 @@ public class GeoServerTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body("0", is("DataSourceArrayExample_0_Points"))
                 .body("1", is("DataSourceArrayExample_1_Points"))
@@ -46,7 +46,7 @@ public class GeoServerTest extends AbstractFeatureServiceTest{
                 .body("15", is("DataSourceArrayExample_15_Points"))
         ;
     }
-    
+
     @Test
     public void testGetLayerSchema() {
         JsonPath postBody = getJson("testGetLayerSchema.json");
@@ -56,10 +56,10 @@ public class GeoServerTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body("metadata.id", is(0))
         ;
@@ -74,10 +74,10 @@ public class GeoServerTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body("metadata.id", is(5));
     }
@@ -91,10 +91,10 @@ public class GeoServerTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body("metadata.id", is(6));
     }
@@ -108,10 +108,10 @@ public class GeoServerTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body("metadata.id", is(12));
     }
@@ -125,10 +125,10 @@ public class GeoServerTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body("metadata.id", is(13));
     }
@@ -142,10 +142,10 @@ public class GeoServerTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body("metadata.id", is(7));
     }
@@ -159,10 +159,10 @@ public class GeoServerTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body("metadata.id", is(8));
     }
@@ -178,10 +178,10 @@ public class GeoServerTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body("metadata.id", is(9));
     }
@@ -195,10 +195,10 @@ public class GeoServerTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body("metadata.id", is(10));
     }
@@ -212,10 +212,10 @@ public class GeoServerTest extends AbstractFeatureServiceTest{
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
                 .body("metadata.id", is(11));
     }

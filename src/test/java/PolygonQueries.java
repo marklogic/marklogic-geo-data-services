@@ -21,10 +21,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				//.log().uri()
+				//
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
@@ -41,10 +41,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				//.log().uri()
+				//
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(2))
@@ -61,10 +61,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-			.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(3))
@@ -81,10 +81,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(3))
@@ -100,10 +100,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
@@ -118,10 +118,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
@@ -137,10 +137,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(2))
@@ -158,10 +158,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
@@ -177,10 +177,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
@@ -197,10 +197,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(6))
@@ -218,10 +218,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
@@ -237,10 +237,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
@@ -257,10 +257,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
@@ -276,10 +276,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
@@ -296,10 +296,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
@@ -315,10 +315,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(2))
@@ -335,10 +335,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
@@ -355,10 +355,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
@@ -374,10 +374,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
@@ -392,10 +392,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
@@ -411,10 +411,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
@@ -429,10 +429,10 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 				.contentType(ContentType.JSON)
 				.body(postBody.prettyPrint())
 			.when()
-				.log().uri()
+
 				.post()
 			.then()
-				.log().ifError()
+
 				.statusCode(200)
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))

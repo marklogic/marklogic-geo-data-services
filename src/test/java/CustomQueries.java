@@ -19,12 +19,9 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana"))
@@ -39,12 +36,9 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana"))
@@ -61,12 +55,9 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana","West Bengal","Assam","Tripura"))
@@ -81,16 +72,13 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
                 .body("features.geometry.size()", is(17))
-                .body("features.geometry.points.size()", not(0))      
+                .body("features.geometry.points.size()", not(0))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana","West Bengal","Assam","Tripura"))
                 ;
     }
@@ -103,12 +91,9 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(5))
                 .body("features.properties.name", hasItems("Himachal Pradesh","Uttar Pradesh","Jammu and Kashmir","Rajasthan","Haryana"))
@@ -123,16 +108,13 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(5))
                 .body("features.geometry.size()", is(5))
-                .body("features.geometry.points.size()", not(0))      
+                .body("features.geometry.points.size()", not(0))
                 .body("features.properties.name", hasItems("Himachal Pradesh","Uttar Pradesh","Jammu and Kashmir","Rajasthan","Haryana"))
             ;
     }
@@ -145,12 +127,9 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(0))
             ;
@@ -164,12 +143,9 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.properties.name", hasItems("Gujarat"))
@@ -184,21 +160,18 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.geometry.size()", is(1))
-                .body("features.geometry.points.size()", not(0))      
+                .body("features.geometry.points.size()", not(0))
                 .body("features.properties.name", hasItems("Gujarat"))
             ;
     }
 
-    // Envelope Test cases 
+    // Envelope Test cases
     @Test
     public void testCustomEnvelope1() {
         JsonPath postBody = getJson("testCustomEnvelope1.json");
@@ -207,17 +180,14 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
                 .post()
             .then()
-                .log().ifError()
                 .statusCode(200)
-                
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana"))            ;
        }
-    
+
     @Test
     public void testCustomGeometryEnvelope1() {
         JsonPath postBody = getJson("testCustomGeometryEnvelope1.json");
@@ -226,12 +196,12 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana"))
@@ -239,7 +209,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .body("features.geometry.points.size()", not(0))
             ;
        }
-    
+
     @Test
     public void testCustomEnvelope2() {
         JsonPath postBody = getJson("testCustomEnvelope2.json");
@@ -248,18 +218,18 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
+
                 .body(isValidFeatureCollection())
-                .body("features.size()", is(17))     
+                .body("features.size()", is(17))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana","West Bengal","Assam","Tripura"))
                 ;
        }
-    
+
     @Test
     public void testCustomGeometryEnvelope2() {
         JsonPath postBody = getJson("testCustomGeometryEnvelope2.json");
@@ -268,20 +238,20 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
                 .body("features.geometry.size()", is(17))
-                .body("features.geometry.points.size()", not(0))      
+                .body("features.geometry.points.size()", not(0))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana","West Bengal","Assam","Tripura"))
                 ;
        }
-    
+
     @Test
     public void testCustomEnvelope3() {
         JsonPath postBody = getJson("testCustomEnvelope3.json");
@@ -290,18 +260,18 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
+
                 .body(isValidFeatureCollection())
-                .body("features.size()", is(5))    
+                .body("features.size()", is(5))
                 .body("features.properties.name", hasItems("Himachal Pradesh","Uttar Pradesh","Jammu and Kashmir","Rajasthan","Haryana"))
             ;
        }
-    
+
     @Test
     public void testCustomGeometryEnvelope3() {
         JsonPath postBody = getJson("testCustomGeometryEnvelope3.json");
@@ -310,20 +280,20 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(5))
                 .body("features.geometry.size()", is(5))
-                .body("features.geometry.points.size()", not(0))      
+                .body("features.geometry.points.size()", not(0))
                 .body("features.properties.name", hasItems("Himachal Pradesh","Uttar Pradesh","Jammu and Kashmir","Rajasthan","Haryana"))
             ;
        }
-    
+
 
     @Test
     public void testCustomEnvelope4() {
@@ -333,17 +303,17 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
+
                 .body(isValidFeatureCollection())
-                .body("features.size()", is(0))    
+                .body("features.size()", is(0))
             ;
        }
-    
+
     @Test
     public void testCustomEnvelope5() {
         JsonPath postBody = getJson("testCustomEnvelope5.json");
@@ -352,18 +322,18 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.properties.name", hasItems("Gujarat"))
                 ;
        }
-    
+
     @Test
     public void testCustomGeometryEnvelope5() {
         JsonPath postBody = getJson("testCustomGeometryEnvelope5.json");
@@ -372,19 +342,19 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.geometry.size()", is(1))
-                .body("features.geometry.points.size()", not(0))      
+                .body("features.geometry.points.size()", not(0))
                 .body("features.properties.name", hasItems("Gujarat"));
        }
-    
+
     //Point test cases
     @Test
     public void testCustomPoint1() throws UnsupportedEncodingException, ParseException  {
@@ -394,18 +364,18 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Rajasthan"))
             ;
     }
-    
+
     @Test
     public void testCustomGeometryPoint1() throws UnsupportedEncodingException, ParseException  {
         JsonPath postBody = getJson("testCustomGeometryPoint1.json");
@@ -414,20 +384,20 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.geometry.size()", is(1))
-                .body("features.geometry.points.size()", not(0)) 
+                .body("features.geometry.points.size()", not(0))
                 .body("features[0].properties.name", is("Rajasthan"))
             ;
     }
-    
+
     @Test
     public void testCustomPoint2() throws UnsupportedEncodingException, ParseException  {
         JsonPath postBody = getJson("testCustomPoint2.json");
@@ -436,17 +406,17 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(0))
             ;
     }
-    
+
     @Test
     public void testCustomPoint3() throws UnsupportedEncodingException, ParseException  {
         JsonPath postBody = getJson("testCustomPoint3.json");
@@ -455,18 +425,18 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Odisha"))
             ;
     }
-    
+
     @Test
     public void testCustomGeometryPoint3() throws UnsupportedEncodingException, ParseException  {
         JsonPath postBody = getJson("testCustomGeometryPoint3.json");
@@ -475,16 +445,16 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.geometry.size()", is(1))
-                .body("features.geometry.points.size()", not(0)) 
+                .body("features.geometry.points.size()", not(0))
                 .body("features[0].properties.name", is("Odisha"))
             ;
     }
@@ -497,21 +467,21 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .contentType(ContentType.JSON)
                 .body(postBody.prettyPrint())
             .when()
-                .log().uri()
+
                 .post()
             .then()
-                .log().ifError()
+
                 .statusCode(200)
-                
+
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
                 .body("features.geometry.size()", is(17))
-                .body("features.geometry.points.size()", not(0))      
+                .body("features.geometry.points.size()", not(0))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana","West Bengal","Assam","Tripura"))
                 ;
     }
     }
-        
+
 
 
 
