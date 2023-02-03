@@ -677,23 +677,7 @@ function getObjects(req, exportPlan=false) {
     boundingQueries.push(getTemporalQuery(layerModel.temporalBounds));
   }
 
-  // TODO: look into how to deal with object ids more generally
-  // we could also look into putting the ids into a "literal" row set and joining via optic
-  const ids = parseObjectIds(query);
-  if (ids) {
-    // this assumes we are querying against the OBJECTID field as a number
-    // should use a range index if we have one
-    //const idsQuery = cts.jsonPropertyValueQuery("OBJECTID", ids.map(Number));
-    xdmp.trace("GDS-DEBUG", "getting ids: " + ids);
-
-    //boundingQueries.push(idsQuery);
-    //const idsQuery = op.sqlCondition("OBJECTID IN (" + query.objectIds + ")");
-
-    const idExp = ids.map(value => op.eq(op.col("OBJECTID"), value));
-    const idsQuery = (idExp.length === 1) ? idExp[0] : op.or(...idExp);
-
-    whereQuery = op.and(whereQuery, idsQuery);
-  }
+  whereQuery = updateWhereWithObjectIds(query, whereQuery)
 
   // Initial Time bounding query implementation, GitHub Issue #13
   if(req.query.time && layerModel.timeInfo && layerModel.timeInfo.startTimeField) {
@@ -974,6 +958,22 @@ function getPlanForDataSource(dataSource) {
   }
 }
 
+function updateWhereWithObjectIds(query, whereQuery) {
+  const ids = parseObjectIds(query);
+  if (ids) {
+    // this assumes we are querying against the OBJECTID field as a number
+    // should use a range index if we have one
+    //const idsQuery = cts.jsonPropertyValueQuery("OBJECTID", ids.map(Number));
+    xdmp.trace("GDS-DEBUG", "getting ids: " + ids);
+
+    const idExp = ids.map(value => op.eq(op.col("OBJECTID"), value));
+    const idsQuery = (idExp.length === 1) ? idExp[0] : op.or(...idExp);
+
+    whereQuery = op.and(whereQuery, idsQuery);
+  }
+  return whereQuery;
+}
+
 // returns a Sequence of aggregated results
 function aggregate(req) {
   xdmp.trace("GDS-DEBUG", "Starting aggregate");
@@ -1009,7 +1009,8 @@ function aggregate(req) {
   const boundingQuery = cts.orQuery([alwaysIncludeQuery, cts.andQuery(boundingQueries)]);
   xdmp.trace("GDS-DEBUG", "bounding query: " + xdmp.toJsonString(boundingQuery));
 
-  const whereQuery = parseWhere(query);
+  let whereQuery = parseWhere(query);
+  whereQuery = updateWhereWithObjectIds(query, whereQuery)
 
   xdmp.trace("GDS-DEBUG", "group by: " + groupByFields);
   xdmp.trace("GDS-DEBUG", "order by: " + orderByFields);
