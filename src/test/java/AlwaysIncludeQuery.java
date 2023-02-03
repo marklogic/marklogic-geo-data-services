@@ -1,6 +1,6 @@
-import io.restassured.http.ContentType;
-import io.restassured.path.json.JsonPath;
+import com.marklogic.gds.Query;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -9,18 +9,17 @@ public class AlwaysIncludeQuery extends AbstractFeatureServiceTest{
 
     @Test
     public void testGkgCountLayer() {
-        JsonPath postBody = getJson("testGkgAlwaysIncludeCount.json");
         RestAssured
             .given()
                 .contentType(ContentType.JSON)
-                .body(postBody.prettyPrint())
+                .body(new Query(7).returnCountOnly().toString())
             .when()
                 .log().uri()
                 .post()
             .then()
                 .log().ifError()
                 .statusCode(200)
-                
+
                 .log().ifValidationFails()
                 .body(isValidFeatureCollection())
                 //this is a count of layers 0 + 1

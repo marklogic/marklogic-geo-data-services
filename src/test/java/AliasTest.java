@@ -1,6 +1,6 @@
-import io.restassured.http.ContentType;
-import io.restassured.path.json.JsonPath;
+import com.marklogic.gds.Query;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.hamcrest.core.IsNull;
 import org.junit.Test;
 
@@ -10,11 +10,16 @@ public class AliasTest extends AbstractFeatureServiceTest {
 
 	@Test
 	public void testFieldAlias() {
-		JsonPath postBody = getJson("testFieldAlias.json");
 		RestAssured
 			.given()
 				.contentType(ContentType.JSON)
-				.body(postBody.prettyPrint())
+				.body(
+                    new Query(4)
+                        .recordCount(5)
+                        .orderByFields("name")
+                        .returnGeometry(1)
+                        .toString()
+                )
 			.when()
 				.log().uri()
 				.post()
