@@ -1,4 +1,4 @@
-import com.marklogic.gds.Query;
+import com.marklogic.gds.GeoQueryRequest;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -7,8 +7,8 @@ public class IdTest extends AbstractFeatureServiceTest {
 
     @Test
     public void testGkgIdsOnly() {
-        postQuery(
-            new Query(0)
+        postGeoQueryRequest(
+            new GeoQueryRequest()
                 .recordCount(20)
                 .orderByFields("name")
                 .returnIdsOnly()
@@ -21,8 +21,8 @@ public class IdTest extends AbstractFeatureServiceTest {
 
     @Test
     public void testGkgObjectIds() {
-        postQuery(
-            new Query(0)
+        postGeoQueryRequest(
+            new GeoQueryRequest()
                 .recordCount(20)
                 .withObjectIds("56577", "56576")
                 .orderByFields("OBJECTID DESC")
@@ -54,8 +54,8 @@ public class IdTest extends AbstractFeatureServiceTest {
 
     @Test
     public void testGeoLocationIdsOnlyWithCorrectIdFieldName() {
-        postQuery(
-            new Query("GeoLocation", 0)
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 0)
                 .recordCount(20)
                 .returnIdsOnly()
         )
@@ -67,8 +67,8 @@ public class IdTest extends AbstractFeatureServiceTest {
 
     @Test
     public void testGeoLocationWhereWithCorrectIdFieldName() {
-        postQuery(
-            new Query("GeoLocation", 0)
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 0)
                 .withObjectIds("10","11")
                 .orderByFields("ID DESC")
                 .returnIdsOnly()
