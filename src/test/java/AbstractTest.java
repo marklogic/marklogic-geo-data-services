@@ -1,3 +1,4 @@
+import com.marklogic.gds.Query;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -33,7 +34,11 @@ public abstract class AbstractTest {
     }
 
     protected final ValidatableResponse postQuery(JsonPath postBody) {
-        return postForResponse(postBody).then().statusCode(200);
+        return postForResponse(postBody.prettyPrint()).then().statusCode(200);
+    }
+
+    protected final ValidatableResponse postQuery(Query postQuery) {
+        return postForResponse(postQuery.toString()).then().statusCode(200);
     }
 
     protected final ValidatableResponse postQueryForError(JsonPath postBody) {
@@ -41,12 +46,16 @@ public abstract class AbstractTest {
     }
 
     protected final Response postForResponse(JsonPath postBody) {
+        return postForResponse(postBody.prettyPrint());
+    }
+
+    protected final Response postForResponse(String postBody) {
         return RestAssured
-                   .given()
-                   .contentType(ContentType.JSON)
-                   .body(postBody.prettyPrint())
-                   .when()
-                   .post();
+            .given()
+            .contentType(ContentType.JSON)
+            .body(postBody)
+            .when()
+            .post();
     }
 
     Log getLogger() {

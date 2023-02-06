@@ -652,9 +652,13 @@ function getObjects(req, exportPlan=false) {
 
   let whereQuery = parseWhere(query);
 
-  let outFields = null;
+  let outFields;
   if (query.returnIdsOnly) {
-    outFields = [ "OBJECTID" ];
+    if (layerModel.idField) {
+      outFields = [layerModel.idField];
+    } else {
+      outFields = [ "OBJECTID" ];
+    }
   } else {
     outFields = parseOutFields(query);
   }
@@ -677,7 +681,7 @@ function getObjects(req, exportPlan=false) {
     boundingQueries.push(getTemporalQuery(layerModel.temporalBounds));
   }
 
-  whereQuery = updateWhereWithObjectIds(query, whereQuery)
+  whereQuery = updateWhereWithObjectIds(query, whereQuery, layerModel)
 
   // Initial Time bounding query implementation, GitHub Issue #13
   if(req.query.time && layerModel.timeInfo && layerModel.timeInfo.startTimeField) {
@@ -735,7 +739,7 @@ function getObjects(req, exportPlan=false) {
     xdmp.trace("GDS-DEBUG", boundingQuery);
     xdmp.trace("GDS-DEBUG", "Pipeline[dataSources === undefined] layerModel:");
     xdmp.trace("GDS-DEBUG", layerModel);
-    
+
     pipeline = initializePipeline(viewPlan, boundingQuery, layerModel);
 
     // joins?
@@ -770,7 +774,7 @@ function getObjects(req, exportPlan=false) {
     }
   }
 
-  
+
   if (exportPlan) {
     pipeline = pipeline
       .where(whereQuery)
@@ -894,7 +898,7 @@ function getTemporalQuery(temporalReference) {
   else
     return cts.trueQuery();
 };
- 
+
 function initializePipeline(viewPlan, boundingQuery, layerModel) {
   xdmp.trace("GDS-DEBUG", "Starting initializePipeline");
   let pipeline = viewPlan.where(boundingQuery);
@@ -915,10 +919,10 @@ function initializePipeline(viewPlan, boundingQuery, layerModel) {
 }
 
 function getOpticJoinFunction(joinOn) {
-  if (joinOn.joinType == null) 
+  if (joinOn.joinType == null)
     return "joinInner";
   let joinFunc = joinFunctionMap[joinOn.joinType.toLowerCase()];
-  if (joinFunc == null) 
+  if (joinFunc == null)
     returnErrToClient(500, joinFunc + " is not a supported joinType, check the layer descriptor->dataSource->joinOn.joinType");
   return joinFunc;
 }
@@ -958,7 +962,7 @@ function getPlanForDataSource(dataSource) {
   }
 }
 
-function updateWhereWithObjectIds(query, whereQuery) {
+function updateWhereWithObjectIds(query, whereQuery, layerModel) {
   const ids = parseObjectIds(query);
   if (ids) {
     // this assumes we are querying against the OBJECTID field as a number
@@ -966,7 +970,11 @@ function updateWhereWithObjectIds(query, whereQuery) {
     //const idsQuery = cts.jsonPropertyValueQuery("OBJECTID", ids.map(Number));
     xdmp.trace("GDS-DEBUG", "getting ids: " + ids);
 
-    const idExp = ids.map(value => op.eq(op.col("OBJECTID"), value));
+    let idFieldName = "OBJECTID";
+    if (layerModel.idField) {
+      idFieldName = layerModel.idField;
+    }
+    const idExp = ids.map(value => op.eq(op.col(idFieldName), value));
     const idsQuery = (idExp.length === 1) ? idExp[0] : op.or(...idExp);
 
     whereQuery = op.and(whereQuery, idsQuery);
@@ -1010,7 +1018,7 @@ function aggregate(req) {
   xdmp.trace("GDS-DEBUG", "bounding query: " + xdmp.toJsonString(boundingQuery));
 
   let whereQuery = parseWhere(query);
-  whereQuery = updateWhereWithObjectIds(query, whereQuery)
+  whereQuery = updateWhereWithObjectIds(query, whereQuery, layerModel)
 
   xdmp.trace("GDS-DEBUG", "group by: " + groupByFields);
   xdmp.trace("GDS-DEBUG", "order by: " + orderByFields);
