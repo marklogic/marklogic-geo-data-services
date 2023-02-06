@@ -31,7 +31,7 @@ public abstract class AbstractTest {
 
     /**
      * Convenience method for the common happy path of submitting a request to geoQueryService and getting back a 200.
-     * 
+     *
      * @param request
      * @return
      */
@@ -41,6 +41,10 @@ public abstract class AbstractTest {
 
     protected final ValidatableResponse postQueryForError(JsonPath postBody) {
         return postForResponse(postBody).then().statusCode(500);
+    }
+
+    protected final ValidatableResponse postQueryForError(GeoQueryRequest postQuery, Integer expectedErrorCode) {
+        return postForResponse(postQuery.toString()).then().statusCode(expectedErrorCode);
     }
 
     protected final Response postForResponse(JsonPath postBody) {
