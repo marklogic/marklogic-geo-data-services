@@ -7,6 +7,15 @@ import static org.hamcrest.Matchers.is;
 public class AliasTest extends AbstractFeatureServiceTest {
 
     @Test
+    public void boom() {
+        postGeoQueryRequest(
+            new GeoQueryRequest(4123123)
+                .recordCount(5)
+        );
+    }
+
+
+    @Test
     public void testFieldAlias() {
         postGeoQueryRequest(
             new GeoQueryRequest(4)

@@ -36,11 +36,14 @@ function post(context, params, input) {
       ...geoJson
     };
   } catch (err) {
-    console.log(err.stack);
-    console.trace(err);
-
+    if (typeof err === "string") {
+      if (err.endsWith("not found")) {
+        returnErrToClient(404, "Not Found", err);
+      } else {
+        returnErrToClient(400, "Bad Request", err);
+      }
+    }
     returnErrToClient(500, 'Error handling request', err.toString());
-    // unreachable
   }
 }
 
