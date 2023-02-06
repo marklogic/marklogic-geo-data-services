@@ -1,4 +1,4 @@
-import io.restassured.path.json.JsonPath;
+import com.marklogic.gds.Query;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -7,43 +7,76 @@ public class IdTest extends AbstractFeatureServiceTest {
 
     @Test
     public void testGkgIdsOnly() {
-        JsonPath postBody = getJson("gkgIdsOnly.json");
-        postQuery(postBody)
-
-                .body(isValidFeatureCollection())
-                //TODO missing .body("objectIdField", is("OBJECTID"))
+        postQuery(
+            new Query(0)
+                .recordCount(20)
+                .orderByFields("name")
+                .returnIdsOnly()
+        )
+            .body(isValidFeatureCollection())
+            .body("metadata.idField", is("OBJECTID"))
+            .body("metadata.fields[0].name", is("OBJECTID"))
         ;
     }
 
     @Test
     public void testGkgObjectIds() {
-        JsonPath postBody = getJson("gkgObjectIds.json");
-        postQuery(postBody)
+        postQuery(
+            new Query(0)
+                .recordCount(20)
+                .withObjectIds("56577", "56576")
+                .orderByFields("OBJECTID DESC")
+        )
+            .body(isValidFeatureCollection())
+            .body("features.size()", is(2))
 
+            .body("features[0].properties.OBJECTID", is(56577))
+            .body("features[0].properties.urlpubtimedate", is("2017-05-24T14:30:00Z"))
+            .body("features[0].properties.urlpubdate", is("2017-05-24Z"))
+            .body("features[0].properties.url", is("http://www.bendigoadvertiser.com.au/story/4685559/meet-the-real-high-taxpayers-theyre-not-high-earners/"))
+            .body("features[0].properties.name", is("Australia"))
+            .body("features[0].properties.urltone", is(-3.91f))
+            .body("features[0].properties.domain", is("bendigoadvertiser.com.au"))
+            .body("features[0].properties.urllangcode", is("eng"))
+            .body("features[0].properties.geores", is(1))
 
-                .body(isValidFeatureCollection())
+            .body("features[1].properties.OBJECTID", is(56576))
+            .body("features[1].properties.urlpubtimedate", is("2017-05-24T14:30:00Z"))
+            .body("features[1].properties.urlpubdate", is("2017-05-24Z"))
+            .body("features[1].properties.url", is("http://www.bendigoadvertiser.com.au/story/4685559/meet-the-real-high-taxpayers-theyre-not-high-earners/"))
+            .body("features[1].properties.name", is("Australia"))
+            .body("features[1].properties.urltone", is(-3.91f))
+            .body("features[1].properties.domain", is("bendigoadvertiser.com.au"))
+            .body("features[1].properties.urllangcode", is("eng"))
+            .body("features[1].properties.geores", is(1))
+        ;
+    }
 
-                .body("features.size()", is(2))
+    @Test
+    public void testGeoLocationIdsOnlyWithCorrectIdFieldName() {
+        postQuery(
+            new Query("GeoLocation", 0)
+                .recordCount(20)
+                .returnIdsOnly()
+        )
+            .body(isValidFeatureCollection())
+            .body("metadata.idField", is("ID"))
+            .body("metadata.fields[0].name", is("ID"))
+        ;
+    }
 
-                .body("features[0].properties.OBJECTID", is(56577))
-                .body("features[0].properties.urlpubtimedate", is("2017-05-24T14:30:00Z"))
-                .body("features[0].properties.urlpubdate", is("2017-05-24Z"))
-                .body("features[0].properties.url", is("http://www.bendigoadvertiser.com.au/story/4685559/meet-the-real-high-taxpayers-theyre-not-high-earners/"))
-                .body("features[0].properties.name", is("Australia"))
-                .body("features[0].properties.urltone", is(-3.91f))
-                .body("features[0].properties.domain", is("bendigoadvertiser.com.au"))
-                .body("features[0].properties.urllangcode", is("eng"))
-                .body("features[0].properties.geores", is(1))
-
-                .body("features[1].properties.OBJECTID", is(56576))
-                .body("features[1].properties.urlpubtimedate", is("2017-05-24T14:30:00Z"))
-                .body("features[1].properties.urlpubdate", is("2017-05-24Z"))
-                .body("features[1].properties.url", is("http://www.bendigoadvertiser.com.au/story/4685559/meet-the-real-high-taxpayers-theyre-not-high-earners/"))
-                .body("features[1].properties.name", is("Australia"))
-                .body("features[1].properties.urltone", is(-3.91f))
-                .body("features[1].properties.domain", is("bendigoadvertiser.com.au"))
-                .body("features[1].properties.urllangcode", is("eng"))
-                .body("features[1].properties.geores", is(1))
+    @Test
+    public void testGeoLocationWhereWithCorrectIdFieldName() {
+        postQuery(
+            new Query("GeoLocation", 0)
+                .withObjectIds("10","11")
+                .orderByFields("ID DESC")
+                .returnIdsOnly()
+        )
+            .body(isValidFeatureCollection())
+            .body("metadata.idField", is("ID"))
+            .body("metadata.fields[0].name", is("ID"))
+            .body("features.size()", is(2))
         ;
     }
 }

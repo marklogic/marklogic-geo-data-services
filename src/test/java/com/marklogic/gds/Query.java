@@ -52,6 +52,11 @@ public class Query {
         return this;
     }
 
+    public Query returnIdsOnly() {
+        queryNode.put("returnIdsOnly", true);
+        return this;
+    }
+
     public String toString() {
         return objectNode.toString();
     }
