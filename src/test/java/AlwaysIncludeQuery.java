@@ -1,25 +1,17 @@
-import com.marklogic.gds.Query;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
+import com.marklogic.gds.GeoQueryRequest;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 
-public class AlwaysIncludeQuery extends AbstractFeatureServiceTest{
+public class AlwaysIncludeQuery extends AbstractFeatureServiceTest {
 
     @Test
     public void testGkgCountLayer() {
-        RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(new Query(7).returnCountOnly().toString())
-            .when()
-                .post()
-            .then()
-                .statusCode(200)
-                .body(isValidFeatureCollection())
-                //this is a count of layers 0 + 1
-                .body("count", is(38765 + 3557))
-            ;
+        postGeoQueryRequest(new GeoQueryRequest(7)
+                      .returnCountOnly()
+        )
+            .body(isValidFeatureCollection())
+            //this is a count of layers 0 + 1
+            .body("count", is(38765 + 3557));
     }
 }

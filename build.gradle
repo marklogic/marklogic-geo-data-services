@@ -39,17 +39,6 @@ dependencies {
 }
 
 test {
-    doFirst {
-        println "Running tests using the following properties:"
-        println "host: " + mlHost
-        println "port: " + mlRestPort
-        println "user: " + testUsername
-    }
-    systemProperty "feature.host", mlHost
-    systemProperty "feature.port", mlRestPort
-    systemProperty "feature.user", testUsername
-    systemProperty "feature.password", testPassword
-    systemProperty "gds.version", project.version
     systemProperty "sonar.projectVersion", project.version
 }
 
