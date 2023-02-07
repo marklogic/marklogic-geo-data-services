@@ -6,6 +6,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.path.json.config.JsonPathConfig;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
+import io.restassured.specification.RequestSpecification;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
@@ -39,6 +40,10 @@ public abstract class AbstractTest {
         return postForResponse(request.toString()).then().statusCode(200);
     }
 
+    protected final ValidatableResponse postGeoserverRequest(GeoserverRequest geoserverRequest) {
+        return postForResponse(geoserverRequest).then().statusCode(200);
+    }
+
     protected final ValidatableResponse postQueryForError(JsonPath postBody) {
         return postForResponse(postBody).then().statusCode(500);
     }
@@ -58,6 +63,14 @@ public abstract class AbstractTest {
             .body(postBody)
             .when()
             .post();
+    }
+
+    protected final Response postForResponse(GeoserverRequest geoRequest) {
+        RequestSpecification raRequest = RestAssured.given();
+        for (String key: geoRequest.getParams().keySet()) {
+            raRequest.param(key, geoRequest.getParams().get(key));
+        }
+        return raRequest.when().post();
     }
 
     Log getLogger() {
