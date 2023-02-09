@@ -642,6 +642,33 @@ function getTimeBoundingWhereQuery(layerModel, req) {
   }
 }
 
+/**
+ *
+ * @param requestQuery the query from the caller's request
+ * @param layerModel
+ * @returns a CTS query
+ */
+function buildBoundingQuery(requestQuery, layerModel) {
+  const boundingQueries = [ parseGeometry(requestQuery, layerModel) ];
+
+  if (layerModel.boundingQuery) {
+    boundingQueries.push(qd.query(layerModel.boundingQuery));
+  }
+  if (layerModel.temporalBounds) {
+    boundingQueries.push(getTemporalQuery(layerModel.temporalBounds));
+  }
+
+  // alwaysIncludeQuery is an optional feature for a layer definition to ensure that certain data is always included,
+  // which implies usage of an "or" query. See https://github.com/marklogic-community/marklogic-geo-data-services/issues/76
+  // for the original requirements.
+  const boundingQuery = layerModel.alwaysIncludeQuery ?
+    cts.orQuery([qd.query(layerModel.alwaysIncludeQuery), cts.andQuery(boundingQueries)]) :
+    cts.andQuery(boundingQueries);
+
+  xdmp.trace("GDS-DEBUG", "boundingQuery: " + xdmp.toJsonString(boundingQuery));
+  return boundingQuery;
+}
+
 // returns a Sequence of documents
 function getObjects(req, exportPlan=false) {
 
@@ -649,42 +676,31 @@ function getObjects(req, exportPlan=false) {
   xdmp.trace("GDS-DEBUG", "getLayerModel(" + req.params.id + ", " + req.params.layer + ")" );
   const layerModel = sm.getLayerModel(req.params.id, req.params.layer);
 
-  const query = req.query;
-  const orderByFields = parseOrderByFields(query);
-  const geoQuery = parseGeometry(query, layerModel);
+  const requestQuery = req.query;
+  const orderByFields = parseOrderByFields(requestQuery);
 
-  let whereQuery = parseWhere(query);
+  let whereQuery = parseWhere(requestQuery);
 
   let outFields;
-  if (query.returnIdsOnly) {
+  if (requestQuery.returnIdsOnly) {
     if (layerModel.idField) {
       outFields = [layerModel.idField];
     } else {
       outFields = [ "OBJECTID" ];
     }
   } else {
-    outFields = parseOutFields(query);
+    outFields = parseOutFields(requestQuery);
   }
 
-  const returnGeometry = (query.returnGeometry || outFields[0] === "*") ? true : false;
+  const returnGeometry = (requestQuery.returnGeometry || outFields[0] === "*") ? true : false;
   // Should this be geometry or geometrySource?  TJD--"geometry"
   // This should be geometry.source.  MDC
   const geometrySource = (layerModel && layerModel.geometry && layerModel.geometry.source) ? layerModel.geometry.source : null;
   xdmp.trace("GDS-DEBUG", "geometrySource = " + geometrySource);
   xdmp.trace("GDS-DEBUG", "returnGeometry = " + returnGeometry);
 
-  const boundingQueries = [ geoQuery ];
 
-  // get the layer bounding query from the layer model
-  if (layerModel.boundingQuery) {
-    boundingQueries.push(qd.query(layerModel.boundingQuery));
-  }
-
-  if (layerModel.temporalBounds) {
-    boundingQueries.push(getTemporalQuery(layerModel.temporalBounds));
-  }
-
-  whereQuery = updateWhereWithObjectIds(query, whereQuery, layerModel)
+  whereQuery = updateWhereWithObjectIds(requestQuery, whereQuery, layerModel)
 
   // Initial Time bounding query implementation, GitHub Issue #13
   if(req.query.time && layerModel.timeInfo && layerModel.timeInfo.startTimeField) {
@@ -692,26 +708,20 @@ function getObjects(req, exportPlan=false) {
   }
   xdmp.trace("GDS-DEBUG", "whereQuery: " + whereQuery);
 
-  let alwaysIncludeQuery = cts.falseQuery();
-  if (layerModel.alwaysIncludeQuery) {
-    alwaysIncludeQuery = qd.query(layerModel.alwaysIncludeQuery);
-  }
+  const boundingQuery = buildBoundingQuery(requestQuery, layerModel);
 
-  const boundingQuery = cts.orQuery([alwaysIncludeQuery, cts.andQuery(boundingQueries)]);
-  xdmp.trace("GDS-DEBUG", "boundingQuery: " + xdmp.toJsonString(boundingQuery));
-
-  const offset = (!query.resultOffset ? 0 : Number(query.resultOffset));
+  const offset = (!requestQuery.resultOffset ? 0 : Number(requestQuery.resultOffset));
   xdmp.trace("GDS-DEBUG", "offset: " + offset);
 
   // what if the number of ids passed in is more than the max?
 
   let limit = 0;
-  if (query.resultRecordCount) {
+  if (requestQuery.resultRecordCount) {
 
     xdmp.trace("GDS-DEBUG", "Setting to limit to resultRecordCount");
-    limit = Number(query.resultRecordCount)
+    limit = Number(requestQuery.resultRecordCount)
   }
-  else if ( query.returnIdsOnly ) {
+  else if ( requestQuery.returnIdsOnly ) {
     xdmp.trace("GDS-DEBUG", "Setting to limit to MAX_SAFE_INTEGER because we are only returning IDs");
     limit = Number.MAX_SAFE_INTEGER
   }
@@ -994,34 +1004,15 @@ function aggregate(req) {
   // this will be the koop provider "id"
   const layerModel = sm.getLayerModel(req.params.id, req.params.layer);
 
-  const query = req.query;
-  const stats = parseOutStatistics(query)
-  const groupByFields = parseGroupByFields(query);
-  const orderByFields = parseOrderByFields(query);
+  const requestQuery = req.query;
+  const stats = parseOutStatistics(requestQuery)
+  const groupByFields = parseGroupByFields(requestQuery);
+  const orderByFields = parseOrderByFields(requestQuery);
 
-  const geoQuery = parseGeometry(query, layerModel);
+  const boundingQuery = buildBoundingQuery(requestQuery, layerModel);
 
-  const boundingQueries = [ geoQuery ];
-
-  // get the layer bounding query from the layer model
-  if (layerModel.boundingQuery) {
-    boundingQueries.push(qd.query(layerModel.boundingQuery));
-  }
-
-  if (layerModel.temporalBounds) {
-    boundingQueries.push(getTemporalQuery(layerModel.temporalBounds));
-  }
-
-  let alwaysIncludeQuery = cts.falseQuery();
-  if (layerModel.alwaysIncludeQuery) {
-    alwaysIncludeQuery = qd.query(layerModel.alwaysIncludeQuery);
-  }
-
-  const boundingQuery = cts.orQuery([alwaysIncludeQuery, cts.andQuery(boundingQueries)]);
-  xdmp.trace("GDS-DEBUG", "bounding query: " + xdmp.toJsonString(boundingQuery));
-
-  let whereQuery = parseWhere(query);
-  whereQuery = updateWhereWithObjectIds(query, whereQuery, layerModel)
+  let whereQuery = parseWhere(requestQuery);
+  whereQuery = updateWhereWithObjectIds(requestQuery, whereQuery, layerModel)
 
   xdmp.trace("GDS-DEBUG", "group by: " + groupByFields);
   xdmp.trace("GDS-DEBUG", "order by: " + orderByFields);
