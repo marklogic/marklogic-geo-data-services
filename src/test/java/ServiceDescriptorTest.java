@@ -14,6 +14,7 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
         // Once we can populate it dynamically in the codebase, we'll do so in the test.
         postGeoQueryRequest(new GeoQueryRequest("GDeltGKG"))
             .body("$version", is("1.4-SNAPSHOT"))
+            .body("layers[0].metadata.useStandardizedQueries", is(true))
             .body("layers[0].metadata.extent.xmin", is(-180))
             .body("layers[0].metadata.extent.ymin", is(-90))
             .body("layers[0].metadata.extent.xmax", is(180))
