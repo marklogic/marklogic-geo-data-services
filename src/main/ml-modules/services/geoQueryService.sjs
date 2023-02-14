@@ -14,7 +14,6 @@ const qd = require('/ext/query/ctsQueryDeserialize.sjs').qd;
 const gsu = require('/ext/search/geo-search-util.xqy');
 
 const MAX_RECORD_COUNT = 5000;
-const defaultDocId = "DocId" + xdmp.request();
 
 const joinFunctionMap = {
   "inner":"joinInner",
@@ -669,6 +668,18 @@ function buildBoundingQuery(requestQuery, layerModel) {
   return boundingQuery;
 }
 
+/**
+ * Create a unique column name for the doc id join
+ * This is used to build the name of the column containing the docId for joins.
+ * This must be unique with respect to the column names of the view in the query,
+ * but it must also be repeatable so that query caches are used appropriately in the Optic engine.
+ * @param serviceName - The name of the feature service being queried
+ * @returns
+ */
+function getDefaultDocIdColumn(serviceName) {
+  return "docId_" + serviceName + "_";
+}
+
 // returns a Sequence of documents
 function getObjects(req, exportPlan=false) {
 
@@ -678,6 +689,7 @@ function getObjects(req, exportPlan=false) {
 
   const requestQuery = req.query;
   const orderByFields = parseOrderByFields(requestQuery);
+  const defaultDocId = getDefaultDocIdColumn(req.params.id);
 
   let whereQuery = parseWhere(requestQuery);
 
@@ -1008,6 +1020,7 @@ function aggregate(req) {
   const stats = parseOutStatistics(requestQuery)
   const groupByFields = parseGroupByFields(requestQuery);
   const orderByFields = parseOrderByFields(requestQuery);
+  const defaultDocId = getDefaultDocIdColumn(req.params.id);
 
   const boundingQuery = buildBoundingQuery(requestQuery, layerModel);
 
