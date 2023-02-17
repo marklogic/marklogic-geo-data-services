@@ -7,7 +7,7 @@ development.
 To deploy this project, do the following:
 
 1. Follow the instructions in this repository's CONTRIBUTING.md file for publishing marklogic-geo-data-services to 
-   your local Maven repository. 
+   your local Maven repository (i.e. you'll run `./gradlew publishToMavenLocal` first).
 2. In this project directory, Create `gradle-local.properties` and set `mlUsername` and `mlPassword` to your admin or 
    admin-like username and password.
 3. Run `./gradlew -i downloadExampleData mlDeploy loadExampleData` . 
