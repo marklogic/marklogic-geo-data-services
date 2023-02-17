@@ -21,6 +21,9 @@ This will put a copy of the marklogic-geo-data-services library in your local Ma
 `~/m2/repository`). This is required so that the sample project can depend on marklogic-geo-data-services via the 
 [ml-gradle mlBundle Gradle configuration](https://github.com/marklogic-community/ml-gradle/wiki/Bundles).
 
+You can deploy the sample-project under "examples/sample-project" - see the README.md file in that directory for 
+instructions on doing so.
+
 
 # Testing with MarkLogic Koop Provider
 
