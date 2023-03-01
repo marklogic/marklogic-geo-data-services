@@ -1,5 +1,10 @@
 xquery version "1.0-ml";
 
+(:
+As of the 1.3.4 release, this is only used by marklogic-arcgis-pro-addin as a default transform when obtaining a
+document via the REST API.
+:)
+
 module namespace trans = "http://marklogic.com/rest-api/transform/default-geo-data-services-transform";
 
 
@@ -27,7 +32,7 @@ as document-node()
           font-weight: bold;
           padding: 2px;
         &#125;
-        
+
         .name::after
         &#123;
           content: ': ';
@@ -61,7 +66,7 @@ declare function trans:transform-node(
         fn:local-name-from-QName(fn:node-name($node))
       },
       if ($node-kind = "object" or ($node-kind eq "element" and fn:not(fn:empty(($node/@*, $node/*)))))
-      then 
+      then
         trans:transform-node($node)
       else
         element span {

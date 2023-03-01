@@ -7,7 +7,7 @@
 const op = require('/MarkLogic/optic');
 const geojson = require('/MarkLogic/geospatial/geojson.xqy');
 const sm = require('/ext/serviceModel.sjs');
-const sql2optic = require('/ext/sql/sql2optic.sjs');
+//const sql2optic = require('/ext/sql/sql2optic.sjs');
 const geostats = require('/ext/geo/geostats.js');
 const geoextractor = require('/ext/geo/extractor.sjs');
 const qd = require('/ext/query/ctsQueryDeserialize.sjs').qd;
@@ -134,7 +134,6 @@ function getDateTime(durationOrTimestamp) {
 
 function query(req, exportPlan=false) {
   xdmp.trace("GDS-DEBUG", "Starting query");
-  // always return a FeatureCollection for now
   const geojson = {
     type : 'FeatureCollection',
     metadata : {
@@ -203,6 +202,10 @@ function query(req, exportPlan=false) {
     // create a parsed request object we can use throughout?
     const outFields = {};
     parseOutFields(req.query).map(f => { outFields[f] = true; });
+
+    // The reason why so much data is tucked under "metadata" (often, everything in the response is there besides
+    // "$version" and "$timestamp" is based on the Koop docs at
+    // https://koopjs.github.io/docs/development/provider/model#adding-provider-metadata-to-the-geojson.
 
     if (Object.keys(outFields).length === 0 || outFields["*"]) {
       geojson.metadata.fields = layerFields;
@@ -330,16 +333,13 @@ function parseWhere(query) {
   const where = query.where;
   let whereQuery = null;
   if (where && typeof where !== 'string' && where.search) {
-    // where.search contains Combined Query
     whereQuery = gsu.parseCombined(where, query.optionsName);
-
-  } else
-  if (!where || where === "1=1" || where === "1 = 1" || where === "") {
-    //whereQuery = cts.trueQuery();
+  } else if (!where || where === "1=1" || where === "1 = 1" || where === "") {
     whereQuery = op.eq(1, 1)
-
   } else {
-    whereQuery = sql2optic.where(where);
+    console.log("SQL: " + where);
+    whereQuery = op.sqlCondition(where);
+    console.log("WHERE: " + whereQuery);
   }
 
   xdmp.trace("GDS-DEBUG", "where: " + whereQuery);

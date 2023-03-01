@@ -83,6 +83,11 @@ public class GeoQueryRequest {
         return this;
     }
 
+    public GeoQueryRequest where(String whereClause) {
+        getQueryNode().put("where", whereClause);
+        return this;
+    }
+
     public String toString() {
         return request.toString();
     }

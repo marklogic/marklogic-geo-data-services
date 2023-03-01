@@ -185,7 +185,7 @@ function getRegionQuery(regions, operation, layerModel) {
     xdmp.trace("GDS-DEBUG", "No region path indexes declared in service descriptor.");
     return null;
   }
-  
+
   const regionOptions = [];
   xdmp.trace("GDS-DEBUG", "regionPaths:");
   xdmp.trace("GDS-DEBUG", regionPaths);
@@ -586,7 +586,7 @@ function CustomExtractor(layer) {
     if (result.geometry) {
       xdmp.trace("GDS-DEBUG", "Processing result.geometry");
       xdmp.trace("GDS-DEBUG", result.geometry);
-      
+
       let geometryToProcess = result.geometry.toObject();
       if (Array.isArray(geometryToProcess)) {
         xdmp.trace("GDS-DEBUG", "result.geometry is an array, expecting to extract multiple points");
@@ -742,13 +742,7 @@ function getSelector(layerModel) {
   return getExtractFunction(layerModel).getSelector();
 }
 
-function getMapper(layerModel) {
-  xdmp.trace("GDS-DEBUG", "Using the following extractor: getMapper");
-  return getExtractFunction(layerModel).extract;
-}
-
 exports.getPointQuery = getPointQuery;
 exports.getRegionQuery = getRegionQuery;
 exports.getExtractor = getExtractor;
 exports.getSelector = getSelector;
-exports.getMapper = getMapper;

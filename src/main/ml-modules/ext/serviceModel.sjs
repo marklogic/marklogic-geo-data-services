@@ -1008,8 +1008,7 @@ function _buildOneLayerDescriptor(serviceName, layerModel) {
     if (DEBUG) xdmp.trace("GDS-DEBUG", Sequence.from(["layerModel:", layerModel.id]));
     const layer = {
       metadata: {
-        maxRecordCount: MAX_RECORD_COUNT,
-        useStandardizedQueries: true
+        maxRecordCount: MAX_RECORD_COUNT
       }
     };
 

@@ -1,3 +1,10 @@
+/**
+ * "model" in this context appears to be synonymous with "service descriptor".
+ *
+ * As of the 1.3.4 release, only used by marklogic-arcgis-pro-addin, and always with rs:filter=search.
+ *
+ * Note that this only returns layer definitions without their fields/columns defined.
+ */
 'use strict';
 const gsu = require('/ext/search/geo-search-util.xqy');
 const sm = require('/ext/serviceModel.sjs');

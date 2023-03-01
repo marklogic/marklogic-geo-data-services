@@ -1,3 +1,6 @@
+/**
+ * As of the 1.3.4 release, only used by marklogic-arcgis-pro-addin.
+ */
 'use strict';
 const err = require('/ext/error.sjs');
 const gs = require('/ext/search/geoSearch.sjs');
