@@ -12,7 +12,7 @@ public class AliasTest extends AbstractFeatureServiceTest {
             new GeoQueryRequest(4)
                 .recordCount(5)
                 .orderByFields("name")
-                .returnGeometry(1)
+                .returnGeometry()
         )
             .body(isValidFeatureCollection())
 

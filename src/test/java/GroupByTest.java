@@ -1,3 +1,4 @@
+import com.marklogic.gds.GeoQueryRequest;
 import io.restassured.path.json.JsonPath;
 import org.junit.Test;
 
@@ -7,10 +8,12 @@ public class GroupByTest extends AbstractFeatureServiceTest{
 
     @Test
     public void testGkgGroupBy() {
-        JsonPath postBody = getJson("testGkgGroupBy.json");
-        postQuery(postBody)
-
-
+        postGeoQueryRequest(
+            new GeoQueryRequest(0)
+                .groupByFieldsForStatistics("domain")
+                .orderByFields("domain_count DESC")
+                .withOutStatistics("[{\"statisticType\":\"count\",\"outStatisticFieldName\":\"domain_count\"}]")
+        )
                 .body(isValidFeatureCollection())
                 //TODO missing .body("displayFieldName", is(""))
                 //TODO missing .body("fieldAliases.domain", is("domain"))
@@ -31,10 +34,11 @@ public class GroupByTest extends AbstractFeatureServiceTest{
 
     @Test
     public void testGroupByTwoFields() {
-        JsonPath postBody = getJson("testGroupByTwoFields.json");
-        postQuery(postBody)
-
-
+        postGeoQueryRequest(
+            new GeoQueryRequest(0)
+                .groupByFieldsForStatistics("domain, name")
+                .withOutStatistics("[ {\"statisticType\":\"count\",\"onStatisticField\":\"OBJECTID\",\"outStatisticFieldName\":\"objectid_count\"} ]")
+        )
                 .body(isValidFeatureCollection())
                 .body("statistics.size()", is(9061))
                 .body(
@@ -58,10 +62,12 @@ public class GroupByTest extends AbstractFeatureServiceTest{
 
     @Test
     public void testGroupByOrderByCount() {
-        JsonPath postBody = getJson("testGroupByOrderByCount.json");
-        postQuery(postBody)
-
-
+        postGeoQueryRequest(
+            new GeoQueryRequest(0)
+                .groupByFieldsForStatistics("domain")
+                .orderByFields("objectid_count DESC")
+                .withOutStatistics("[ {\"statisticType\":\"count\",\"onStatisticField\":\"OBJECTID\",\"outStatisticFieldName\":\"objectid_count\"} ]")
+        )
                 .body(isValidFeatureCollection())
                 .body("statistics.size()", is(2455))
                 .body("statistics[0].domain", is("fax.al"))
@@ -71,10 +77,13 @@ public class GroupByTest extends AbstractFeatureServiceTest{
 
     @Test
     public void testGroupByWithFilter() {
-        JsonPath postBody = getJson("testGroupByWithFilter.json");
-        postQuery(postBody)
-
-
+        postGeoQueryRequest(
+            new GeoQueryRequest(0)
+                .where("domain = '4-traders.com' OR domain = '9news.com.au' ")
+                .groupByFieldsForStatistics("domain")
+                .orderByFields("objectid_count DESC")
+                .withOutStatistics("[ {\"statisticType\":\"count\",\"onStatisticField\":\"OBJECTID\",\"outStatisticFieldName\":\"objectid_count\"} ]")
+        )
                 .body(isValidFeatureCollection())
                 .body("statistics.size()", is(2))
                 .body("statistics.find { it.domain == '4-traders.com' }.objectid_count", is(178))

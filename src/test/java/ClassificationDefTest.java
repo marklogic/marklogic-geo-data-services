@@ -1,3 +1,4 @@
+import com.marklogic.gds.GeoQueryRequest;
 import io.restassured.path.json.JsonPath;
 import org.junit.Test;
 
@@ -7,8 +8,10 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
 
     @Test
     public void testGkgToneStandardDeviation0() {
-        JsonPath postBody = getJson("gkgToneStandardDeviation0.json");
-        postQuery(postBody)
+        postGeoQueryRequest(
+            new GeoQueryRequest(0)
+                .withClassificationDef("{\"type\":\"classBreaksDef\",\"classificationField\":\"OBJECTID\",\"classificationMethod\":\"esriClassifyStandardDeviation\",\"standardDeviationInterval\":5}")
+        )
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-13340.0579808794f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(3183.36201912057f))
@@ -20,8 +23,10 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
 
     @Test
     public void testGkgToneStandardDeviation1() {
-        JsonPath postBody = getJson("gkgToneStandardDeviation1.json");
-        postQuery(postBody)
+        postGeoQueryRequest(
+            new GeoQueryRequest(1)
+                .withClassificationDef("{\"type\":\"classBreaksDef\",\"classificationField\":\"OBJECTID\",\"classificationMethod\":\"esriClassifyStandardDeviation\",\"standardDeviationInterval\":10}")
+        )
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-61804.899857712f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-44763.169857712f))
@@ -33,8 +38,10 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
 
     @Test
     public void testGkgToneStandardDeviation2() {
-        JsonPath postBody = getJson("gkgToneStandardDeviation2.json");
-        postQuery(postBody)
+        postGeoQueryRequest(
+            new GeoQueryRequest(1)
+                .withClassificationDef("{\"type\":\"classBreaksDef\",\"classificationField\":\"OBJECTID\",\"classificationMethod\":\"esriClassifyStandardDeviation\",\"standardDeviationInterval\":20}")
+        )
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-141140.379126623f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-124345.619126623f))
@@ -46,8 +53,10 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
 
     @Test
     public void gkgObjectIdGeometricInterval0() {
-        JsonPath postBody = getJson("gkgObjectIdGeometricInterval0.json");
-        postQuery(postBody)
+        postGeoQueryRequest(
+            new GeoQueryRequest(0)
+                .withClassificationDef("{\"type\":\"classBreaksDef\",\"classificationField\":\"OBJECTID\",\"classificationMethod\":\"esriClassifyGeometricalInterval\",\"breakCount\":10}")
+        )
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(1))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(2.99261807854486f))
@@ -60,8 +69,10 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
 
     @Test
     public void gkgObjectIdGeometricInterval1() {
-        JsonPath postBody = getJson("gkgObjectIdGeometricInterval1.json");
-        postQuery(postBody)
+        postGeoQueryRequest(
+            new GeoQueryRequest(1)
+                .withClassificationDef("{\"type\":\"classBreaksDef\",\"classificationField\":\"OBJECTID\",\"classificationMethod\":\"esriClassifyGeometricalInterval\",\"breakCount\":5}")
+        )
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(37))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(160.936078759448f))
@@ -73,8 +84,10 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
 
     @Test
     public void gkgObjectIdGeometricInterval2() {
-        JsonPath postBody = getJson("gkgObjectIdGeometricInterval2.json");
-        postQuery(postBody)
+        postGeoQueryRequest(
+            new GeoQueryRequest(1)
+                .withClassificationDefObject("esriClassifyGeometricalInterval", 5)
+        )
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(37))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(160.936078759448f))
@@ -84,11 +97,12 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             ;
     }
 
-    //gkgObjectIdQuantile
      @Test
     public void gkgObjectIdQuantile0 () {
-        JsonPath postBody = getJson("gkgObjectIdQuantile0.json");
-        postQuery(postBody)
+         postGeoQueryRequest(
+             new GeoQueryRequest(0)
+                 .withClassificationDef("{\"type\":\"classBreaksDef\",\"classificationField\":\"OBJECTID\",\"classificationMethod\":\"esriClassifyQuantile\",\"breakCount\":10}")
+         )
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(1))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(6437))
@@ -125,12 +139,12 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             ;
     }
 
-    //gkgToneEqualInterval0
-
     @Test
-    public void gkgToneEqualInterval0 () {
-        JsonPath postBody = getJson("gkgToneEqualInterval0.json");
-        postQuery(postBody)
+    public void gkgToneEqualInterval0() {
+        postGeoQueryRequest(
+            new GeoQueryRequest(0)
+                .withClassificationDef("{\"type\":\"classBreaksDef\",\"classificationField\":\"urltone\",\"classificationMethod\":\"esriClassifyEqualInterval\",\"breakCount\":5}")
+        )
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-21.77f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-14.17f))
@@ -167,12 +181,12 @@ public class ClassificationDefTest extends AbstractFeatureServiceTest{
             ;
     }
 
-    //gkgToneQuantile
-
     @Test
     public void gkgToneQuantile0 () {
-        JsonPath postBody = getJson("gkgToneQuantile0.json");
-        postQuery(postBody)
+        postGeoQueryRequest(
+            new GeoQueryRequest(0)
+                .withClassificationDef("{\"type\":\"classBreaksDef\",\"classificationField\":\"urltone\",\"classificationMethod\":\"esriClassifyQuantile\",\"breakCount\":10}")
+        )
                 .body(isValidFeatureCollection())
                 //TODO .body("statistics.classBreak[0].classMinValue", is(-21.77f))
                 //TODO .body("statistics.classBreak[0].classMaxValue", is(-8.48f))

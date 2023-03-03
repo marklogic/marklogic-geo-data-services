@@ -1,3 +1,4 @@
+import com.marklogic.gds.GeoQueryRequest;
 import io.restassured.path.json.JsonPath;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
@@ -17,11 +18,13 @@ public class GeoJSONGeometry  extends AbstractFeatureServiceTest {
     //     "xpath" : "/envelope/instance/boundary"
     //   }
     // }
-
     @Test
-    public void testXPathExtraction() throws UnsupportedEncodingException, ParseException  {
-        JsonPath postBody = getJson("testXPathExtraction.json");
-        postQuery(postBody)
+    public void testXPathExtraction() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 6)
+                .withObjectIds("900001")
+                .returnGeometry()
+        )
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.geometry.coordinates.size()", is(1))
@@ -40,9 +43,12 @@ public class GeoJSONGeometry  extends AbstractFeatureServiceTest {
     //   }
     // }
     @Test
-    public void testColumnExtraction() throws UnsupportedEncodingException, ParseException  {
-        JsonPath postBody = getJson("testColumnExtraction.json");
-        postQuery(postBody)
+    public void testColumnExtraction() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 9)
+                .withObjectIds("990001")
+                .returnGeometry()
+        )
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.geometry.coordinates.size()", is(1))
@@ -62,9 +68,12 @@ public class GeoJSONGeometry  extends AbstractFeatureServiceTest {
     //   }
     // }
     @Test
-    public void testXPathCtsExtraction() throws UnsupportedEncodingException, ParseException  {
-        JsonPath postBody = getJson("testXPathCtsExtraction.json");
-        postQuery(postBody)
+    public void testXPathCtsExtraction() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 10)
+                .withObjectIds("990001")
+                .returnGeometry()
+        )
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.geometry.coordinates.size()", is(1))

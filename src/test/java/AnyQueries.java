@@ -1,3 +1,4 @@
+import com.marklogic.gds.GeoQueryRequest;
 import io.restassured.path.json.JsonPath;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
@@ -11,9 +12,17 @@ import static org.hamcrest.Matchers.not;
 public class AnyQueries extends AbstractFeatureServiceTest {
 
 	@Test
-	public void testAnyPolygon1() throws UnsupportedEncodingException, ParseException {
-		JsonPath postBody = getJson("testAnyPolygon1.json");
-		postQuery(postBody)
+	public void testAnyPolygon1() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 5)
+                .withPolygonQuery(
+                    60.99609375, 9.96885060854611,
+                    60.99609375, 37.78808138412046,
+                    86.1328125, 37.78808138412046,
+                    86.1328125, 9.96885060854611,
+                    86.1328125, 9.96885060854611
+                )
+        )
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(14))
 				.body("features.properties.name",
@@ -23,9 +32,18 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	}
 
 	@Test
-	public void testAnyGeometryPolygon1() throws UnsupportedEncodingException, ParseException {
-		JsonPath postBody = getJson("testAnyGeometryPolygon1.json");
-        postQuery(postBody)
+	public void testAnyGeometryPolygon1() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 5)
+                .withPolygonQuery(
+                    60.99609375, 9.96885060854611,
+                    60.99609375, 37.78808138412046,
+                    86.1328125, 37.78808138412046,
+                    86.1328125, 9.96885060854611,
+                    86.1328125, 9.96885060854611
+                )
+                .returnGeometry()
+        )
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(14))
 				.body("features.properties.name",
@@ -115,11 +133,19 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	// Envelope Test cases
 	@Test
 	public void testAnyEnvelope1() {
-		JsonPath postBody = getJson("testAnyEnvelope1.json");
-        postQuery(postBody)
-				.body(isValidFeatureCollection())
-				.body("features.size()", is(14))
-				.body("features.properties.name",
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 5)
+                .withEnvelopeIntersectsQuery(
+                    "-61,-170,85,180",
+                    -61, -170,
+                    85, -170,
+                    85, 180,
+                    -61, 180,
+                    -61, -170
+                ))
+            .body(isValidFeatureCollection())
+            .body("features.size()", is(14))
+            .body("features.properties.name",
 						hasItems("Kerala", "Himachal Pradesh", "Odisha", "Chhattisgarh", "Madhya Pradesh", "Uttar Pradesh",
 								"Jammu and Kashmir", "Karnataka", "Rajasthan", "Maharashtra", "Gujarat", "Haryana", "Tamil Nadu",
 								"Telangana"));
@@ -217,18 +243,24 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 
 	// Point test cases
 	@Test
-	public void testAnyPoint1() throws UnsupportedEncodingException, ParseException {
-		JsonPath postBody = getJson("testAnyPoint1.json");
-        postQuery(postBody)
+	public void testAnyPoint1() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 5)
+                .withPointQuery(73.432617, 27.391277)
+                .returnGeometry()
+        )
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Rajasthan"));
 	}
 
 	@Test
-	public void testAnyGeometryPoint1() throws UnsupportedEncodingException, ParseException {
-		JsonPath postBody = getJson("testAnyGeometryPoint1.json");
-        postQuery(postBody)
+	public void testAnyGeometryPoint1() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 5)
+                .withPointQuery(73.432617, 27.391277)
+                .returnGeometry()
+        )
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features.geometry.size()", is(1))
@@ -237,26 +269,33 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	}
 
 	@Test
-	public void testAnyPoint2() throws UnsupportedEncodingException, ParseException {
-		JsonPath postBody = getJson("testAnyPoint2.json");
-        postQuery(postBody)
+	public void testAnyPoint2() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 5)
+                .withPointQuery(92.46093749999999, 39.095962936305476)
+        )
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
 	}
 
 	@Test
-	public void testAnyPoint3() throws UnsupportedEncodingException, ParseException {
-		JsonPath postBody = getJson("testAnyPoint3.json");
-        postQuery(postBody)
+	public void testAnyPoint3() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 5)
+                .withPointQuery(84.803467, 20.94092)
+        )
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Odisha"));
 	}
 
 	@Test
-	public void testAnyGeometryPoint3() throws UnsupportedEncodingException, ParseException {
-		JsonPath postBody = getJson("testAnyGeometryPoint3.json");
-        postQuery(postBody)
+	public void testAnyGeometryPoint3() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 5)
+                .withPointQuery(84.803467, 20.94092)
+                .returnGeometry()
+        )
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features.geometry.size()", is(1))

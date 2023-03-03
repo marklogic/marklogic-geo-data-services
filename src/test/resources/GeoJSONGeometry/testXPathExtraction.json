@@ -1,4 +1,0 @@
-{
-  "params": { "id": "GeoLocation", "layer": "6", "method": "query" },
-  "query": { "ids": 900001, "returnGeometry": 1 }
-}
