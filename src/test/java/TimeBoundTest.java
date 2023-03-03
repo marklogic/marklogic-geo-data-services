@@ -1,5 +1,4 @@
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
+import com.marklogic.gds.GeoQueryRequest;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.junit.Test;
@@ -14,10 +13,12 @@ public class TimeBoundTest extends AbstractFeatureServiceTest {
 
     @Test
     public void testTimeBound() {
-        JsonPath postBody = getJson("gkgTimeBound.json");
-        Response response = postForResponse(postBody);
-        response.then()
-                    .statusCode(200)
+        Response response = postGeoQueryRequest(
+            new GeoQueryRequest(6)
+                .withTimeRange("1493596800000,1496275200000")
+                .recordCount(20)
+                .returnIdsOnly()
+        )
                     .body(isValidFeatureCollection())
                     .extract().response()
             ;

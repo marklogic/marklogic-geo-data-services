@@ -1,8 +1,5 @@
-import io.restassured.path.json.JsonPath;
-import org.json.simple.parser.ParseException;
+import com.marklogic.gds.GeoQueryRequest;
 import org.junit.Test;
-
-import java.io.UnsupportedEncodingException;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
@@ -11,9 +8,12 @@ public class PointQueries  extends AbstractFeatureServiceTest {
 
     //testOnePolygonIntersects
     @Test
-    public void testPointIntersects1() throws UnsupportedEncodingException, ParseException  {
-        JsonPath postBody = getJson("testPointIntersects1.json");
-        postQuery(postBody)
+    public void testPointIntersects1() {
+        postGeoQueryRequest(
+            new GeoQueryRequest(3)
+                .intersectsPoint(-122.25972175598143, 37.51871254735555)
+                .returnGeometry()
+        )
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("MarkLogic Neighborhood"))
@@ -22,9 +22,11 @@ public class PointQueries  extends AbstractFeatureServiceTest {
 
     //testTwoPolygonIntersects
     @Test
-    public void testPointIntersects2() throws UnsupportedEncodingException, ParseException  {
-        JsonPath postBody = getJson("testPointIntersects2.json");
-        postQuery(postBody)
+    public void testPointIntersects2() {
+        postGeoQueryRequest(
+            new GeoQueryRequest(3)
+                .intersectsPoint(-122.24564552307129, 37.513198107015064)
+        )
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(2))
                 .body("features.properties.name", hasItems("Wildlife Refuge", "MarkLogic Neighborhood"))
@@ -34,9 +36,11 @@ public class PointQueries  extends AbstractFeatureServiceTest {
 
     //Inside single polygon Expected- WildLife Refuge
     @Test
-    public void testPointContains1() throws UnsupportedEncodingException, ParseException  {
-        JsonPath postBody = getJson("testPointContains1.json");
-        postQuery(postBody)
+    public void testPointContains1() {
+        postGeoQueryRequest(
+            new GeoQueryRequest(3)
+                .containsPoint(-122.2411823272705, 37.50918115940604)
+        )
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Wildlife Refuge"))
@@ -45,9 +49,12 @@ public class PointQueries  extends AbstractFeatureServiceTest {
 
     //Inside two polygon Expected- WildLife Refuge
     @Test
-    public void testPointContains2() throws UnsupportedEncodingException, ParseException  {
-        JsonPath postBody = getJson("testPointContains2.json");
-        postQuery(postBody)
+    public void testPointContains2() {
+        postGeoQueryRequest(
+            new GeoQueryRequest(3)
+                .containsPoint(-122.25208282470703, 37.51571709945411)
+                .returnGeometry()
+        )
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(2))
                 .body("features.properties.name", hasItems("Airport", "MarkLogic Neighborhood"))
@@ -56,9 +63,11 @@ public class PointQueries  extends AbstractFeatureServiceTest {
 
     //External Point Expected- No Features
     @Test
-    public void testPointContains3() throws UnsupportedEncodingException, ParseException  {
-        JsonPath postBody = getJson("testPointContains3.json");
-        postQuery(postBody)
+    public void testPointContains3() {
+        postGeoQueryRequest(
+            new GeoQueryRequest(3)
+                .containsPoint(-122.24152565002441, 37.52068675409422)
+        )
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(0))
         ;

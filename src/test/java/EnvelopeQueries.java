@@ -14,7 +14,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
     public void testEnvelopeIntersects1() {
         postGeoQueryRequest(
             new GeoQueryRequest(3)
-                .withEnvelopeIntersectsQuery("-122.2634554,37.5033596,-122.2446156,37.5212994",
+                .intersectsEnvelope(
                     -122.2634554, 37.5033596,
                     -122.2446156, 37.5033596,
                     -122.2446156, 37.5212994,
@@ -87,7 +87,7 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
     public void testEnvelopeContains1() {
         postGeoQueryRequest(
             new GeoQueryRequest(3)
-                .withEnvelopeContainsQuery(
+                .containsEnvelope(
                     -122.25723266601562, 37.507070473180455,
                     -122.25337028503418, 37.507070473180455,
                     -122.25337028503418, 37.50904498790216,

@@ -1,3 +1,4 @@
+import com.marklogic.gds.GeoQueryRequest;
 import io.restassured.path.json.JsonPath;
 import org.junit.Test;
 
@@ -7,9 +8,12 @@ public class OffsetAndLimitTest extends AbstractFeatureServiceTest {
 
 	@Test
     public void testGkgOffsetAndLimit() {
-        JsonPath postBody = getJson("testGkgOffsetAndLimit.json");
-        postQuery(postBody)
-
+        postGeoQueryRequest(
+            new GeoQueryRequest(0)
+                .orderByFields("domain DESC, OBJECTID ASC")
+                .offset(100)
+                .recordCount(10)
+        )
                 .body(isValidFeatureCollection())
 
                 .body("features.size()", is(10))

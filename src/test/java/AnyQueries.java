@@ -15,7 +15,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	public void testAnyPolygon1() {
         postGeoQueryRequest(
             new GeoQueryRequest("GeoLocation", 5)
-                .withPolygonQuery(
+                .intersectsPolygon(
                     60.99609375, 9.96885060854611,
                     60.99609375, 37.78808138412046,
                     86.1328125, 37.78808138412046,
@@ -35,7 +35,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	public void testAnyGeometryPolygon1() {
         postGeoQueryRequest(
             new GeoQueryRequest("GeoLocation", 5)
-                .withPolygonQuery(
+                .intersectsPolygon(
                     60.99609375, 9.96885060854611,
                     60.99609375, 37.78808138412046,
                     86.1328125, 37.78808138412046,
@@ -135,8 +135,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	public void testAnyEnvelope1() {
         postGeoQueryRequest(
             new GeoQueryRequest("GeoLocation", 5)
-                .withEnvelopeIntersectsQuery(
-                    "-61,-170,85,180",
+                .intersectsEnvelope(
                     -61, -170,
                     85, -170,
                     85, 180,
@@ -246,7 +245,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	public void testAnyPoint1() {
         postGeoQueryRequest(
             new GeoQueryRequest("GeoLocation", 5)
-                .withPointQuery(73.432617, 27.391277)
+                .intersectsPoint(73.432617, 27.391277)
                 .returnGeometry()
         )
 				.body(isValidFeatureCollection())
@@ -258,7 +257,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	public void testAnyGeometryPoint1() {
         postGeoQueryRequest(
             new GeoQueryRequest("GeoLocation", 5)
-                .withPointQuery(73.432617, 27.391277)
+                .intersectsPoint(73.432617, 27.391277)
                 .returnGeometry()
         )
 				.body(isValidFeatureCollection())
@@ -272,7 +271,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	public void testAnyPoint2() {
         postGeoQueryRequest(
             new GeoQueryRequest("GeoLocation", 5)
-                .withPointQuery(92.46093749999999, 39.095962936305476)
+                .intersectsPoint(92.46093749999999, 39.095962936305476)
         )
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(0));
@@ -282,7 +281,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	public void testAnyPoint3() {
         postGeoQueryRequest(
             new GeoQueryRequest("GeoLocation", 5)
-                .withPointQuery(84.803467, 20.94092)
+                .intersectsPoint(84.803467, 20.94092)
         )
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
@@ -293,7 +292,7 @@ public class AnyQueries extends AbstractFeatureServiceTest {
 	public void testAnyGeometryPoint3() {
         postGeoQueryRequest(
             new GeoQueryRequest("GeoLocation", 5)
-                .withPointQuery(84.803467, 20.94092)
+                .intersectsPoint(84.803467, 20.94092)
                 .returnGeometry()
         )
 				.body(isValidFeatureCollection())
