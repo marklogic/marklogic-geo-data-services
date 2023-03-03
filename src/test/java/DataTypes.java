@@ -1,17 +1,13 @@
-import io.restassured.path.json.JsonPath;
-import org.json.simple.parser.ParseException;
+import com.marklogic.gds.GeoQueryRequest;
 import org.junit.Test;
-
-import java.io.UnsupportedEncodingException;
 
 import static org.hamcrest.Matchers.is;
 
 public class DataTypes extends AbstractFeatureServiceTest {
 
     @Test
-    public void testDefaultStringLength() throws UnsupportedEncodingException, ParseException  {
-        JsonPath postBody = getJson("testDefaultStringLength.json");
-        postQuery(postBody)
+    public void testDefaultStringLength() {
+        postGeoQueryRequest(new GeoQueryRequest(3))
                 .body("metadata.fields.find { it.name == 'domain' }.length", is(1024))
         ;
     }

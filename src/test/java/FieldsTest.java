@@ -1,3 +1,4 @@
+import com.marklogic.gds.GeoQueryRequest;
 import io.restassured.path.json.JsonPath;
 import org.junit.Test;
 
@@ -8,10 +9,9 @@ public class FieldsTest extends AbstractFeatureServiceTest {
 
     @Test
     public void testAllFields() {
-        JsonPath postBody = getJson("testAllFields.json");
-        postQuery(postBody)
-
-
+        postGeoQueryRequest(new GeoQueryRequest(0)
+                                .recordCount(5)
+                                .withOutFields("*"))
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(5))
                 .body("features[0].properties.OBJECTID", notNullValue())

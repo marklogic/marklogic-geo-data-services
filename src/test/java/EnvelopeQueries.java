@@ -1,3 +1,4 @@
+import com.marklogic.gds.GeoQueryRequest;
 import io.restassured.path.json.JsonPath;
 import org.junit.Test;
 
@@ -11,8 +12,15 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
     //testEnvelopeMarkLogicNeighborhoodIntersects
     @Test
     public void testEnvelopeIntersects1() {
-        JsonPath postBody = getJson("testEnvelopeIntersects1.json");
-        postQuery(postBody)
+        postGeoQueryRequest(
+            new GeoQueryRequest(3)
+                .withEnvelopeIntersectsQuery("-122.2634554,37.5033596,-122.2446156,37.5212994",
+                    -122.2634554, 37.5033596,
+                    -122.2446156, 37.5033596,
+                    -122.2446156, 37.5212994,
+                    -122.2634554, 37.5212994,
+                    -122.2634554, 37.5033596
+                    ))
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(9))
                 .body("features.properties.name", hasItems("MarkLogic HQ","Museum","Restaurant","Shopping Center","MarkLogic Neighborhood", "Wildlife Refuge","Airport","Hwy 101","Holly St"))
@@ -77,8 +85,16 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
     //Inside single Envelope - Expected : MarkLogic Neighborhood
     @Test
     public void testEnvelopeContains1() {
-        JsonPath postBody = getJson("testEnvelopeContains1.json");
-        postQuery(postBody)
+        postGeoQueryRequest(
+            new GeoQueryRequest(3)
+                .withEnvelopeContainsQuery(
+                    -122.25723266601562, 37.507070473180455,
+                    -122.25337028503418, 37.507070473180455,
+                    -122.25337028503418, 37.50904498790216,
+                    -122.25723266601562, 37.50904498790216,
+                    -122.25723266601562, 37.507070473180455
+                )
+        )
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("MarkLogic Neighborhood"))

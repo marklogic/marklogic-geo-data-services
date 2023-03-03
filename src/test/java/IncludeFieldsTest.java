@@ -1,3 +1,4 @@
+import com.marklogic.gds.GeoQueryRequest;
 import io.restassured.path.json.JsonPath;
 import org.junit.Test;
 
@@ -7,10 +8,12 @@ public class IncludeFieldsTest extends AbstractFeatureServiceTest {
 
     @Test
     public void testIncludeFieldsInFirstDataSourcesObject() {
-        JsonPath postBody = getJson("testIncludeFieldsInFirstDataSourcesObject.json");
-        postQuery(postBody)
-
-
+        postGeoQueryRequest(
+            new GeoQueryRequest(4)
+                .recordCount(5)
+                .orderByFields("name")
+                .returnGeometry()
+        )
                 .body(isValidFeatureCollection())
 
                 .body("features.size()", is(5))
@@ -30,10 +33,12 @@ public class IncludeFieldsTest extends AbstractFeatureServiceTest {
 
     @Test
     public void testIncludeFieldsInOriginalSource() {
-        JsonPath postBody = getJson("testIncludeFieldsInOriginalSource.json");
-        postQuery(postBody)
-
-
+        postGeoQueryRequest(
+            new GeoQueryRequest(5)
+                .recordCount(5)
+                .orderByFields("name")
+                .returnGeometry()
+        )
                 .body(isValidFeatureCollection())
 
                 .body("features.size()", is(5))

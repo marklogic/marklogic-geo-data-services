@@ -1,3 +1,4 @@
+import com.marklogic.gds.GeoQueryRequest;
 import io.restassured.path.json.JsonPath;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
@@ -11,9 +12,17 @@ import static org.hamcrest.Matchers.not;
 public class CustomQueries extends AbstractFeatureServiceTest {
 
     @Test
-    public void testCustomPolygon1() throws UnsupportedEncodingException, ParseException  {
-        JsonPath postBody = getJson("testCustomPolygon1.json");
-        postQuery(postBody)
+    public void testCustomPolygon1() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 4)
+                .withPolygonQuery(
+                    60.99609375, 9.96885060854611,
+                    60.99609375, 37.78808138412046,
+                    86.1328125, 37.78808138412046,
+                    86.1328125, 9.96885060854611,
+                    60.99609375, 9.96885060854611
+                )
+        )
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(14))
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana"))
@@ -212,12 +221,13 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .body("features.properties.name", hasItems("Gujarat"));
        }
 
-    //Point test cases
     @Test
-    public void testCustomPoint1() throws UnsupportedEncodingException, ParseException  {
-        JsonPath postBody = getJson("testCustomPoint1.json");
-        postQuery(postBody)
-
+    public void testCustomPoint1() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 4)
+                .withPointQuery(73.432617, 27.391277)
+                .returnGeometry()
+        )
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Rajasthan"))
@@ -225,10 +235,12 @@ public class CustomQueries extends AbstractFeatureServiceTest {
     }
 
     @Test
-    public void testCustomGeometryPoint1() throws UnsupportedEncodingException, ParseException  {
-        JsonPath postBody = getJson("testCustomGeometryPoint1.json");
-        postQuery(postBody)
-
+    public void testCustomGeometryPoint1() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 4)
+                .withPointQuery(73.432617, 27.391277)
+                .returnGeometry()
+        )
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.geometry.size()", is(1))
@@ -238,20 +250,24 @@ public class CustomQueries extends AbstractFeatureServiceTest {
     }
 
     @Test
-    public void testCustomPoint2() throws UnsupportedEncodingException, ParseException  {
-        JsonPath postBody = getJson("testCustomPoint2.json");
-        postQuery(postBody)
-
+    public void testCustomPoint2() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 4)
+                .withPointQuery(92.46093749999999, 39.095962936305476)
+                .returnGeometry()
+        )
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(0))
             ;
     }
 
     @Test
-    public void testCustomPoint3() throws UnsupportedEncodingException, ParseException  {
-        JsonPath postBody = getJson("testCustomPoint3.json");
-        postQuery(postBody)
-
+    public void testCustomPoint3() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 4)
+                .withPointQuery(84.803467, 20.94092)
+                .returnGeometry()
+        )
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].properties.name", is("Odisha"))
@@ -259,10 +275,12 @@ public class CustomQueries extends AbstractFeatureServiceTest {
     }
 
     @Test
-    public void testCustomGeometryPoint3() throws UnsupportedEncodingException, ParseException  {
-        JsonPath postBody = getJson("testCustomGeometryPoint3.json");
-        postQuery(postBody)
-
+    public void testCustomGeometryPoint3() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 4)
+                .withPointQuery(84.803467, 20.940920000000002)
+                .returnGeometry()
+        )
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features.geometry.size()", is(1))
@@ -272,10 +290,10 @@ public class CustomQueries extends AbstractFeatureServiceTest {
     }
 
     @Test
-    public void testCustomAllFields() throws UnsupportedEncodingException, ParseException  {
-        JsonPath postBody = getJson("testCustomAllFields.json");
-        postQuery(postBody)
-
+    public void testCustomAllFields() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 4)
+                .withOutFields("*"))
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(17))
                 .body("features.geometry.size()", is(17))
@@ -283,9 +301,4 @@ public class CustomQueries extends AbstractFeatureServiceTest {
                 .body("features.properties.name", hasItems("Kerala","Himachal Pradesh","Odisha","Chhattisgarh","Madhya Pradesh","Uttar Pradesh","Jammu and Kashmir","Karnataka","Rajasthan","Maharashtra","Gujarat","Haryana","Tamil Nadu","Telangana","West Bengal","Assam","Tripura"))
                 ;
     }
-    }
-
-
-
-
-///marklogic/GeoLocation/FeatureServer/0/query?outFields=*
+}
