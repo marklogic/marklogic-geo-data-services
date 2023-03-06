@@ -15,7 +15,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
     public void testCustomPolygon1() {
         postGeoQueryRequest(
             new GeoQueryRequest("GeoLocation", 4)
-                .withPolygonQuery(
+                .intersectsPolygon(
                     60.99609375, 9.96885060854611,
                     60.99609375, 37.78808138412046,
                     86.1328125, 37.78808138412046,
@@ -225,7 +225,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
     public void testCustomPoint1() {
         postGeoQueryRequest(
             new GeoQueryRequest("GeoLocation", 4)
-                .withPointQuery(73.432617, 27.391277)
+                .intersectsPoint(73.432617, 27.391277)
                 .returnGeometry()
         )
                 .body(isValidFeatureCollection())
@@ -238,7 +238,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
     public void testCustomGeometryPoint1() {
         postGeoQueryRequest(
             new GeoQueryRequest("GeoLocation", 4)
-                .withPointQuery(73.432617, 27.391277)
+                .intersectsPoint(73.432617, 27.391277)
                 .returnGeometry()
         )
                 .body(isValidFeatureCollection())
@@ -253,7 +253,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
     public void testCustomPoint2() {
         postGeoQueryRequest(
             new GeoQueryRequest("GeoLocation", 4)
-                .withPointQuery(92.46093749999999, 39.095962936305476)
+                .intersectsPoint(92.46093749999999, 39.095962936305476)
                 .returnGeometry()
         )
                 .body(isValidFeatureCollection())
@@ -265,7 +265,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
     public void testCustomPoint3() {
         postGeoQueryRequest(
             new GeoQueryRequest("GeoLocation", 4)
-                .withPointQuery(84.803467, 20.94092)
+                .intersectsPoint(84.803467, 20.94092)
                 .returnGeometry()
         )
                 .body(isValidFeatureCollection())
@@ -278,7 +278,7 @@ public class CustomQueries extends AbstractFeatureServiceTest {
     public void testCustomGeometryPoint3() {
         postGeoQueryRequest(
             new GeoQueryRequest("GeoLocation", 4)
-                .withPointQuery(84.803467, 20.940920000000002)
+                .intersectsPoint(84.803467, 20.940920000000002)
                 .returnGeometry()
         )
                 .body(isValidFeatureCollection())

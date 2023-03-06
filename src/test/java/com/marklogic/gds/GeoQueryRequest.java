@@ -6,6 +6,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Knows how to build up the JSON for a request to geoQueryService.
+ * <p>
+ * Good reference on spatialRel definitions -
+ * https://desktop.arcgis.com/en/arcmap/latest/extensions/data-reviewer/types-of-spatial-relationships-that-can-be-validated.htm
  */
 public class GeoQueryRequest {
 
@@ -74,6 +77,11 @@ public class GeoQueryRequest {
         return this;
     }
 
+    public GeoQueryRequest offset(int offset) {
+        getQueryNode().put("resultOffset", offset);
+        return this;
+    }
+
     public GeoQueryRequest orderByFields(String value) {
         getQueryNode().put("orderByFields", value);
         return this;
@@ -89,16 +97,23 @@ public class GeoQueryRequest {
         return this;
     }
 
+    /**
+     * This also supports a "search" JSON object as a child. That is presumably not a standard thing that an ArcGIS
+     * Feature Service user can provide. So not sure yet if it's something we'd document as part of GDS - yet.
+     *
+     * @param whereClause
+     * @return
+     */
     public GeoQueryRequest where(String whereClause) {
         getQueryNode().put("where", whereClause);
         return this;
     }
 
-    public GeoQueryRequest withEnvelopeIntersectsQuery(String envelope, double... coordinates) {
+    public GeoQueryRequest intersectsEnvelope(double... coordinates) {
         return withEnvelopeQuery(null, coordinates);
     }
 
-    public GeoQueryRequest withEnvelopeContainsQuery(double... coordinates) {
+    public GeoQueryRequest containsEnvelope(double... coordinates) {
         return withEnvelopeQuery("esrispatialrelcontains", coordinates);
     }
 
@@ -118,11 +133,34 @@ public class GeoQueryRequest {
         return this;
     }
 
-    public GeoQueryRequest withPolygonQuery(double... coordinates) {
+    public GeoQueryRequest intersectsPolygon(double... coordinates) {
+        return withPolygonQuery(null, coordinates);
+    }
+
+    public GeoQueryRequest containsPolygon(double... coordinates) {
+        return withPolygonQuery("esrispatialrelcontains", coordinates);
+    }
+
+    public GeoQueryRequest overlapsPolygon(double... coordinates) {
+        return withPolygonQuery("esrispatialreloverlaps", coordinates);
+    }
+
+    public GeoQueryRequest touchesPolygon(double... coordinates) {
+        return withPolygonQuery("esrispatialreltouches", coordinates);
+    }
+
+    public GeoQueryRequest withinPolygon(double... coordinates) {
+        return withPolygonQuery("esriSpatialRelWithin", coordinates);
+    }
+
+    public GeoQueryRequest withPolygonQuery(String spatialRel, double... coordinates) {
         ObjectNode query = getQueryNode();
         query.put("geometryType", "esriGeometryPolygon");
+        if (spatialRel != null) {
+            query.put("spatialRel", spatialRel);
+        }
         ObjectNode geometry = query.putObject("extension").putObject("geometry");
-        geometry.putObject("spatialReference").put("wkid", 4326);
+//        geometry.putObject("spatialReference").put("wkid", 4326);
         geometry.put("type", "Polygon");
         ArrayNode coords = geometry.putArray("coordinates").addArray();
         for (int i = 0; i < coordinates.length; i += 2) {
@@ -132,13 +170,46 @@ public class GeoQueryRequest {
         return this;
     }
 
-    // TODO This redundancy can't be right, can it???
-    public GeoQueryRequest withPointQuery(double x, double y) {
+    public GeoQueryRequest crossesLineString(double... coordinates) {
+        return withLineStringQuery("esrispatialrelcrosses", coordinates);
+    }
+
+    public GeoQueryRequest intersectsLineString(double... coordinates) {
+        return withLineStringQuery(null, coordinates);
+    }
+
+    private GeoQueryRequest withLineStringQuery(String spatialRel, double... coordinates) {
+        ObjectNode query = getQueryNode();
+        query.put("geometryType", "esriGeometryPolyline");
+        if (spatialRel != null) {
+            query.put("spatialRel", spatialRel);
+        }
+        ObjectNode geometry = query.putObject("extension").putObject("geometry");
+//        geometry.putObject("spatialReference").put("wkid", 4326);
+        geometry.put("type", "LineString");
+        ArrayNode coords = geometry.putArray("coordinates");
+        for (int i = 0; i < coordinates.length; i += 2) {
+            ArrayNode pair = coords.addArray();
+            pair.add(coordinates[i]).add(coordinates[i + 1]);
+        }
+        return this;
+    }
+
+    public GeoQueryRequest containsPoint(double x, double y) {
+        return withPointQuery("esrispatialrelcontains", x, y);
+    }
+
+    public GeoQueryRequest intersectsPoint(double x, double y) {
+        return withPointQuery(null, x, y);
+    }
+
+    private GeoQueryRequest withPointQuery(String spatialRel, double x, double y) {
         ObjectNode query = getQueryNode();
         query.put("geometryType", "esriGeometryPoint");
-//        query.putObject("geometry").put("x", x).put("y", y);
+        if (spatialRel != null) {
+            query.put("spatialRel", spatialRel);
+        }
         ObjectNode geometry = query.putObject("extension").putObject("geometry");
-//        geometry.put("x", x).put("y", y);
         geometry.put("type", "Point");
         geometry.putArray("coordinates").add(x).add(y);
         return this;
@@ -167,6 +238,11 @@ public class GeoQueryRequest {
 
     public GeoQueryRequest withOutStatistics(String json) {
         getQueryNode().put("outStatistics", json);
+        return this;
+    }
+
+    public GeoQueryRequest withTimeRange(String startAndEndTimestamps) {
+        getQueryNode().put("time", startAndEndTimestamps);
         return this;
     }
 

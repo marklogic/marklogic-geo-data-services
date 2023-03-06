@@ -1,3 +1,4 @@
+import com.marklogic.gds.GeoQueryRequest;
 import io.restassured.path.json.JsonPath;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
@@ -19,9 +20,12 @@ public class WKTGeometry  extends AbstractFeatureServiceTest {
     // }
 
     @Test
-    public void testXPathExtraction() throws UnsupportedEncodingException, ParseException {
-        JsonPath postBody = getJson("testXPathExtraction.json");
-        postQuery(postBody)
+    public void testXPathExtraction() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 6)
+                .withObjectIds("900001")
+                .returnGeometry()
+        )
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].geometry.coordinates.size()", is(1))
@@ -40,9 +44,12 @@ public class WKTGeometry  extends AbstractFeatureServiceTest {
     //   }
     // }
     @Test
-    public void testColumnExtraction() throws UnsupportedEncodingException, ParseException {
-        JsonPath postBody = getJson("testColumnExtraction.json");
-        postQuery(postBody)
+    public void testColumnExtraction() {
+        postGeoQueryRequest(
+            new GeoQueryRequest("GeoLocation", 7)
+                .withObjectIds("900001")
+                .returnGeometry()
+        )
                 .body(isValidFeatureCollection())
                 .body("features.size()", is(1))
                 .body("features[0].geometry.coordinates.size()", is(1))

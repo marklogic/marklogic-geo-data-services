@@ -1,3 +1,4 @@
+import com.marklogic.gds.GeoQueryRequest;
 import io.restassured.path.json.JsonPath;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
@@ -87,9 +88,19 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 
 	// Polygon1 ( Features within Polygon ) Expected : Restaurant
 	@Test
-	public void testPolygonWithin1() throws UnsupportedEncodingException, ParseException {
-		JsonPath postBody = getJson("testPolygonWithin1.json");
-        postQuery(postBody)
+	public void testPolygonWithin1() {
+        postGeoQueryRequest(
+            new GeoQueryRequest(3)
+                .withinPolygon(
+                    -122.259035110474, 37.5139980665297,
+                    -122.257189750671, 37.513589577636104,
+                    -122.25779056549099, 37.5125343043126,
+                    -122.259120941162, 37.512908757845,
+                    -122.259035110474, 37.5139980665297
+                )
+                .returnGeometry()
+        )
+            .log().body()
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Restaurant"));
@@ -162,9 +173,19 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 
 	// Polygon1 Contains (Inside single polygon ) Expected : WildLife refuge
 	@Test
-	public void testPolygonContains1() throws UnsupportedEncodingException, ParseException {
-		JsonPath postBody = getJson("testPolygonContains1.json");
-        postQuery(postBody)
+	public void testPolygonContains1() {
+        postGeoQueryRequest(
+            new GeoQueryRequest(3)
+                .containsPolygon(
+                    -122.2418689727783, 37.513810842731,
+                    -122.23852157592772, 37.5124492009751,
+                    -122.24032402038574, 37.51033860715949,
+                    -122.24289894104004, 37.511155618297025,
+                    -122.2418689727783, 37.513810842731
+                )
+                .returnGeometry()
+        )
+            .log().body()
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Wildlife Refuge"));
@@ -194,9 +215,18 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	// ==================================Touch===========================================
 	// Touched Hvy 101(Linestring) ( from Endpoint )
 	@Test
-	public void testPolygonTouches1() throws UnsupportedEncodingException, ParseException {
-		JsonPath postBody = getJson("testPolygonTouches1.json");
-        postQuery(postBody)
+	public void testPolygonTouches1() {
+        postGeoQueryRequest(
+            new GeoQueryRequest(3)
+                .touchesPolygon(
+                    -122.26343393325807, 37.521410049523055,
+                    -122.2637558, 37.5206187,
+                    -122.26503252983092, 37.520746319865054,
+                    -122.26560115814208, 37.5216312914303,
+                    -122.26358413696288, 37.52209930099547,
+                    -122.26343393325807, 37.521410049523055
+                )
+        )
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("Hwy 101"));
@@ -223,9 +253,16 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	// ==============================overlap=========================================
 
 	@Test
-	public void testPolygonOverlaps1() throws UnsupportedEncodingException, ParseException {
-		JsonPath postBody = getJson("testPolygonOverlaps1.json");
-        postQuery(postBody)
+	public void testPolygonOverlaps1() {
+        postGeoQueryRequest(
+            new GeoQueryRequest(3)
+                .overlapsPolygon(
+                    -122.25843429565428, 37.51871254735555,
+                    -122.25843429565428, 37.52170787501458,
+                    -122.25431442260741, 37.52170787501458,
+                    -122.25431442260741, 37.51871254735555,
+                    -122.25843429565428, 37.51871254735555
+                ))
 				.body(isValidFeatureCollection())
 				.body("features.size()", is(1))
 				.body("features[0].properties.name", is("MarkLogic Neighborhood"));
