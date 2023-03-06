@@ -7,7 +7,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.notNullValue;
 
-public class SearchServiceTests extends AbstractTest {
+public class GeoSearchTest extends AbstractTest {
     public void setup() {
         super.setup();
         RestAssured.basePath = "/LATEST/resources/geoSearchService";

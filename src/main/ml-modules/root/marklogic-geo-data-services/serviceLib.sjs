@@ -1,15 +1,17 @@
 'use strict';
 
 /**
+ * Library module for getting data about feature services and their layers.
+ *
  * The idea behind this module is to make retrieving the service and layer model(s)
  * as efficient as possible, and to retrieve them only once per transaction.  Also,
  * we need to avoid the use of server fields for the layer models themselves.
  */
 
 const ampedFunctions = require("/marklogic-geo-data-services/ampedFunctions.sjs");
-const err = require('/ext/error.sjs');
-const sfc = require('/ext/server-field-cache.xqy');
-const trace = require('/ext/trace.sjs');
+const err = require('/marklogic-geo-data-services/error.sjs');
+const gdsTrace = require('/marklogic-geo-data-services/trace.sjs');
+const serverFieldCache = require('/marklogic-geo-data-services/server-field-cache.xqy');
 
 const SERVICE_DESCRIPTOR_COLLECTION = 'http://marklogic.com/feature-services';
 const MAX_RECORD_COUNT = 5000;
@@ -65,7 +67,7 @@ function getServiceModels(filter) {
   for (let i in serviceModelIndex) {
       allModels.push(serviceModelIndex[i].serviceModel);
   }
-  trace.info(`Found a total of ${allModels.length} service descriptor documents.`, "getServiceModels");
+  gdsTrace.info(`Found a total of ${allModels.length} service descriptor documents.`, "getServiceModels");
 
   if (_filter === 'search')
     return allModels.filter(m => m.search);
@@ -514,7 +516,7 @@ function saveServiceModel(serviceId, model, uri) {
  * @param viewNameKey {String} key for the view hash in the form "schemaName.viewName"
  */
 function getCachedViewHash(viewNameKey) {
-    let cachedViewHash = fn.head(sfc.get(viewNameKey));
+    let cachedViewHash = fn.head(serverFieldCache.get(viewNameKey));
     //if it's in the serer field cache, use that
     if (cachedViewHash) {
         if (DEBUG) xdmp.trace("GDS-DEBUG", "Found viewHash in server field cache, " + viewNameKey + ": " + cachedViewHash);
@@ -598,13 +600,13 @@ function getViewHashes(layerModelIndexEntry) {
         if (DEBUG) xdmp.trace("GDS-DEBUG", Sequence.from(["calculating view hashes", viewsNeedingHashesCalculated]));
 
         //We calculate these in xquery because it is WAY faster than javascript
-        let retrievedViewHashes = fn.head(ampedFunctions.invoke("/ext/view-hash.xqy", { input: Sequence.from(viewsNeedingHashesCalculated) }));
+        let retrievedViewHashes = fn.head(ampedFunctions.invoke("/marklogic-geo-data-services/view-hash.xqy", { input: Sequence.from(viewsNeedingHashesCalculated) }));
         if (DEBUG) xdmp.trace("GDS-DEBUG", Sequence.from(["retrieved view hashes", retrievedViewHashes]));
         for (let key in retrievedViewHashes) {
             let hashStr = retrievedViewHashes[key].toString()
             viewHashIndex[key] = hashStr;
             viewHashes[key] = hashStr;
-            sfc.put(key, hashStr);
+            serverFieldCache.put(key, hashStr);
         }
     }
     else {

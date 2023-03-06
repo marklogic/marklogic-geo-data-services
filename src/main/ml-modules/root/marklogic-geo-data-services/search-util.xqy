@@ -1,6 +1,11 @@
 xquery version "1.0-ml";
 
-module namespace gsu = "http://marklogic.com/geo-data-services/geo-search-util";
+(:
+Helper functions for geospatial operations using the MarkLogic Search API.
+In this context, "search" = the MarkLogic Search API.
+:)
+
+module namespace searchUtil = "http://marklogic.com/geo-data-services/geo-search-util";
 
 import module namespace sut = "http://marklogic.com/rest-api/lib/search-util" at "/MarkLogic/rest-api/lib/search-util.xqy";
 import module namespace search = "http://marklogic.com/appservices/search" at "/MarkLogic/appservices/search/search.xqy";
@@ -8,16 +13,16 @@ import module namespace ast = "http://marklogic.com/appservices/search-ast" at "
 
 declare private variable $VALUES_OPTION_PREFIX as xs:string := "__generated_values_";
 
-declare function gsu:parse-combined(
+declare function searchUtil:parse-combined(
   $json as item(),
   $options-name as xs:string?
 ) as cts:query
 {
   (: convert to xml :)
-  let $search := gsu:search-from-json($json)
+  let $search := searchUtil:search-from-json($json)
 
   (: get options from request body, or fall back to named options :)
-  let $resolved-options := gsu:resolve-options($search, ($options-name, "all")[1])
+  let $resolved-options := searchUtil:resolve-options($search, ($options-name, "all")[1])
 
   (: include any additional query :)
   let $additional-queries := $resolved-options/search:additional-query/*/cts:query(.)
@@ -31,7 +36,7 @@ declare function gsu:parse-combined(
   (: include structured query :)
   let $structured-query :=
     if ($search/search:query) then
-      gsu:structured-to-cts($search/search:query, $resolved-options)
+      searchUtil:structured-to-cts($search/search:query, $resolved-options)
     else ()
 
   (: combine all into large andQuery :)
@@ -42,7 +47,7 @@ declare function gsu:parse-combined(
   ))
 };
 
-declare function gsu:search-from-json(
+declare function searchUtil:search-from-json(
   $json as item()
 ) as element(search:search)
 {
@@ -55,14 +60,14 @@ declare function gsu:search-from-json(
     sut:search-from-json($json)
 };
 
-declare function gsu:search-to-json(
+declare function searchUtil:search-to-json(
   $search as element(search:search)
 ) as json:object
 {
   sut:search-to-json($search)
 };
 
-declare function gsu:structured-to-cts(
+declare function searchUtil:structured-to-cts(
   $sq as element(search:query),
   $options as element(search:options)
 ) as cts:query?
@@ -70,13 +75,13 @@ declare function gsu:structured-to-cts(
   map:get(ast:to-query($sq, $options), "query")
 };
 
-declare function gsu:resolve-options(
+declare function searchUtil:resolve-options(
   $search as element(search:search),
   $options-name as xs:string
 ) as element(search:options)
 {
   let $delta-options := $search/search:options
-  let $saved-options := gsu:get-search-options($options-name)
+  let $saved-options := searchUtil:get-search-options($options-name)
   let $empty-options := <options xmlns="http://marklogic.com/appservices/search"/>
   return
     if (exists($delta-options) and exists($saved-options)) then
@@ -88,18 +93,18 @@ declare function gsu:resolve-options(
       ($delta-options, $saved-options)
 };
 
-declare function gsu:get-search-options(
+declare function searchUtil:get-search-options(
   $options-name as xs:string
 ) as element(search:options)?
 {
   sut:options(map:entry("options", $options-name))
 };
 
-declare function gsu:get-search-options-constraints(
+declare function searchUtil:get-search-options-constraints(
   $options-name as xs:string
 ) as object-node()*
 {
-  for $constraint in gsu:get-search-options($options-name)/search:constraint
+  for $constraint in searchUtil:get-search-options($options-name)/search:constraint
     let $json := json:object()
     let $name := $constraint/@name
     let $description := $constraint/search:annotation/description
@@ -110,7 +115,7 @@ declare function gsu:get-search-options-constraints(
     )
 };
 
-declare function gsu:get-geometry-type(
+declare function searchUtil:get-geometry-type(
   $constraint as element(search:constraint)
 ) as xs:string*
 {
@@ -121,7 +126,7 @@ declare function gsu:get-geometry-type(
   else ()
 };
 
-declare function gsu:create-heatmapped-constraint(
+declare function searchUtil:create-heatmapped-constraint(
   $base-geo-constraint as element(search:constraint),
   $options as object-node()
 ) as element(search:constraint)
@@ -155,7 +160,7 @@ declare function gsu:create-heatmapped-constraint(
   }
 };
 
-declare function gsu:create-search-criteria(
+declare function searchUtil:create-search-criteria(
   $stored-options-name as xs:string,
   $delta-search as element(search:search),
   $geo-constraint-names as xs:string*,
@@ -172,7 +177,7 @@ declare function gsu:create-search-criteria(
   let $aggregate-values := $options/aggregateValues eq fn:true()
   let $return-values := $options/returnValues eq fn:true()
   let $values-limit := xs:unsignedLong($options/valuesLimit)
-  let $base-options := gsu:get-search-options($stored-options-name)
+  let $base-options := searchUtil:get-search-options($stored-options-name)
 
   (: qtext to structured queries :)
   let $qtext-queries := search:parse($options/fullQueryText, $base-options, "search:query")
@@ -180,12 +185,12 @@ declare function gsu:create-search-criteria(
   let $base-geo-constraints := $base-options/search:constraint[@name = $geo-constraint-names]
   let $new-geo-constraints := for $base-geo-constraint in $base-geo-constraints
     (: get values via <heatmap> :)
-    let $use-heatmap := $return-values and $aggregate-values and gsu:get-geometry-type($base-geo-constraint) eq "Point"
-    return if ($use-heatmap) then gsu:create-heatmapped-constraint($base-geo-constraint, $options) else $base-geo-constraint
+    let $use-heatmap := $return-values and $aggregate-values and searchUtil:get-geometry-type($base-geo-constraint) eq "Point"
+    return if ($use-heatmap) then searchUtil:create-heatmapped-constraint($base-geo-constraint, $options) else $base-geo-constraint
 
   let $values-options := for $base-geo-constraint in $base-geo-constraints
     (: get values via <values> :)
-    let $use-values := $return-values and (fn:not($aggregate-values) or ($aggregate-values and gsu:get-geometry-type($base-geo-constraint) ne "Point"))
+    let $use-values := $return-values and (fn:not($aggregate-values) or ($aggregate-values and searchUtil:get-geometry-type($base-geo-constraint) ne "Point"))
     let $base-geo-constraint-index := $base-geo-constraint/*[1]
     return element search:values {
       attribute name { fn:concat($VALUES_OPTION_PREFIX, $base-geo-constraint/@name) },
@@ -214,7 +219,7 @@ declare function gsu:create-search-criteria(
   }
 };
 
-declare function gsu:get-search-suggestions(
+declare function searchUtil:get-search-suggestions(
   $search as element(search:search),
   $qtext as xs:string,
   $limit as xs:unsignedInt?
@@ -229,7 +234,7 @@ declare function gsu:get-search-suggestions(
     $search/search:query)
 };
 
-declare function gsu:get-search-results(
+declare function searchUtil:get-search-results(
   $search as element(search:search),
   $geo-constraint-names as xs:string*,
   $options as object-node()
@@ -251,12 +256,12 @@ declare function gsu:get-search-results(
   }
 
   let $response := xdmp:from-json(sut:response-to-json-object($stripped-response, "all"))
-    => gsu:add-response-values($search, $search-response, $geo-constraint-names, $options)
+    => searchUtil:add-response-values($search, $search-response, $geo-constraint-names, $options)
 
   return xdmp:to-json($response)
 };
 
-declare private function gsu:add-response-values(
+declare private function searchUtil:add-response-values(
   $json as json:object,
   $search as element(search:search),
   $search-response as element(search:response),
@@ -271,9 +276,9 @@ declare private function gsu:add-response-values(
     return (
       for $geo-constraint-name in $geo-constraint-names
         let $constraint-values := json:object()
-          => map:with("type", gsu:get-geometry-type($search/search:options/search:constraint[@name eq $geo-constraint-name]))
-          => gsu:add-constraint-clusters($geo-constraint-name, $search-response, $options)
-          => gsu:add-constraint-values($geo-constraint-name, $search, $options)
+          => map:with("type", searchUtil:get-geometry-type($search/search:options/search:constraint[@name eq $geo-constraint-name]))
+          => searchUtil:add-constraint-clusters($geo-constraint-name, $search-response, $options)
+          => searchUtil:add-constraint-values($geo-constraint-name, $search, $options)
         return map:put($values-object, $geo-constraint-name, $constraint-values),
       map:put($json, "values", $values-object),
       $json
@@ -281,7 +286,7 @@ declare private function gsu:add-response-values(
   else $json
 };
 
-declare private function gsu:add-constraint-clusters(
+declare private function searchUtil:add-constraint-clusters(
   $json as json:object,
   $geo-constraint-name as xs:string,
   $search-response as element(search:response),
@@ -316,7 +321,7 @@ declare private function gsu:add-constraint-clusters(
   else $json
 };
 
-declare private function gsu:add-constraint-values(
+declare private function searchUtil:add-constraint-values(
   $json as json:object,
   $geo-constraint-name as xs:string,
   $search as element(search:search),

@@ -1,21 +1,26 @@
 'use strict';
-const gsu = require('/ext/search/geo-search-util.xqy');
-const sm = require('/ext/serviceModel.sjs');
-const err = require('/ext/error.sjs');
-const gdsVersion = require('/ext/version.sjs').version;
+
+/**
+ * This REST extension is only used by marklogic-arcgis-pro-addin.
+ */
+
+const err = require('/marklogic-geo-data-services/error.sjs');
+const gdsVersion = require('/marklogic-geo-data-services/version.sjs').version;
+const searchUtil = require('/marklogic-geo-data-services/search-util.xqy');
+const serviceLib = require('/marklogic-geo-data-services/serviceLib.sjs');
 
 function get(context, params) {
   try {
     if (params.id) {
       return {
         "$version": gdsVersion,
-        ...sm.getServiceModel(params.id)
+        ...serviceLib.getServiceModel(params.id)
       };
     }
     else {
       const filter = params.filter || "all";
       let models = {};
-      sm.getServiceModels(filter).forEach(model => {
+      serviceLib.getServiceModels(filter).forEach(model => {
         let geoConstraints = [];
         let obj = {
           id: model.info.name,
@@ -36,7 +41,7 @@ function get(context, params) {
           })
         };
         if (geoConstraints.length > 0) {
-          const allConstraints = gsu.getSearchOptionsConstraints(model.search.options).toArray().map(o => o.toObject());
+          const allConstraints = searchUtil.getSearchOptionsConstraints(model.search.options).toArray().map(o => o.toObject());
           obj.search = {
             docTransform: model.search.docTransform || "default-geo-data-services-transform",
             constraints: allConstraints.filter(o => !geoConstraints.includes(o.name)) // don't include geo constraints

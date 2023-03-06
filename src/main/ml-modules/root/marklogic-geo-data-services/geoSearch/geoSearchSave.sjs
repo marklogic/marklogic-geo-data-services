@@ -1,16 +1,16 @@
 'use strict';
-const sm = require('/ext/serviceModel.sjs');
-const err = require('/ext/error.sjs');
-const trace = require('/ext/trace.sjs');
-const gs = require('/ext/search/geoSearch.sjs');
+const err = require('/marklogic-geo-data-services/error.sjs');
+const gdsTrace = require('/marklogic-geo-data-services/trace.sjs');
+const geoSearch = require('/marklogic-geo-data-services/geoSearch/geoSearch.sjs');
 const searchLib = require('/MarkLogic/appservices/search/search.xqy');
+const serviceLib = require('/marklogic-geo-data-services/serviceLib.sjs');
 
 /*
   PUT payload: saving search into a layer
   {
     "params": {
       "id": "service descriptor name", // required; source descriptor model
-      "layers": { 
+      "layers": {
         "source layer ID": {
           "layerId": 5, // required; layer ID to replace or "new" to append, can be the same as source layer ID
           "name": "layer name", // optional; defaults to name of source layer
@@ -22,37 +22,37 @@ const searchLib = require('/MarkLogic/appservices/search/search.xqy');
   }
 */
 
-function geoSearchSave(input) {
+function saveGeoSearch(input) {
   if (!input.params) { throw err.newInputError("Missing section 'params'."); }
   if (!input.params.id) { throw err.newInputError("No service descriptor ID provided in the property params.id"); }
   if (!input.search) { throw err.newInputError("missing section 'search'."); }
   if (!input.params.layers || (input.params.layers && Object.keys(input.params.layers).length === 0)) { throw err.newInputError("Missing section 'layers'."); }
 
-  let model = sm.getServiceModel(input.params.id);
+  let model = serviceLib.getServiceModel(input.params.id);
   if (!model.search || !model.search.options) { throw err.newInputError(`The service descriptor "${model.info.name}" is not configured for use with geoSearchService: missing search options.`); }
 
   const debugMode = input.params.debug === true;
   let debug = debugMode ? {} : null;
 
-  const _input = gs.resolveInput({
+  const _input = geoSearch.resolveInput({
     params: { id: input.params.id },
     search: input.search
   });
-  const criteria = gs.createSearchCriteria(model, _input, false, false, false, debug); // get search:search
+  const criteria = geoSearch.createSearchCriteria(model, _input, false, false, false, debug); // get search:search
   const ctsQuery = searchLib.parse(_input.search.qtext, criteria.xpath('./search:options'), 'cts:query'); // get cts:query
-  
+
   const targets = [];
   if (input.params.layers) {
     Object.keys(input.params.layers).forEach(lid => {
       const sourceLayerId = parseInt(lid);
-      if (isNaN(sourceLayerId)) { 
+      if (isNaN(sourceLayerId)) {
         throw err.newInputError(`One or more source layer IDs is invalid.`);
       }
-      targets.push({ 
+      targets.push({
         sourceLayerId: sourceLayerId,
         ...input.params.layers[lid]
       });
-    }); 
+    });
   }
 
   const now = fn.currentDateTime();
@@ -79,7 +79,7 @@ function geoSearchSave(input) {
       mutatedLayers.push(target);
     }
     // append
-    else if (target.layerId === "new") { 
+    else if (target.layerId === "new") {
       const nextLayerId = fn.max(Sequence.from(model.layers.map(l => l.id))) + 1;
       let newLayer = Object.assign({}, sourceLayer); // shallow copy should suffice
       newLayer.id = nextLayerId;
@@ -103,13 +103,13 @@ function geoSearchSave(input) {
     throw err.newInternalError(`No layers were modified or added for service descriptor "${model.info.name}".`)
   }
   else {
-    sm.saveServiceModel(input.params.id, model);
+    serviceLib.saveServiceModel(input.params.id, model);
   }
 
   const response = {
     id: input.params.id,
-    layers: mutatedLayers.reduce((result, layer) => { 
-      result[layer.sourceLayerId.toString()] = { 
+    layers: mutatedLayers.reduce((result, layer) => {
+      result[layer.sourceLayerId.toString()] = {
         layerId: layer.layerId,
         name: layer.name
       };
@@ -128,4 +128,4 @@ function geoSearchSave(input) {
   return response;
 }
 
-exports.geoSearchSave = geoSearchSave;
+exports.saveGeoSearch = saveGeoSearch;

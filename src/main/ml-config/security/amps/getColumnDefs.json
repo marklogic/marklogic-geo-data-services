@@ -1,7 +1,7 @@
 {
     "namespace": "",
     "local-name": "getColumnDefs",
-    "document-uri": "/ext/serviceModel.sjs",
+    "document-uri": "/marklogic-geo-data-services/serviceLib.sjs",
     "modules-database": "%%MODULES_DATABASE%%",
     "role": [ "geo-data-services-model-cache-role" ]
   }
