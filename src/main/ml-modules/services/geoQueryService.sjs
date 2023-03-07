@@ -451,11 +451,6 @@ function convertEnvelopePolygon(query) {
   return splitBox(box).toArray();
 }
 
-function splitCtsBox(box) {
-  xdmp.trace("GDS-DEBUG", "Starting splitCtsBox");
-  return splitBox({ south : cts.boxSouth(box), west : cts.boxWest(box), north : cts.boxNorth(box), east : cts.boxEast(box) })
-}
-
 function splitBox(box) {
   xdmp.trace("GDS-DEBUG", "Starting splitBox");
   if (Math.round(Math.abs(box.west - box.east)) >= 179) {
@@ -1083,14 +1078,6 @@ function aggregate(req) {
   return pipeline.result("object", bindParams);
 };
 
-function getAggregateFieldNames(aggregateDefs) {
-  xdmp.trace("GDS-DEBUG", "Starting getAggregateFieldNames");
-  return aggregateDefs.map((def) => {
-    return def._outCol._colName;
-  });
-};
-
-
 function getSelectDef(outFields, columnDefs, returnGeometry, geometryExtractor, exportPlan = false, idField="OBJECTID") {
   xdmp.trace("GDS-DEBUG", "Starting getSelectDef");
   if (exportPlan) {
@@ -1213,16 +1200,6 @@ function getPropDefs(outFields, columnDefs) {
   return props;
 }
 
-function getValueConverter(col) {
-  xdmp.trace("GDS-DEBUG", "Starting getValueConverter");
-  switch (col.scalarType) {
-    case "date":
-      return "";
-    default:
-      return op.col(col.name)
-  }
-}
-
 function getOrderByDef(fields) {
   xdmp.trace("GDS-DEBUG", "Starting getOrderByDef");
   return fields.map((field) => {
@@ -1235,25 +1212,6 @@ function getOrderByDef(fields) {
         return op.asc(field.field);
     }
   });
-}
-
-// not used any more since we don't return aggregates in properties
-function getAggregatePropDefs(groupByFields, stats) {
-  xdmp.trace("GDS-DEBUG", "Starting getAggregatePropDefs");
-  const props = [];
-
-  groupByFields.map((f) => {
-    props.push(
-      op.prop(f, op.col(f))
-    )
-  });
-
-  stats.map((stat) => {
-    props.push(
-      op.prop(stat.outStatisticFieldName, op.jsonNumber(op.col(stat.outStatisticFieldName)))
-    );
-  });
-  return props;
 }
 
 function getAggregateGroupByDef(stats) {
