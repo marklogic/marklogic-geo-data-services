@@ -1,0 +1,13 @@
+title: MarkLogic Geo Data Services
+remote_theme: just-the-docs/just-the-docs
+plugins:
+  - jekyll-remote-theme
+
+heading_anchors: true
+
+# Aux links for the upper right navigation
+aux_links:
+  "marklogic-community/marklogic-geo-data-services":
+    - "https://github.com/marklogic-community/marklogic-geo-data-services"
+
+enable_copy_code_button: true

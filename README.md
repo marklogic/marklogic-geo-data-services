@@ -1,46 +1,39 @@
-# MarkLogic Geo Data Services
-
-MarkLogic Geo Data Services (GDS) enables a rich set of geospatial query capabilities enables against a MarkLogic database. It is the backend behind the [MarkLogic Koop Provider](https://github.com/koopjs/koop-provider-marklogic) and a future release of the [MarkLogic GeoTools Plugin](https://github.com/marklogic-community/marklogic-geotools-plugin).
-
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=social)](https://opensource.org/licenses/Apache-2.0)
 
 ![GitHub release](https://img.shields.io/github/release/marklogic-community/marklogic-geo-data-services.svg?style=social)
 
-![Bintray](https://img.shields.io/bintray/v/marklogic-community/Maven/marklogic-geo-data-services?style=social)
+# MarkLogic Geo Data Services
 
-## Upgrading from previous versions
-
-If you already have an existing project with Geo Data Services and wish to upgrade, all you need to do is update the version of your dependencies in `build.gradle`, as specified in the **Installation** section.
-
-```
-com.marklogic:marklogic-geo-data-services-modules:1.4.0
-```
-
-After updating, run `./gradlew mlRedeploy` to update MarkLogic.  
-
-> Note: `mlDeploy` works too, but `mlRedeploy` ensures the modules database is wiped clean before deployment.
+MarkLogic Geo Data Services (GDS) is a set of modules that can be added to your MarkLogic application to enable a rich
+set of geospatial query capabilities against a MarkLogic database. Generally, you will add GDS to your MarkLogic 
+application because you are either using the 
+[MarkLogic Koop Provider](https://github.com/koopjs/koop-provider-marklogic) or the 
+[MarkLogic GeoTools Plugin](https://github.com/marklogic-community/marklogic-geotools-plugin). This guide focuses on 
+installing and configuring GDS so that it can be accessed via either of those tools. You may also use GDS by itself, 
+though this guide does not yet describe the MarkLogic REST extensions that comprise GDS and how they can be used.
 
 ## Installation
 
-The MarkLogic Geo Data Services capability can be included in a [ml-gradle](https://github.com/marklogic-community/ml-gradle) project using a [mlBundle](https://github.com/marklogic-community/ml-gradle/wiki/Bundles) configuration. To add the services to your project you will need to update your `build.gradle` file, configure a schemas database, add the data services configuration, TDE templates, and add any required indexes. The MarkLogic Geo Data Services modules will be deployed to your modules database when you run the `mlDeploy` gradle task in your project.
+The GDS modules can be added to a MarkLogic application that uses 
+[ml-gradle](https://github.com/marklogic-community/ml-gradle) by declaring an 
+[mlBundle](https://github.com/marklogic-community/ml-gradle/wiki/Bundles) configuration:
 
-Please see the _examples_ directory for sample projects making use of this project with ml-gradle's mlBundle capability.
+    dependencies {
+      mlBundle "com.marklogic:marklogic-geo-data-services:1.4.0"
+    }
 
-### Update your build.gradle file
+When you run the Gradle `mlDeploy` or `mlLoadModules` tasks, ml-gradle will downloaded the GDS artifact and install 
+the modules within it into your application's modules database.
 
-```
-plugins {
-  id "com.marklogic.ml-gradle" version "4.4.0"
-}
+### Upgrading
 
-repositories {
-  mavenCentral()
-}
+If you have already added GDS to your MarkLogic application and wish to upgrade, simply change the version number 
+of the GDS dependency in your build.gradle file. 
 
-dependencies {
-  mlBundle "com.marklogic:marklogic-geo-data-services-modules:1.4.0"
-}
-```
+## Getting Started
+
+TODO This will all be replaced by the new docs.
+
 
 ### Add a schema database to your gradle project
 
@@ -67,19 +60,11 @@ Geo Data Services relies on a [MarkLogic native plugin](https://docs.marklogic.c
 
 ## Configure your Geo Data Services
 
-### Feature Service Descriptors
-
-GDS uses what it calls a _service descriptor_ to describe the feature services. The service descriptors define the name, description, and other metadata about the services as well what layers are available through that service. Each layer defines the type of features available via the layer as well as the data sources (SPARQL and/or TDE views) that will be used to generate the features.
-
-The service descriptors live in the content database and they must be in the `http://marklogic.com/feature-services` collection for the connector to be able to find them.
-
-To add service descriptors, place them in the `src/main/ml-data` directory of your project along with the correct `collections.properties` and `permissions.properties` files. They will be loaded into your database and placed into the required collection when you run the `./gradlew mlDeploy` task for your project.
-
-See `examples/sample-project/src/main/ml-data/example/services` for example service descriptors and the required `collections.properties` and `permissions.properties` files.
-
-Stay tuned for updates to the wiki for more details about all the configuration options that you can use in the service descriptors.
+TODO This is gradually being replaced by the new documentation.
 
 ### Security and Service Descriptors
+
+TODO Need to verify how accurate this is. 
 
 Geo Data Services use several security roles to manage feature service descriptors:
 
@@ -92,11 +77,15 @@ These roles only control what users can do with service descriptors and don't co
 
 ### TDE Templates
 
+TODO This will be replaced by DEVEXP-244.
+
 GDS can generate feature data from SPARQL queries, TDE views or a combination of both. To use TDE views, follow the [MarkLogic TDE documentation](https://docs.marklogic.com/guide/app-dev/TDE) and the GKG example provided `examples/sample-project/src/main/ml-schemas/tde/example-gkg.tdex` to create TDE templates to build views for the data you want to expose as features.
 
 TDE templates should be placed in the `src/main/ml-schemas/tde` directory of your project. They will be automically installed when you run the `./gradlew mlDeploy` task for your project.
 
 ### _OBJECTIDs_
+
+TODO This will be addressed in the TDE docs.
 
 The features returned by the Koop provider service with an Esri client should contain a field named `OBJECTID` or a field that can be identified as the OBJECTID in to the Esri Feature Service clients. The OBJECTID must be an *unsigned integer*. In order to support pagination across large result sets, the OBJECTIDs need to be increasing numbers. They don't have to be continguous to but should be fairly evenly distributed between the minimum and maximum values.
 
