@@ -6,8 +6,6 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.path.json.config.JsonPathConfig;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 
 import static io.restassured.RestAssured.basic;
@@ -39,10 +37,6 @@ public abstract class AbstractTest {
         return postForResponse(request.toString()).then().statusCode(200);
     }
 
-    protected final ValidatableResponse postQueryForError(JsonPath postBody) {
-        return postForResponse(postBody).then().statusCode(500);
-    }
-
     protected final ValidatableResponse postQueryForError(GeoQueryRequest postQuery, Integer expectedErrorCode) {
         return postForResponse(postQuery.toString()).then().statusCode(expectedErrorCode);
     }
@@ -60,17 +54,12 @@ public abstract class AbstractTest {
             .post();
     }
 
-    Log getLogger() {
-        return LogFactory.getLog(AbstractTest.class);
-    }
-
     /**
      * @deprecated Don't use this, use the Query class instead.
      */
     @Deprecated
     public JsonPath getJson(String requestFile) {
         String pathToFile = "/" + getClass().getName() + "/" + requestFile;
-        getLogger().debug("pathToFile: " + pathToFile);
         return new JsonPath(AbstractFeatureServiceTest.class.getResource(pathToFile)).using(new JsonPathConfig(JsonPathConfig.NumberReturnType.BIG_DECIMAL));
     }
 }
