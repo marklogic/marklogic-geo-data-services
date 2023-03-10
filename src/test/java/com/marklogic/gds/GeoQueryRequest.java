@@ -114,7 +114,7 @@ public class GeoQueryRequest {
     }
 
     public GeoQueryRequest containsEnvelope(double... coordinates) {
-        return withEnvelopeQuery("esrispatialrelcontains", coordinates);
+        return withEnvelopeQuery("esriSpatialRelContains", coordinates);
     }
 
     private GeoQueryRequest withEnvelopeQuery(String spatialRel, double... coordinates) {
@@ -138,15 +138,15 @@ public class GeoQueryRequest {
     }
 
     public GeoQueryRequest containsPolygon(double... coordinates) {
-        return withPolygonQuery("esrispatialrelcontains", coordinates);
+        return withPolygonQuery("esriSpatialRelContains", coordinates);
     }
 
     public GeoQueryRequest overlapsPolygon(double... coordinates) {
-        return withPolygonQuery("esrispatialreloverlaps", coordinates);
+        return withPolygonQuery("esriSpatialRelOverlaps", coordinates);
     }
 
     public GeoQueryRequest touchesPolygon(double... coordinates) {
-        return withPolygonQuery("esrispatialreltouches", coordinates);
+        return withPolygonQuery("esriSpatialRelTouches", coordinates);
     }
 
     public GeoQueryRequest withinPolygon(double... coordinates) {
@@ -160,7 +160,6 @@ public class GeoQueryRequest {
             query.put("spatialRel", spatialRel);
         }
         ObjectNode geometry = query.putObject("extension").putObject("geometry");
-//        geometry.putObject("spatialReference").put("wkid", 4326);
         geometry.put("type", "Polygon");
         ArrayNode coords = geometry.putArray("coordinates").addArray();
         for (int i = 0; i < coordinates.length; i += 2) {
@@ -171,7 +170,7 @@ public class GeoQueryRequest {
     }
 
     public GeoQueryRequest crossesLineString(double... coordinates) {
-        return withLineStringQuery("esrispatialrelcrosses", coordinates);
+        return withLineStringQuery("esriSpatialRelCrosses", coordinates);
     }
 
     public GeoQueryRequest intersectsLineString(double... coordinates) {
@@ -196,7 +195,7 @@ public class GeoQueryRequest {
     }
 
     public GeoQueryRequest containsPoint(double x, double y) {
-        return withPointQuery("esrispatialrelcontains", x, y);
+        return withPointQuery("esriSpatialRelContains", x, y);
     }
 
     public GeoQueryRequest intersectsPoint(double x, double y) {
