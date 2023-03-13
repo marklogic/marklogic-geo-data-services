@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Creating a Service Descriptor
-nav_order: 2
+title: Create a service descriptor
+nav_order: 5
 ---
 
 The geospatial query capabilities provided by GDS depend on service descriptors. A service descriptor is a JSON 
@@ -14,20 +14,11 @@ the intent is not to conform exactly to the ArcGIS definition.
 The documentation below describes how to load and define service descriptors. For a working example, please see the 
 example project in the `./examples/sample-project` directory in this repository.
 
+If you plan on querying data via a MarkLogic TDE template, please read the instructions for 
+[creating a TDE](create-tde.md) first. 
 
-## Loading service descriptors
-
-Each service descriptor must be loaded to the content database in your MarkLogic application. The following approach is 
-recommended to accomplish this:
-
-1. Put each service descriptor JSON file in the `src/main/ml-data` directory in your ml-gradle project; you can 
-   store these in any child directory that you wish.
-2. Add a `collections.properties` file to the directory containing your service descriptor files and add 
-`*.json=http://marklogic.com/feature-services` to the file.
-3. Add a `permissions.properties` file to the directory containing your service descriptor files and add 
-`*.json=rest-reader,read,rest-writer,update` to it, swapping out `rest-reader` and `rest-writer` with 
-   application-specific roles if desired. 
-4. Run `./gradlew mlLoadData` or `./gradlew mlDeploy` to load the service descriptor files in your content database.
+* Table of Contents
+{:toc}
 
 ## Defining a service descriptor
 
@@ -95,3 +86,48 @@ joined together. Each object in the array can have the following fields:
 
 TODO `fields` can also be used when source=view; I'm not sure why though, as it seems GDS can already determine the
 fields from the TDE. And "includes" can be used to select a subset of them if desired. 
+
+## Loading service descriptors
+
+Each service descriptor must be loaded to the content database in your MarkLogic application. The following approach is
+recommended to accomplish this:
+
+1. Put each service descriptor JSON file in the `src/main/ml-data` directory in your ml-gradle project; you can
+   store these in any child directory that you wish.
+2. Add a `collections.properties` file to the directory containing your service descriptor files and add
+   `*.json=http://marklogic.com/feature-services` to the file.
+3. Add a `permissions.properties` file to the directory containing your service descriptor files and add
+   `*.json=rest-reader,read,rest-writer,update` to it, swapping out `rest-reader` and `rest-writer` with
+   application-specific roles if desired.
+4. Run `./gradlew mlLoadData` or `./gradlew mlDeploy` to load the service descriptor files in your content database.
+
+## Verifying a service descriptor
+
+After loading your service descriptors into your MarkLogic application's content database, you can verify that they
+are accessible via simple requests in your browser and via curl. Note that the URLs below are not yet considered part
+of GDS's public interface as directly interacting with GDS is not yet documented nor supported; the expectation is that
+clients will use the [MarkLogic Koop provider](https://github.com/koopjs/koop-provider-marklogic) or similar tool 
+that depends on GDS. 
+
+The examples below assume that you have installed the example project under `./examples/sample-project` and thus use
+port 8095. Change this as needed for your own installation of GDS.
+
+Additionally, it is recommended to authenticate as a [user with the GDS roles](create-user.md) as opposed to an admin 
+or admin-like user. This user should also have at least read access to the data that can be queried via your service
+descriptors' layers. 
+
+To see a list of service descriptors:
+
+<http://localhost:8095/v1/resources/modelService>
+
+To see a particular service descriptor (change the name of the `rs:id` parameter to be that of the service 
+descriptor you wish to see):
+
+<http://localhost:8095/v1/resources/modelService?rs:id=GDeltExample>
+
+To query for data, you will need to submit an HTTP POST request, which can be done via a tool like curl. You can use
+the statement below, changing `user:password` for the user and password of a user with the [GDS roles](create-user.md):
+
+```bash
+curl --anyauth -u user:password -X POST 'localhost:8095/v1/resources/geoQueryService' --header 'Content-Type:application/json' --data-raw '{"params":{"id":"GDeltExample","layer":0,"method":"query"},"query":{"returnCountOnly":true}}'
+```
