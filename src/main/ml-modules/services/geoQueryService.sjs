@@ -4,9 +4,10 @@
 
 'use strict';
 
-const geoExtractor = require('/marklogic-geo-data-services/geo/extractor.sjs');
+const geoExtractor = require('/marklogic-geo-data-services/extractor.sjs');
 const geojson = require('/MarkLogic/geospatial/geojson.xqy');
-const geoStats = require('/marklogic-geo-data-services/geo/geostats.js');
+const geoServer = require('/marklogic-geo-data-services/geoServer.sjs');
+const geoStats = require('/marklogic-geo-data-services/geostats.js');
 const op = require('/MarkLogic/optic');
 const queryDeserializer = require('/marklogic-geo-data-services/query/ctsQueryDeserialize.sjs').qd;
 const searchUtil = require('/marklogic-geo-data-services/search-util.xqy');
@@ -63,7 +64,7 @@ function getData(req) {
   xdmp.trace("GDS-REQUEST", JSON.stringify(req));
 
   if (req.geoserver) {
-    return getGeoServerData(req);
+    return geoServer.getGeoServerData(req);
   }
   else if (req.params.method == "query") {
     xdmp.trace("GDS-DEBUG", "Method 'query'");
@@ -85,34 +86,6 @@ function getData(req) {
 
   // return an unsupported error
   returnErrToClient(501, 'Request parameters not supported', xdmp.quote(req));
-}
-
-function getGeoServerData(req) {
-  if (req.geoserver.method == "getLayerNames") {
-    return getGeoServerLayerNames();
-  }
-  else if (req.geoserver.method == "getLayerSchema") {
-    return serviceLib.getGeoServerLayerSchema(req.geoserver.layerName);
-  }
-}
-
-function getGeoServerLayerNames() {
-  const collection = "http://marklogic.com/feature-services";
-  let layerNames = [];
-  for (let descriptorDoc of cts.search(
-    cts.andQuery([
-      cts.collectionQuery(collection),
-      cts.jsonPropertyScopeQuery("geoServerLayerName", cts.trueQuery())
-    ])
-    )) {
-    let descriptor = descriptorDoc.toObject();
-
-    for (let layer of descriptor.layers) {
-      if (layer.geoServerMetadata && layer.geoServerMetadata.geoServerLayerName)
-        layerNames.push(layer.geoServerMetadata.geoServerLayerName);
-    }
-  }
-  return layerNames;
 }
 
 function getDateTime(durationOrTimestamp) {

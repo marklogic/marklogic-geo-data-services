@@ -1030,24 +1030,16 @@ function _buildOneLayerDescriptor(serviceName, layerModel) {
  * This function does its own searches/etc and sets the serviceModelIndex entry for the
  * service model returned.  This function only gets called as part of a geoserver request
  * for the layer schema, which is always done as a separate transaction.
+ *
+ * Would be nice to move this into a geoserver-specific module, but it's unfortunately too tightly tied
+ * into this module.
+ *
  * @param layerName The GeoServer-specific layer name
  */
-function getGeoServerLayerSchema(layerName) {
-  let serviceModel = fn.head(cts.search(
-    cts.andQuery([
-      cts.collectionQuery(SERVICE_DESCRIPTOR_COLLECTION),
-      cts.jsonPropertyValueQuery("geoServerLayerName", layerName)
-    ])
-  ));
-
-  if (!serviceModel) {
-    xdmp.trace("GDS-DEBUG", "Unable to find service descriptor with geoServerLayerName of " + layerName);
-    throw "Layer info for " + layerName + " not found";
-  }
-
+function getGeoServerLayerSchema(layerName, serviceDescriptor) {
   //this function will build a map of geoserver layer names to layer id's
-  setServiceModelIndexEntry(serviceModel);
-  let serviceId = serviceModel.root.info.name;
+  setServiceModelIndexEntry(serviceDescriptor);
+  let serviceId = serviceDescriptor.root.info.name;
   let layerId = serviceModelIndex[serviceId].geoServerLayerMap[layerName];
 
   if (layerId == null) {
@@ -1060,7 +1052,7 @@ function getGeoServerLayerSchema(layerName) {
     throw "Layer info for " + layerName + " not found";
   }
 
-  layer.serviceName = serviceModel.root.info.name;
+  layer.serviceName = serviceDescriptor.root.info.name;
   return layer;
 }
 
@@ -1072,3 +1064,4 @@ exports.generateLayerDescriptor = module.amp(generateLayerDescriptor);
 exports.generateServiceDescriptor = module.amp(generateServiceDescriptor);
 exports.getColumnDefs = module.amp(getColumnDefs);
 exports.getGeoServerLayerSchema = module.amp(getGeoServerLayerSchema);
+exports.SERVICE_DESCRIPTOR_COLLECTION = SERVICE_DESCRIPTOR_COLLECTION;
