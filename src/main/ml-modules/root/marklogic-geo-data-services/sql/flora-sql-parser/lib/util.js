@@ -1,6 +1,6 @@
 'use strict';
 
-const { ImplementationError } = require('/ext/sql/flora-errors/index.js');
+const { ImplementationError } = require('/marklogic-geo-data-services/sql/flora-errors/index.js');
 
 const astToSQL = require('./sql');
 

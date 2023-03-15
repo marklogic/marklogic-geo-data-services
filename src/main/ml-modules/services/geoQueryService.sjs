@@ -11,7 +11,7 @@ const op = require('/MarkLogic/optic');
 const queryDeserializer = require('/marklogic-geo-data-services/query/ctsQueryDeserialize.sjs').qd;
 const searchUtil = require('/marklogic-geo-data-services/search-util.xqy');
 const serviceLib = require('/marklogic-geo-data-services/serviceLib.sjs');
-const sql2optic = require('/ext/sql/sql2optic.sjs');
+const sql2optic = require('/marklogic-geo-data-services/sql/sql2optic.sjs');
 
 const MAX_RECORD_COUNT = 5000;
 
