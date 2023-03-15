@@ -12,8 +12,9 @@ in this section.
 ## Creating a TDE template
 
 The [MarkLogic docs for TDE templates](https://docs.marklogic.com/guide/app-dev/TDE) will help you with creating a 
-template. It is often easier though to start with an existing template and customize it. To do so, you can use the 
-`./examples/sample-project/src/main/ml-schemas/tde/example-gkg.tdex` file as a starting point. 
+template. It is often easier though to start with an existing template and customize it. To do so, you can use  
+[this example TDE file](https://github.com/marklogic-community/marklogic-geo-data-services/blob/master/examples/sample-project/src/main/ml-schemas/tde/example-gkg.tdex) 
+as a starting point. 
 
 A requirement for your TDE is that it must either declare a column named "OBJECTID" or it must declare a column with 
 a name that corresponds to the `idField` in the associated layer definition. In either case, the column must contain

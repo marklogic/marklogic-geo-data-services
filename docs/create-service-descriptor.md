@@ -55,7 +55,7 @@ The layer can contain any number of additional fields, which will be included wh
 descriptor. For example, while GDS does not make use of an `extent` field, a user will typically want to include that
 when using the MarkLogic Koop provider so that ArcGIS clients can leverage this field.
 
-#### Data sources
+### Data sources
 
 When defining a layer, a user has two choices for defining the source of data to be queried in MarkLogic:
 
@@ -83,9 +83,6 @@ joined together. Each object in the array can have the following fields:
    fragment ID when performing a join. Specifically, this allows for passing in a value for the `systemCols` 
    argument when GDS uses [op.fromView](https://docs.marklogic.com/op.fromView) to build an Optic pipeline based on 
    a view. 
-
-TODO `fields` can also be used when source=view; I'm not sure why though, as it seems GDS can already determine the
-fields from the TDE. And "includes" can be used to select a subset of them if desired. 
 
 ## Loading service descriptors
 
