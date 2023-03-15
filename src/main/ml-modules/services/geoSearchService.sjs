@@ -1,8 +1,13 @@
 'use strict';
-const err = require('/ext/error.sjs');
-const gs = require('/ext/search/geoSearch.sjs');
-const gss = require('/ext/search/geoSearchSave.sjs');
-const gdsVersion = require('/ext/version.sjs').version;
+
+/**
+ * This REST extension is only used by marklogic-arcgis-pro-addin.
+ */
+
+const err = require('/marklogic-geo-data-services/error.sjs');
+const geoSearch = require('/marklogic-geo-data-services/geoSearch/geoSearch.sjs');
+const geoSearchSave = require('/marklogic-geo-data-services/geoSearch/geoSearchSave.sjs');
+const gdsVersion = require('/marklogic-geo-data-services/version.sjs').version;
 
 function post(context, params, input) {
   try {
@@ -10,7 +15,7 @@ function post(context, params, input) {
     if (!_input) { throw err.newInputError('No JSON input found in POST body.'); }
     return {
       "$version": gdsVersion,
-      ...gs.geoSearch(_input)
+      ...geoSearch.geoSearch(_input)
     };
   }
   catch (error) {
@@ -24,7 +29,7 @@ function put(context, params, input) {
     if (!_input) { throw err.newInputError('No JSON input found in POST body.'); }
     return {
       "$version": gdsVersion,
-      ...gss.geoSearchSave(_input)
+      ...geoSearchSave.saveGeoSearch(_input)
     };
   }
   catch (error) {

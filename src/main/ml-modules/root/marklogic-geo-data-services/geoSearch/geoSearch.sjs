@@ -1,8 +1,9 @@
 'use strict';
-const sm = require('/ext/serviceModel.sjs');
-const err = require('/ext/error.sjs');
-const trace = require('/ext/trace.sjs');
-const gsu = require('/ext/search/geo-search-util.xqy');
+
+const err = require('/marklogic-geo-data-services/error.sjs');
+const gdsTrace = require('/marklogic-geo-data-services/trace.sjs');
+const searchUtil = require('/marklogic-geo-data-services/search-util.xqy');
+const serviceLib = require('/marklogic-geo-data-services/serviceLib.sjs');
 
 /*
   POST payload: running search
@@ -25,8 +26,8 @@ const gsu = require('/ext/search/geo-search-util.xqy');
       }
       "viewport": {
         "box": { // Optional; defaults to cover entire coordinate system (90, -90, -180, 180)
-          "n": 90.0, 
-          "s": -90.0, 
+          "n": 90.0,
+          "s": -90.0,
           "w": -180.0,
           "e": 180.0
         },
@@ -34,7 +35,7 @@ const gsu = require('/ext/search/geo-search-util.xqy');
         "maxLonDivs": 100, // Optional; defaults to 100
       },
       "queries": [] // Optional; additional structured queries, defaults to empty []
-    }    
+    }
   }
 */
 
@@ -52,7 +53,7 @@ function resolveInput(input)
   _input.params = input.params || {};
   _input.search = input.search || { viewport: {} };
   _input.search.viewport = _input.search.viewport || {};
-  
+
   // extract values from input and set default values if a property is missing
   let {
     params: {
@@ -83,23 +84,23 @@ function resolveInput(input)
   // set limits
   maxLatDivs = fn.min([DEFAULT_MAX_DIVS, fn.max([DEFAULT_MIN_DIVS, maxLatDivs])]);
   maxLonDivs = fn.min([DEFAULT_MAX_DIVS, fn.max([DEFAULT_MIN_DIVS, maxLonDivs])]);
-  
+
   // create new input object
   let newInput = {
     params: { id, request, aggregateValues, valuesLimit, suggestLimit, debug, ...paramsRest },
     search: { qtext, start, pageLength, facets, viewport: { box, maxLatDivs, maxLonDivs }, queries, ...searchRest },
     ...inputRest
   };
-  
+
   // fill these out if null
   newInput.params.request = newInput.params.request || [];
   newInput.search.qtext = newInput.search.qtext || "";
   newInput.search.facets = newInput.search.facets || {};
   newInput.search.queries = newInput.search.queries || [];
-  
+
   // ensure these are arrays (if single values were provided)
   if (!Array.isArray(newInput.params.request)) { newInput.params.request = [ newInput.params.request ]; }
-  
+
   return newInput;
 }
 
@@ -118,13 +119,13 @@ function createQueryText(input) {
   if (input.search.facets) {
     for (let [key, values] of Object.entries(input.search.facets)) {
       const name = key.trim();
-      if (Array.isArray(values) && name) { 
+      if (Array.isArray(values) && name) {
         values.forEach(v => {
           const value = v.trim();
           if (value) {
             terms.add(`${name}:\"${value}\"`);
           }
-        }); 
+        });
       }
     }
   }
@@ -134,11 +135,11 @@ function createQueryText(input) {
 function createSearchCriteria(model, input, returnResults, returnFacets, returnValues, debug) {
   // collect all structured queries to be injected into search:search
   const structuredQueries = [];
-  
+
   // constrain search against current viewport
   const geoConstraintNames = getGeoConstraintNames(model);
   const viewport = input.search.viewport;
-  geoConstraintNames.forEach(constraintName => 
+  geoConstraintNames.forEach(constraintName =>
     structuredQueries.push({
       "geospatial-constraint-query": {
         "constraint-name": constraintName,
@@ -149,7 +150,7 @@ function createSearchCriteria(model, input, returnResults, returnFacets, returnV
 
   // add any additional queries provided in input (request)
   structuredQueries.push(...input.search.queries);
-  
+
   // create delta search:search
   const aggregateValues = input.params.aggregateValues;
   const deltaSearchObj = {
@@ -165,11 +166,11 @@ function createSearchCriteria(model, input, returnResults, returnFacets, returnV
       }
     }
   };
-  const deltaSearch = gsu.searchFromJson(deltaSearchObj);
+  const deltaSearch = searchUtil.searchFromJson(deltaSearchObj);
 
-  const criteria = fn.head(gsu.createSearchCriteria(
+  const criteria = fn.head(searchUtil.createSearchCriteria(
     model.search.options,
-    deltaSearch, 
+    deltaSearch,
     geoConstraintNames,
     {
       fullQueryText: createQueryText(input),
@@ -181,14 +182,14 @@ function createSearchCriteria(model, input, returnResults, returnFacets, returnV
       defaultMaxDivs: DEFAULT_MAX_DIVS
     }));
 
-  if (debug) { debug.criteria = gsu.searchToJson(criteria); } // expose search:search
+  if (debug) { debug.criteria = searchUtil.searchToJson(criteria); } // expose search:search
   return criteria;
 }
 
 function getSearchResults(model, input, criteria, returnResults, returnFacets, returnValues, debug) {
   // get results
   const geoConstraintNames = getGeoConstraintNames(model);
-  const response = fn.head(gsu.getSearchResults(criteria, geoConstraintNames, {
+  const response = fn.head(searchUtil.getSearchResults(criteria, geoConstraintNames, {
     start : input.search.start,
     pageLength: input.search.pageLength,
     aggregateValues: input.params.aggregateValues,
@@ -196,21 +197,21 @@ function getSearchResults(model, input, criteria, returnResults, returnFacets, r
     returnFacets: returnFacets,
     returnValues: returnValues
   })).toObject();
-  
+
   return response;
 }
 
 function getSearchSuggestions(input, criteria) {
-  return gsu.getSearchSuggestions(criteria, input.search.qtext, input.params.suggestLimit).toArray();
+  return searchUtil.getSearchSuggestions(criteria, input.search.qtext, input.params.suggestLimit).toArray();
 }
 
 function geoSearch(input) {
   const _input = resolveInput(input);
   if (!_input.params.id) { throw err.newInputError("No service descriptor ID provided in the property params.id"); }
 
-  const model = sm.getServiceModel(_input.params.id);
+  const model = serviceLib.getServiceModel(_input.params.id);
   if (!(model.search && model.search.options)) { throw err.newInputError(`The service descriptor \"${model.info.name}" is not configured for use with geoSearchService: missing search options.`); }
-  if (getGeoConstraintNames(model).length <= 0) { trace.warn(`The service descriptor \"${model.info.name}\" has no layers with a geoConstraint.`, "geoSearch"); }
+  if (getGeoConstraintNames(model).length <= 0) { gdsTrace.warn(`The service descriptor \"${model.info.name}\" has no layers with a geoConstraint.`, "geoSearch"); }
 
   // check what to return
   const returnResults = _input.params.request.some((opt) => opt === "results");
@@ -219,13 +220,13 @@ function geoSearch(input) {
   const returnSuggest = _input.params.request.some((opt) => opt === "suggest");
   const returnSearch = returnResults || returnFacets || returnValues;
   const debugMode = _input.params.debug === true;
-  
+
   let debug = debugMode ? {} : null;
 
   // get search:search
   const criteria = createSearchCriteria(model, _input, returnResults, returnFacets, returnValues, debug);
-  
-  // response follows the structure returned by search:search 
+
+  // response follows the structure returned by search:search
   let response = returnSearch ? getSearchResults(model, _input, criteria, returnResults, returnFacets, returnValues, debug) : {};
 
   // add search suggestions if requested

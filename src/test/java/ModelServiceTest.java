@@ -6,7 +6,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 
-public class ModelServiceTests extends AbstractTest {
+public class ModelServiceTest extends AbstractTest {
     public void setup() {
         super.setup();
         RestAssured.basePath = "/LATEST/resources/modelService";

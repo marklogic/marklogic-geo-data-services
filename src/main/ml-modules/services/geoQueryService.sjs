@@ -4,14 +4,14 @@
 
 'use strict';
 
-const op = require('/MarkLogic/optic');
+const geoExtractor = require('/marklogic-geo-data-services/geo/extractor.sjs');
 const geojson = require('/MarkLogic/geospatial/geojson.xqy');
-const sm = require('/ext/serviceModel.sjs');
+const geoStats = require('/marklogic-geo-data-services/geo/geostats.js');
+const op = require('/MarkLogic/optic');
+const queryDeserializer = require('/marklogic-geo-data-services/query/ctsQueryDeserialize.sjs').qd;
+const searchUtil = require('/marklogic-geo-data-services/search-util.xqy');
+const serviceLib = require('/marklogic-geo-data-services/serviceLib.sjs');
 const sql2optic = require('/ext/sql/sql2optic.sjs');
-const geostats = require('/ext/geo/geostats.js');
-const geoextractor = require('/ext/geo/extractor.sjs');
-const qd = require('/ext/query/ctsQueryDeserialize.sjs').qd;
-const gsu = require('/ext/search/geo-search-util.xqy');
 
 const MAX_RECORD_COUNT = 5000;
 
@@ -30,7 +30,7 @@ function post(context, params, input) {
     const geoJson =  getData(fn.head(xdmp.fromJSON(input)));
     xdmp.trace("GDS-DEBUG", JSON.stringify(geoJson));
     return {
-      "$version": require('/ext/version.sjs').version,
+      "$version": require('/marklogic-geo-data-services/version.sjs').version,
       "$timestamp": new Date().toISOString(),
       ...geoJson
     };
@@ -77,9 +77,9 @@ function getData(req) {
   } else {
     xdmp.trace("GDS-DEBUG", "Method not found, just get the descriptors");
     if (req.params.layer >= 0) {
-      return sm.generateLayerDescriptor(req.params.id, req.params.layer);
+      return serviceLib.generateLayerDescriptor(req.params.id, req.params.layer);
     } else {
-      return sm.generateServiceDescriptor(req.params.id);
+      return serviceLib.generateServiceDescriptor(req.params.id);
     }
   }
 
@@ -92,7 +92,7 @@ function getGeoServerData(req) {
     return getGeoServerLayerNames();
   }
   else if (req.geoserver.method == "getLayerSchema") {
-    return sm.getGeoServerLayerSchema(req.geoserver.layerName);
+    return serviceLib.getGeoServerLayerSchema(req.geoserver.layerName);
   }
 }
 
@@ -192,8 +192,8 @@ function query(req, exportPlan=false) {
     // we should only get this once in the process but do this for now to test
     const serviceId = req.params.id;
     //const layerModel = sm.generateLayerDescriptor(serviceId, req.params.layer);
-    const layerModel = sm.getLayerModel(serviceId, req.params.layer);
-    const layerFields = sm.getColumnDefs(serviceId, req.params.layer);
+    const layerModel = serviceLib.getLayerModel(serviceId, req.params.layer);
+    const layerFields = serviceLib.getColumnDefs(serviceId, req.params.layer);
 
     // set the field metadata in the response
     // but only set it for fields we are returning
@@ -267,7 +267,7 @@ function queryClassificationValues(req) {
   xdmp.trace("GDS-DEBUG", "queryClassificationValues calculating breaks for " + result.statistics.length + " values");
 
   const classStatistics = {
-    geometryType : sm.getLayerModel(req.params.id, req.params.layer).geometryType
+    geometryType : serviceLib.getLayerModel(req.params.id, req.params.layer).geometryType
   }
 
   //http://pro.arcgis.com/en/pro-app/help/mapping/symbols-and-styles/data-classification-methods.htm
@@ -282,19 +282,19 @@ function queryClassificationValues(req) {
 
     switch (def.classificationMethod) {
       case "esriClassifyNaturalBreaks":
-        classValues = (new geostats(values)).getClassJenks(def.breakCount);
+        classValues = (new geoStats(values)).getClassJenks(def.breakCount);
         break;
       case "esriClassifyEqualInterval":
-        classValues = (new geostats(values)).getClassEqInterval(def.breakCount);
+        classValues = (new geoStats(values)).getClassEqInterval(def.breakCount);
         break;
       case "esriClassifyQuantile":
-        classValues = (new geostats(values)).getClassQuantile(def.breakCount);
+        classValues = (new geoStats(values)).getClassQuantile(def.breakCount);
         break;
       case "esriClassifyStandardDeviation":
-        classValues = (new geostats(values)).getClassStdDeviation(def.standardDeviationInterval);
+        classValues = (new geoStats(values)).getClassStdDeviation(def.standardDeviationInterval);
         break;
       case "esriClassifyGeometricalInterval":
-        classValues = (new geostats(values)).getClassGeometricProgression(def.breakCount);
+        classValues = (new geoStats(values)).getClassGeometricProgression(def.breakCount);
         break;
       default:
         throw "Unsupported classificationMethod: " + def.classificationMethod;
@@ -331,7 +331,7 @@ function parseWhere(query) {
   let whereQuery = null;
   if (where && typeof where !== 'string' && where.search) {
     // where.search contains Combined Query
-    whereQuery = gsu.parseCombined(where, query.optionsName);
+    whereQuery = searchUtil.parseCombined(where, query.optionsName);
 
   } else
   if (!where || where === "1=1" || where === "1 = 1" || where === "") {
@@ -365,9 +365,9 @@ function parseGeometry(query, layerModel) {
       regions = geojson.parseGeojson(adjustEsriPolygon(query.extension.geometry));
     }
 
-    const pointQuery = geoextractor.getPointQuery(regions, layerModel);
+    const pointQuery = geoExtractor.getPointQuery(regions, layerModel);
     const operation = parseRegionOperation(query);
-    const regionQuery = geoextractor.getRegionQuery(regions, operation, layerModel);
+    const regionQuery = geoExtractor.getRegionQuery(regions, operation, layerModel);
 
     let queries = [];
     if (pointQuery) { queries.push(pointQuery); }
@@ -646,7 +646,7 @@ function buildBoundingQuery(requestQuery, layerModel) {
   const boundingQueries = [ parseGeometry(requestQuery, layerModel) ];
 
   if (layerModel.boundingQuery) {
-    boundingQueries.push(qd.query(layerModel.boundingQuery));
+    boundingQueries.push(queryDeserializer.query(layerModel.boundingQuery));
   }
   if (layerModel.temporalBounds) {
     boundingQueries.push(getTemporalQuery(layerModel.temporalBounds));
@@ -656,7 +656,7 @@ function buildBoundingQuery(requestQuery, layerModel) {
   // which implies usage of an "or" query. See https://github.com/marklogic-community/marklogic-geo-data-services/issues/76
   // for the original requirements.
   const boundingQuery = layerModel.alwaysIncludeQuery ?
-    cts.orQuery([qd.query(layerModel.alwaysIncludeQuery), cts.andQuery(boundingQueries)]) :
+    cts.orQuery([queryDeserializer.query(layerModel.alwaysIncludeQuery), cts.andQuery(boundingQueries)]) :
     cts.andQuery(boundingQueries);
 
   xdmp.trace("GDS-DEBUG", "boundingQuery: " + xdmp.toJsonString(boundingQuery));
@@ -680,7 +680,7 @@ function getObjects(req, exportPlan=false) {
 
   xdmp.trace("GDS-DEBUG", "Starting getObjects");
   xdmp.trace("GDS-DEBUG", "getLayerModel(" + req.params.id + ", " + req.params.layer + ")" );
-  const layerModel = sm.getLayerModel(req.params.id, req.params.layer);
+  const layerModel = serviceLib.getLayerModel(req.params.id, req.params.layer);
 
   const requestQuery = req.query;
   const orderByFields = parseOrderByFields(requestQuery);
@@ -749,7 +749,7 @@ function getObjects(req, exportPlan=false) {
     xdmp.trace("GDS-DEBUG", "layerModel.dataSources is undefined");
     const schema = layerModel.schema;
     const view = layerModel.view;
-    columnDefs = sm.getColumnDefs(req.params.id, req.params.layer);
+    columnDefs = serviceLib.getColumnDefs(req.params.id, req.params.layer);
 
     xdmp.trace("GDS-DEBUG", "getObjects(): layerModel.dataSources === undefined, using " + defaultDocId + " as fragment id column");
     let viewPlan = op.fromView(schema, view, "", defaultDocId);
@@ -769,7 +769,7 @@ function getObjects(req, exportPlan=false) {
     if (primaryDataSource.source === "view") {
       const schema = primaryDataSource.schema;
       const view = primaryDataSource.view;
-      columnDefs = sm.getColumnDefs(req.params.id, req.params.layer);
+      columnDefs = serviceLib.getColumnDefs(req.params.id, req.params.layer);
 
       // Dynamically choosing prefix depending on existance of fragment ID column.
       const prefix = primaryDataSource.fragmentIdColumn ? null : "";
@@ -788,7 +788,7 @@ function getObjects(req, exportPlan=false) {
       pipeline = initializePipeline(viewPlan, boundingQuery, layerModel)
     }
     else if (primaryDataSource.source === "sparql") {
-      columnDefs = sm.getColumnDefs(req.params.id, req.params.layer);
+      columnDefs = serviceLib.getColumnDefs(req.params.id, req.params.layer);
       let sparqlPlan = getPlanForDataSource(primaryDataSource);
       pipeline = initializePipeline(sparqlPlan, boundingQuery, layerModel);
     }
@@ -824,7 +824,7 @@ function getObjects(req, exportPlan=false) {
     //otherwise we must have column extraction
   }
 
-  const extractor = geoextractor.getExtractor(layerModel);
+  const extractor = geoExtractor.getExtractor(layerModel);
   xdmp.trace("GDS-DEBUG", "extractor:");
   xdmp.trace("GDS-DEBUG", extractor);
 
@@ -966,7 +966,7 @@ function getPlanForDataSource(dataSource) {
   if (dataSource.source === "sparql") {
     let plan =  op.fromSPARQL(dataSource.query);
     if (dataSource.boundingQuery) {
-      plan = plan.where(qd.query(dataSource.boundingQuery));
+      plan = plan.where(queryDeserializer.query(dataSource.boundingQuery));
     }
     return plan;
   } else if (dataSource.source === "view") {
@@ -1009,7 +1009,7 @@ function aggregate(req) {
   // groupByFieldsForStatistics, orderByFields, time, and where.
 
   // this will be the koop provider "id"
-  const layerModel = sm.getLayerModel(req.params.id, req.params.layer);
+  const layerModel = serviceLib.getLayerModel(req.params.id, req.params.layer);
 
   const requestQuery = req.query;
   const stats = parseOutStatistics(requestQuery)
