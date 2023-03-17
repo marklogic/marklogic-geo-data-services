@@ -13,7 +13,7 @@ in this section.
 
 The [MarkLogic docs for TDE templates](https://docs.marklogic.com/guide/app-dev/TDE) will help you with creating a 
 template. It is often easier though to start with an existing template and customize it. To do so, you can use  
-[this example TDE file](https://github.com/marklogic-community/marklogic-geo-data-services/blob/master/examples/sample-project/src/main/ml-schemas/tde/example-gkg.tdex) 
+[this example TDE file](https://github.com/marklogic-community/marklogic-geo-data-services/blob/master/examples/sample-project/src/main/ml-schemas/tde/example-gkg.xml) 
 as a starting point. 
 
 A requirement for your TDE is that it must either declare a column named "OBJECTID" or it must declare a column with 
@@ -27,6 +27,15 @@ transformation tool like [CoRB](https://developer.marklogic.com/code/corb/) to a
 document (this example would be for JSON documents):
 
     objectId: xdmp.hash32(sem.uuidString())
+
+Once you have an identifier column established, you are free to declare any other columns you wish based on the 
+properties you wish to expose in each feature. You will likely want to declare at least one column that contains values
+that act as human-friendly labels for the features. That column can be used as the `displayField` for a layer when you 
+[create a service descriptor](./create-service-descriptor.md).
+
+### Invalid column names
+
+The column name `type` is not supported when performing SQL queries on that column. 
 
 ## Loading TDE templates
 

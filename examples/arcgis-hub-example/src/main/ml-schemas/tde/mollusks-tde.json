@@ -1,0 +1,41 @@
+{
+  "template": {
+    "context": "/",
+    "collections": [
+      "mollusks"
+    ],
+    "rows": [
+      {
+        "schemaName": "arcgis_hub",
+        "viewName": "mollusks",
+        "columns": [
+          {
+            "name": "OBJECTID",
+            "scalarType": "int",
+            "val": "id"
+          },
+          {
+            "name": "featureType",
+            "scalarType": "string",
+            "val": "type"
+          },
+          {
+            "name": "citation",
+            "scalarType": "string",
+            "val": "bibliographicCitation"
+          },
+          {
+            "name": "latitude",
+            "scalarType": "float",
+            "val": "decimalLatitude"
+          },
+          {
+            "name": "longitude",
+            "scalarType": "float",
+            "val": "decimalLongitude"
+          }
+        ]
+      }
+    ]
+  }
+}

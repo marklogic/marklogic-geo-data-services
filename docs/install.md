@@ -14,8 +14,10 @@ The GDS modules can be added to a MarkLogic application that uses
       mlBundle "com.marklogic:marklogic-geo-data-services:1.4.0"
     }
 
-When you run the Gradle `mlDeploy` or `mlLoadModules` tasks, ml-gradle will download the GDS artifact and install
-the modules within it into your application's modules database.
+When you run the Gradle `mlDeploy`, ml-gradle will download the GDS artifact and install the modules within it into 
+your application's modules database. In addition, the GDS bundle includes two required geospatial indexes for your 
+content database along with several security resources, including amps, a protected collection, and roles. These 
+resources will also be installed when running `mlDeploy`.
 
 > Geo Data Services relies on a [MarkLogic native plugin](https://docs.marklogic.com/guide/app-dev/native-plugins) to
 > perform standard deviation and variance calculations. The plugin is built using the build system's gcc. The MarkLogic 
@@ -23,6 +25,13 @@ the modules within it into your application's modules database.
 > installation problems and do not need standard deviation and variance calculations, you can disable installation of 
 > the plugin by adding `mlPluginInstallationEnabled=false` to your `gradle.properties` file.
 
+### Loading data
+
+After installing GDS, you may have a need for loading data if you have not already done so in your application. 
+Geospatial datasets can often be obtained as files. If you need to load data from files, consider using 
+[MarkLogic Content Pump (MLCP)](https://docs.marklogic.com/guide/mlcp/import) for this. You may also find it 
+convenient to 
+[run MLCP via Gradle](https://github.com/marklogic/ml-gradle/wiki/MarkLogic-Content-Pump-(mlcp)-and-Gradle).  
 
 ## Upgrading GDS
 

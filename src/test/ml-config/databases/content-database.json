@@ -62,20 +62,6 @@
   ],
   "geospatial-path-index": [
     {
-      "path-expression" : "geometry[type='MultiPoint']\/array-node('coordinates')\/array-node('coordinates')",
-      "coordinate-system": "wgs84",
-      "point-format": "long-lat-point",
-      "range-value-positions": false,
-      "invalid-values": "reject"
-    },
-    {
-      "path-expression": "geometry[type='Point']\/array-node('coordinates')",
-      "coordinate-system": "wgs84",
-      "point-format": "long-lat-point",
-      "range-value-positions": false,
-      "invalid-values": "reject"
-    },
-    {
       "path-expression" : "//location/item/Point",
       "coordinate-system": "wgs84",
       "point-format": "point",
