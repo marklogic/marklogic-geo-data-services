@@ -1,8 +1,6 @@
 'use strict';
-
 function transform(content, context) {
-  let doc = content.value.toObject();
-  // Add the required geometry object so that the geospatial query constructed by GDS finds the expected data.
+  const doc = content.value.toObject();
   doc.geometry = {
     "type": "Point",
     "coordinates": [parseFloat(doc.X), parseFloat(doc.Y)],
@@ -10,5 +8,4 @@ function transform(content, context) {
   content.value = doc;
   return content;
 }
-
 exports.transform = transform;

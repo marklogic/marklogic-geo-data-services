@@ -1,5 +1,3 @@
-package com.marklogic.gds;
-
 import com.marklogic.gds.GeoQueryRequest;
 import io.restassured.RestAssured;
 import org.junit.Before;

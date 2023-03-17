@@ -27,12 +27,12 @@
           {
             "name": "latitude",
             "scalarType": "float",
-            "val": "decimalLatitude"
+            "val": "Y"
           },
           {
             "name": "longitude",
             "scalarType": "float",
-            "val": "decimalLongitude"
+            "val": "X"
           }
         ]
       }

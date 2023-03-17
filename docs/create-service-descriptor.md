@@ -4,7 +4,8 @@ title: Create a service descriptor
 nav_order: 5
 ---
 
-The geospatial query capabilities provided by GDS depend on service descriptors. A service descriptor is a JSON 
+The geospatial query capabilities provided by GDS depend on service descriptors (which are also referred to as 
+"models"). A service descriptor is a JSON 
 document that defines a feature service and one or more layers. Each layer is defined by a data source, which specifies 
 the set of data in MarkLogic that will be queried for that layer. Note that while the terminology and structure are 
 very similar to how ArcGIS defines a 
