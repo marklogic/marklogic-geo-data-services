@@ -1,6 +1,6 @@
 {
-  "user-name": "sample-writer",
-  "password": "sample-writer",
+  "user-name": "gds-example-user",
+  "password": "password",
   "role": [
     "geo-data-services-writer",
     "rest-extension-user"

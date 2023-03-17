@@ -1,0 +1,22 @@
+{
+  "info": {
+    "name": "ArcGIS Hub Data",
+    "description": "Contains datasets from https://hub.arcgis.com/ ; each dataset is represented by a layer"
+  },
+  "layers": [
+    {
+      "id": 0,
+      "name": "Muricidae (Mollusca: Gastropoda) from Fiji and Tonga",
+      "description": "Fifty-eight muricid species were collected during recent expeditions to Fiji, including 3 new species.",
+      "geometryType": "Point",
+      "schema": "arcgis_hub",
+      "view": "mollusks",
+      "geometry" : {
+        "type" : "Point",
+        "format" : "geojson",
+        "coordinateSystem" : "wgs84",
+        "xpath" : "//geometry"
+      }
+    }
+  ]
+}

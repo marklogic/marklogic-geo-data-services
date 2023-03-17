@@ -1,0 +1,44 @@
+plugins {
+  id "net.saliman.properties" version "1.5.1"
+  id "com.marklogic.ml-gradle" version "4.5.1"
+}
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+
+  // Needed for some mlcp dependencies
+  maven { url "https://developer.marklogic.com/maven2/" }
+}
+
+configurations {
+  mlcp
+}
+
+dependencies {
+  // Results in the GDS modules/config/plugin being installed via mlDeploy
+  mlBundle "com.marklogic:marklogic-geo-data-services:1.4-SNAPSHOT"
+
+  // For loading example data
+  mlcp "com.marklogic:mlcp:10.0.9.5"
+  mlcp files("mlcp-logging")
+}
+
+task loadMollusks(type: com.marklogic.gradle.task.MlcpTask) {
+  classpath = configurations.mlcp
+  command = "IMPORT"
+  port = mlAppConfig.restPort
+  database = mlAppConfig.contentDatabaseName
+  input_file_path = "data/mollusks.csv"
+  input_file_type = "delimited_text"
+  delimiter = ","
+  document_type = "json"
+  uri_id = "id"
+  output_collections = "data,mollusks"
+  output_permissions = "geo-data-services-reader,read,geo-data-services-writer,update"
+  output_uri_replace = ".*/data/,'/'"
+  output_uri_prefix = "/data/"
+  output_uri_suffix = ".json"
+  transform_module = "/mollusks-mlcp-transform.sjs"
+}
+mlDeploy.finalizedBy loadMollusks
