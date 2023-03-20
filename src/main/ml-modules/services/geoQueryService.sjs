@@ -58,25 +58,19 @@ function returnErrToClient(statusCode, statusMsg, body) {
 };
 
 // the same as the koop provider function without the callback parameter
-xdmp.trace("GDS-DEBUG", "Starting without");
 function getData(req) {
-  xdmp.trace("GDS-DEBUG", "Starting getData");
   xdmp.trace("GDS-REQUEST", JSON.stringify(req));
 
   if (req.geoserver) {
     return geoServer.getGeoServerData(req);
   }
   else if (req.params.method == "query") {
-    xdmp.trace("GDS-DEBUG", "Method 'query'");
     return query(req);
   } else if (req.params.method == "exportPlan") {
-    xdmp.trace("GDS-DEBUG", "Method 'exportPlan'");
     return query(req, true);
   } else if (req.params.method == "generateRenderer") {
-    xdmp.trace("GDS-DEBUG", "Method 'generateRenderer'");
     return queryClassificationValues(req);
   } else {
-    xdmp.trace("GDS-DEBUG", "Method not found, just get the descriptors");
     if (req.params.layer >= 0) {
       return serviceLib.generateLayerDescriptor(req.params.id, req.params.layer);
     } else {
@@ -108,7 +102,7 @@ function getDateTime(durationOrTimestamp) {
 function query(req, exportPlan=false) {
   xdmp.trace("GDS-DEBUG", "Starting query");
   // always return a FeatureCollection for now
-  const geojson = {
+  const response = {
     type : 'FeatureCollection',
     metadata : {
       name: req.params.id,
@@ -132,33 +126,19 @@ function query(req, exportPlan=false) {
       { outStatisticFieldName : "count", statisticType : "count" }
     ];
 
-    geojson.count = Array.from(aggregate(req))[0].count;
+    response.count = Array.from(aggregate(req))[0].count;
 
   } else if (req.query.outStatistics != null) {
 
     xdmp.trace("GDS-DEBUG", "running aggregation");
-    geojson.statistics = Array.from(aggregate(req));
+    response.statistics = Array.from(aggregate(req));
 
   } else  {
 
     xdmp.trace("GDS-DEBUG", "getting objects for geojson.features");
     const objects = getObjects(req);
-    xdmp.trace("GDS-DEBUG", "Object Results found:");
-    xdmp.trace("GDS-DEBUG", objects);
-    geojson.features = objects.result;
-    if (geojson.features.geometry) {
-      const geometryType = typeof geojson.features.geometry;
-      switch(geometryType) {
-        case "object":
-            xdmp.trace("GDS-DEBUG", "geojson.features.geometry is an object");
-            break;
-        case "string":
-            xdmp.trace("GDS-DEBUG", "geojson.features.geometry is an string");
-            break;
-        default:
-            xdmp.trace("GDS-DEBUG", "geojson.features.geometry is:" + typeof geojson.features.geometry);
-      }
-    }
+    xdmp.trace("GDS-DEBUG", `Results: ${JSON.stringify(objects)}`);
+    response.features = objects.result;
 
     xdmp.trace("GDS-DEBUG", "limitExceeded flag :" + objects.limitExceeded);
 
@@ -178,26 +158,26 @@ function query(req, exportPlan=false) {
     parseOutFields(req.query).map(f => { outFields[f] = true; });
 
     if (Object.keys(outFields).length === 0 || outFields["*"]) {
-      geojson.metadata.fields = layerFields;
+      response.metadata.fields = layerFields;
     } else {
-      geojson.metadata.fields = layerFields.filter(f => {
+      response.metadata.fields = layerFields.filter(f => {
         return outFields[f.name];
       });
     }
 
-    geojson.metadata.limitExceeded = objects.limitExceeded;
+    response.metadata.limitExceeded = objects.limitExceeded;
 
-    geojson.metadata.idField = layerModel.idField;
-    geojson.metadata.displayField = layerModel.displayField;
+    response.metadata.idField = layerModel.idField;
+    response.metadata.displayField = layerModel.displayField;
   }
 
   // GeoJSON feature collections must always have a "features" object array, even if empty.
   // See GeoJSON RFC: https://tools.ietf.org/html/rfc7946#section-3.2
-  if (!geojson.hasOwnProperty("features")) {
-    geojson.features = [];
+  if (!response.hasOwnProperty("features")) {
+    response.features = [];
   }
 
-  return geojson;
+  return response;
 }
 
 /**
@@ -697,20 +677,18 @@ function getObjects(req, exportPlan=false) {
 
   let limit = 0;
   if (requestQuery.resultRecordCount) {
-
-    xdmp.trace("GDS-DEBUG", "Setting to limit to resultRecordCount");
-    limit = Number(requestQuery.resultRecordCount)
+    limit = Number(requestQuery.resultRecordCount);
+    xdmp.trace("GDS-DEBUG", "Setting limit to resultRecordCount: " + limit);
   }
   else if ( requestQuery.returnIdsOnly ) {
-    xdmp.trace("GDS-DEBUG", "Setting to limit to MAX_SAFE_INTEGER because we are only returning IDs");
-    limit = Number.MAX_SAFE_INTEGER
+    limit = Number.MAX_SAFE_INTEGER;
+    xdmp.trace("GDS-DEBUG", "Setting limit to MAX_SAFE_INTEGER because we are only returning IDs");
   }
   else {
-    xdmp.trace("GDS-DEBUG", "Setting to limit to MAX_RECORD_COUNT");
-    limit = MAX_RECORD_COUNT
+    limit = MAX_RECORD_COUNT;
+    xdmp.trace("GDS-DEBUG", "Setting limit to MAX_RECORD_COUNT: " + limit);
   }
 
-  xdmp.trace("GDS-DEBUG", "limit: " + limit);
   const bindParams = {
     "offset" : offset,
     "limit" : ((limit != Number.MAX_SAFE_INTEGER) ? (limit+1) : Number.MAX_SAFE_INTEGER),
@@ -719,15 +697,12 @@ function getObjects(req, exportPlan=false) {
   let pipeline;
   let columnDefs;
   if (layerModel.dataSources === undefined) {
-    xdmp.trace("GDS-DEBUG", "layerModel.dataSources is undefined");
     const schema = layerModel.schema;
     const view = layerModel.view;
     columnDefs = serviceLib.getColumnDefs(req.params.id, req.params.layer);
 
     xdmp.trace("GDS-DEBUG", "getObjects(): layerModel.dataSources === undefined, using " + defaultDocId + " as fragment id column");
     let viewPlan = op.fromView(schema, view, "", defaultDocId);
-    xdmp.trace("GDS-DEBUG", "Pipeline[dataSources === undefined] Plan:");
-    xdmp.trace("GDS-DEBUG", viewPlan);
     xdmp.trace("GDS-DEBUG", "Pipeline[dataSources === undefined] boundingQuery:");
     xdmp.trace("GDS-DEBUG", boundingQuery);
     xdmp.trace("GDS-DEBUG", "Pipeline[dataSources === undefined] layerModel:");
@@ -798,8 +773,6 @@ function getObjects(req, exportPlan=false) {
   }
 
   const extractor = geoExtractor.getExtractor(layerModel);
-  xdmp.trace("GDS-DEBUG", "extractor:");
-  xdmp.trace("GDS-DEBUG", extractor);
 
   // TODO: see if there is any benefit to pushing the column select earlier in the pipeline
   // transform the rows into GeoJSON
@@ -835,14 +808,9 @@ function getObjects(req, exportPlan=false) {
       return outFeature;
     });
 
-    xdmp.trace("GDS-DEBUG", "Now to pull results from the pipeline with the following bindParams");
-    xdmp.trace("GDS-DEBUG", bindParams);
+    xdmp.trace("GDS-DEBUG", `Getting pipeline results with bindParams: ${JSON.stringify(bindParams)}`);
     const opticResult = Array.from(pipeline.result("object", bindParams));
-
-    xdmp.trace("GDS-DEBUG", `Results pulled from Pipeline. Found ${opticResult.length} results.`);
     const opticResultCount = opticResult.length;
-
-
 
     if(opticResultCount >= (limit + 1) ){
       opticResult.pop();
@@ -1068,13 +1036,8 @@ function getSelectDef(outFields, columnDefs, returnGeometry, geometryExtractor, 
     )
   ];
 
-  xdmp.trace("GDS-DEBUG", "defs before returnGeometry");
-  xdmp.trace("GDS-DEBUG", defs);
-
   // only include this if returnGeometry is true or outFields is *
   if (returnGeometry || outFields[0] === "*") {
-    xdmp.trace("GDS-DEBUG", "Returning geometry from the following selector: ");
-    xdmp.trace("GDS-DEBUG", geometryExtractor.getSelector());
     defs.push(geometryExtractor.getSelector());
   }
   return defs;
@@ -1147,7 +1110,6 @@ function getPropDefs(outFields, columnDefs) {
       } else {
         colName = col.name;
       }
-      xdmp.trace("GDS-DEBUG","***** ColName: " + colName )
       props.push(
         op.prop(
           colName,

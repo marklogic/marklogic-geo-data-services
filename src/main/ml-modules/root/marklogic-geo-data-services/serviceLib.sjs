@@ -306,8 +306,6 @@ function getLayerModelIndexEntry(serviceName, layerId) {
  * Usually we want to do the latter.
  */
 function getServiceModelIndexEntry(serviceId, lightweight=true) {
-  //look in the transaction index first and return it if it's there.
-  if (DEBUG) xdmp.trace("GDS-DEBUG", "getServiceModelIndexEntry(): Looking for serviceId " + serviceId);
   if (serviceModelIndex[serviceId]) {
     let entry = serviceModelIndex[serviceId];
     if (DEBUG) xdmp.trace("GDS-DEBUG", "getServiceModelIndexEntry(): serviceModelIndex[serviceId] found");
@@ -596,9 +594,6 @@ function getViewHashes(layerModelIndexEntry) {
 
     if (DEBUG) xdmp.trace("GDS-DEBUG", Sequence.from(["viewsNeedingHashesCalculated:", viewsNeedingHashesCalculated, "viewHashes:", viewHashes]));
     if (viewsNeedingHashesCalculated.length > 0) {
-        //only go calculate hashes if we haven't done so already in this transaction
-        if (DEBUG) xdmp.trace("GDS-DEBUG", Sequence.from(["calculating view hashes", viewsNeedingHashesCalculated]));
-
         //We calculate these in xquery because it is WAY faster than javascript
         let retrievedViewHashes = fn.head(ampedFunctions.invoke("/marklogic-geo-data-services/view-hash.xqy", { input: Sequence.from(viewsNeedingHashesCalculated) }));
         if (DEBUG) xdmp.trace("GDS-DEBUG", Sequence.from(["retrieved view hashes", retrievedViewHashes]));

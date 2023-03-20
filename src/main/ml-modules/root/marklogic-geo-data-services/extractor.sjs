@@ -219,16 +219,13 @@ function GeoJsonExtractor(layer) {
   xdmp.trace("GDS-DEBUG", "Using the following extractor: GeoJsonExtractor");
   this.getSelector = function () {
     if (layer.geometry.source && layer.geometry.source.column) {
-      xdmp.trace("GDS-DEBUG", "op.xpath('doc'), from layer.geometry.source.column");
-      xdmp.trace("GDS-DEBUG", layer.geometry.source.column);
+      xdmp.trace("GDS-DEBUG", "op.xpath('doc'), from layer.geometry.source.column: " + layer.geometry.source.column);
       return op.as("geometry", op.call('http://marklogic.com/xdmp', 'unquote', op.col(layer.geometry.source.column)));
     } else if (layer.geometry.source && layer.geometry.source.xpath) {
-      xdmp.trace("GDS-DEBUG", "op.xpath('doc'), from layer.geometry.source.xpath");
-      xdmp.trace("GDS-DEBUG", layer.geometry.source.xpath);
+      xdmp.trace("GDS-DEBUG", "op.xpath('doc'), from layer.geometry.source.xpath: " + layer.geometry.source.xpath);
       return op.as("geometry", op.xpath('doc', layer.geometry.source.xpath));
     } else if (layer.geometry && layer.geometry.xpath) {
-      xdmp.trace("GDS-DEBUG", "op.xpath('doc'), from layer.geometry.xpath");
-      xdmp.trace("GDS-DEBUG", layer.geometry.xpath);
+      xdmp.trace("GDS-DEBUG", "op.xpath('doc'), from layer.geometry.xpath: " + layer.geometry.xpath);
       return op.as("geometry", op.xpath('doc', layer.geometry.xpath));
     } else {
       xdmp.trace("GDS-DEBUG", "WARNING: No GeoJSON configuration found");

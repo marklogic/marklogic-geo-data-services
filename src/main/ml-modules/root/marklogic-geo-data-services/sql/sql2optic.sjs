@@ -25,13 +25,10 @@ function where2ast(where) {
     .replace(     /DATE +'(\d{4}-\d{1,2}-\d{1,2})'/gi, "date('$1')")
     .replace(     /TIME +'(\d{2}:\d{2}:\d{2}\.?\d*)'/gi, "time('$1')");
 
-  console.log("Rewrote where: " + where);
+  xdmp.trace("GDS-DEBUG", "Rewrote where: " + where);
 
   const Parser = require('./flora-sql-parser/index.js').Parser;
   const ast = new Parser().parse("SELECT * WHERE " + where);
-
-  //console.log(ast);
-
   return ast.where;
 }
 
@@ -98,8 +95,6 @@ function binaryExpression(expr) {
     case "between": {
       const column = sql2optic(expr.left);
       const nums = sql2optic(expr.right);
-      console.log(nums);
-
       return op.and(
         op.ge(column, nums[0]),
         op.le(column, nums[1])
