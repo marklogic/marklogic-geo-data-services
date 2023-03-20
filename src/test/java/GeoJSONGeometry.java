@@ -11,7 +11,6 @@ import static org.hamcrest.Matchers.is;
 public class GeoJSONGeometry  extends AbstractFeatureServiceTest {
 
     // "geometry" : {
-    //   "type" : "Polygon",
     //   "format" : "geojson",
     //   "coordinateSystem" : "wgs84",
     //   "source" : {
@@ -35,7 +34,6 @@ public class GeoJSONGeometry  extends AbstractFeatureServiceTest {
     }
 
     // "geometry" : {
-    //   "type" : "Polygon",
     //   "format" : "geojson",
     //   "coordinateSystem" : "wgs84",
     //   "source" : {
@@ -59,7 +57,6 @@ public class GeoJSONGeometry  extends AbstractFeatureServiceTest {
     }
 
     // "geometry" : {
-    //   "type" : "Polygon",
     //   "format" : "geojson",
     //   "coordinateSystem" : "wgs84",
     //   "source" : {
