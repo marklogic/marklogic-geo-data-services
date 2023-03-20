@@ -202,7 +202,6 @@ function calculateNewLayerModelIndex(serviceModel, layerId) {
         // default the geometry to GeoJSON
         if (!layer.geometry) {
             layer.geometry = {
-                type: "Point",
                 format: "geojson",
                 coordinateSystem: "wgs84",
                 xpath: "//geometry"

@@ -11,7 +11,6 @@ import static org.hamcrest.Matchers.is;
 public class WKTGeometry  extends AbstractFeatureServiceTest {
 
     // "geometry" : {
-    //   "type" : "Polygon",
     //   "format" : "wkt",
     //   "coordinateSystem" : "wgs84",
     //   "source" : {
@@ -36,7 +35,6 @@ public class WKTGeometry  extends AbstractFeatureServiceTest {
     }
 
     // "geometry" : {
-    //   "type" : "Polygon",
     //   "format" : "wkt",
     //   "coordinateSystem" : "wgs84",
     //   "source" : {

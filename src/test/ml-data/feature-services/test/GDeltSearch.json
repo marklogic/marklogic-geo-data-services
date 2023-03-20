@@ -30,7 +30,6 @@
       "schema": "GDeltGKG",
       "view" : "Article",
       "geometry" : {
-        "type" : "Point",
         "format" : "geojson",
         "coordinateSystem" : "wgs84",
         "xpath" : "//geometry"
@@ -59,7 +58,6 @@
       "schema": "GDeltGKG",
       "view" : "Article",
       "geometry" : {
-        "type" : "Point",
         "format" : "geojson",
         "coordinateSystem" : "wgs84",
         "xpath" : "//geometry"
@@ -85,7 +83,6 @@
       "schema": "GDeltGKG",
       "view" : "Article",
       "geometry" : {
-        "type" : "Point",
         "format" : "geojson",
         "coordinateSystem" : "wgs84",
         "xpath" : "//geometry"
