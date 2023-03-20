@@ -300,44 +300,41 @@ function parseWhere(query) {
   return whereQuery;
 }
 
-function parseGeometry(query, layerModel) {
-  xdmp.trace("GDS-DEBUG", "Starting parseGeometry");
-
-  // the koop provider code will convert the Esri geometry objects into GeoJSON
-  // in WGS84 and place it in the query.extension.geometry property
-  let geoQuery = null;
-  if (query.extension && query.extension.geometry) {
-
-    let regions = null;
-    if (!query.geometryType || query.geometryType.toLowerCase() === "esrigeometryenvelope") {
-      // handle this because the koop server changes boxes to GeoJSON polygons but
-      // a box is better for this
-      regions = convertEnvelopePolygon(query);
-    } else {
-      // convert GeoJSON into cts regions
-      regions = geojson.parseGeojson(adjustEsriPolygon(query.extension.geometry));
-    }
+/**
+ * Builds a query based on the extension/geometry in the given request query and the configuration in the layer model.
+ * The marklogic-koop-provider is expected to convert Esri geometry objects into GeoJSON in WGS84 and place it in the
+ * query.extension.geometry property.
+ *
+ * The extractor module is responsible for producing a point query and/or a region query based on the "geometry" object
+ * in the layer model.
+ *
+ * @param requestQuery
+ * @param layerModel
+ * @returns {*}
+ */
+function buildQueryFromLayerGeometry(requestQuery, layerModel) {
+  let query = cts.trueQuery();
+  if (requestQuery.extension && requestQuery.extension.geometry) {
+    const mustConvertEnvelope = !requestQuery.geometryType || requestQuery.geometryType.toLowerCase() === "esrigeometryenvelope";
+    const regions = mustConvertEnvelope ?
+      // handle this because the koop server changes boxes to GeoJSON polygons but a box is better for this
+      convertEnvelopePolygon(requestQuery) :
+      geojson.parseGeojson(adjustEsriPolygon(requestQuery.extension.geometry));
 
     const pointQuery = geoExtractor.getPointQuery(regions, layerModel);
-    const operation = parseRegionOperation(query);
+    const operation = parseRegionOperation(requestQuery);
     const regionQuery = geoExtractor.getRegionQuery(regions, operation, layerModel);
 
-    let queries = [];
+    const queries = [];
     if (pointQuery) { queries.push(pointQuery); }
     if (regionQuery) { queries.push(regionQuery); }
     if (queries.length > 0) {
-      geoQuery = cts.orQuery(queries);
+      query = cts.orQuery(queries);
     }
   }
 
-  if (!geoQuery) {
-    // just match everything
-    geoQuery = cts.trueQuery();
-  }
-
-  xdmp.trace("GDS-DEBUG", "geometry: " + geoQuery);
-
-  return geoQuery;
+  xdmp.trace("GDS-DEBUG", "Initial layer query: " + query);
+  return query;
 }
 
 function clampPointArray(coord) {
@@ -596,7 +593,7 @@ function getTimeBoundingWhereQuery(layerModel, req) {
  * @returns a CTS query
  */
 function buildBoundingQuery(requestQuery, layerModel) {
-  const boundingQueries = [ parseGeometry(requestQuery, layerModel) ];
+  const boundingQueries = [ buildQueryFromLayerGeometry(requestQuery, layerModel) ];
 
   if (layerModel.boundingQuery) {
     boundingQueries.push(queryDeserializer.query(layerModel.boundingQuery));
@@ -608,12 +605,9 @@ function buildBoundingQuery(requestQuery, layerModel) {
   // alwaysIncludeQuery is an optional feature for a layer definition to ensure that certain data is always included,
   // which implies usage of an "or" query. See https://github.com/marklogic-community/marklogic-geo-data-services/issues/76
   // for the original requirements.
-  const boundingQuery = layerModel.alwaysIncludeQuery ?
+  return layerModel.alwaysIncludeQuery ?
     cts.orQuery([queryDeserializer.query(layerModel.alwaysIncludeQuery), cts.andQuery(boundingQueries)]) :
     cts.andQuery(boundingQueries);
-
-  xdmp.trace("GDS-DEBUG", "boundingQuery: " + xdmp.toJsonString(boundingQuery));
-  return boundingQuery;
 }
 
 /**
