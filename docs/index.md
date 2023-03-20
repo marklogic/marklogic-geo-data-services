@@ -12,9 +12,11 @@ application because you are either using the
 on installing and configuring GDS so that it can be accessed via either of those tools. You may also use GDS by itself,
 though this guide does not yet describe the MarkLogic REST extensions that comprise GDS and how they can be used.
 
-To start using GDS, please read through the following guides in the given order:
+To start using GDS, read through the following guides in the given order:
 
 1. [Install GDS](install.md)
 2. [Create a MarkLogic user](create-user.md)
 3. [Create a TDE template](create-tde.md)
 4. [Create a service descriptor](create-service-descriptor.md)
+
+The [tutorial](tutorial.md) provides a walk through of creating a new project that uses GDS. 
