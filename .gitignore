@@ -221,3 +221,7 @@ gradle-app.setting
 gradle-local.properties
 .scannerwork
 out
+
+src/main/ml-plugins/variance/*.o
+src/main/ml-plugins/variance/*.dylib
+src/main/ml-plugins/variance/*.zip
