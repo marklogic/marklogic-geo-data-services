@@ -104,18 +104,21 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 }
 
 task modulesJar(type: Jar) {
-    description = "Jar up the marklogic-unit-test MarkLogic modules into a package that can be published"
-    from("src/main/ml-config") {
-        into("marklogic-geo-data-services/ml-config")
-    }
-    from("src/main/ml-modules") {
-        into("marklogic-geo-data-services/ml-modules")
-    }
-    from("src/main/ml-plugins") {
-        into("marklogic-geo-data-services/ml-plugins")
-    }
-    destinationDir file("build/libs")
-    baseName "marklogic-geo-data-services"
+  description = "Creates a package of all GDS files that can be published to Maven Central"
+  from("src/main/ml-config") {
+    into("marklogic-geo-data-services/ml-config")
+  }
+  from("src/main/ml-modules") {
+    into("marklogic-geo-data-services/ml-modules")
+  }
+  from("src/main/ml-plugins") {
+    into "marklogic-geo-data-services/ml-plugins"
+    exclude "**/*.o"
+    exclude "**/*.dylib"
+    exclude "**/*.zip"
+  }
+  destinationDir file("build/libs")
+  baseName "marklogic-geo-data-services"
 }
 
 artifacts {
