@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2023 MarkLogic Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 'use strict';
 const geojson = require('/MarkLogic/geospatial/geojson');
 const geogml = require("/MarkLogic/geospatial/gml");
@@ -185,7 +201,7 @@ function getRegionQuery(regions, operation, layerModel) {
     xdmp.trace("GDS-DEBUG", "No region path indexes declared in service descriptor.");
     return null;
   }
-  
+
   const regionOptions = [];
   xdmp.trace("GDS-DEBUG", "regionPaths:");
   xdmp.trace("GDS-DEBUG", regionPaths);
@@ -583,7 +599,7 @@ function CustomExtractor(layer) {
     if (result.geometry) {
       xdmp.trace("GDS-DEBUG", "Processing result.geometry");
       xdmp.trace("GDS-DEBUG", result.geometry);
-      
+
       let geometryToProcess = result.geometry.toObject();
       if (Array.isArray(geometryToProcess)) {
         xdmp.trace("GDS-DEBUG", "result.geometry is an array, expecting to extract multiple points");

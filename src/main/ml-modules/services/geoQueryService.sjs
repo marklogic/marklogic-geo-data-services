@@ -1,5 +1,17 @@
 /*
- * Copyright © 2017-2019 MarkLogic Corporation
+ * Copyright (c) 2023 MarkLogic Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
@@ -10,7 +22,7 @@ const geoServer = require('/marklogic-geo-data-services/geoServer.sjs');
 const geoStats = require('/marklogic-geo-data-services/geostats.js');
 const op = require('/MarkLogic/optic');
 const queryBuilder = require('/marklogic-geo-data-services/boundingQueryBuilder.sjs');
-const queryDeserializer = require('/marklogic-geo-data-services/query/ctsQueryDeserialize.sjs').qd;
+const queryDeserializer = require('/marklogic-geo-data-services/ctsQueryDeserialize.sjs').qd;
 const searchUtil = require('/marklogic-geo-data-services/search-util.xqy');
 const serviceLib = require('/marklogic-geo-data-services/serviceLib.sjs');
 const sql2optic = require('/marklogic-geo-data-services/sql/sql2optic.sjs');
