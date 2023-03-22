@@ -10,8 +10,6 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
 
     @Test
     public void getServiceDescriptor() {
-        // The version is currently hardcoded in the codebase, so it's hardcoded here as well.
-        // Once we can populate it dynamically in the codebase, we'll do so in the test.
         postGeoQueryRequest(new GeoQueryRequest("GDeltGKG"))
             .body("$version", is("1.4-SNAPSHOT"))
             .body("layers[0].metadata.useStandardizedQueries", is(true))
