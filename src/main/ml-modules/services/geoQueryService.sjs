@@ -464,12 +464,9 @@ function getObjects(req, exportPlan=false) {
   }
 
   const returnGeometry = (requestQuery.returnGeometry || outFields[0] === "*") ? true : false;
-  // Should this be geometry or geometrySource?  TJD--"geometry"
-  // This should be geometry.source.  MDC
   const geometrySource = (layerModel && layerModel.geometry && layerModel.geometry.source) ? layerModel.geometry.source : null;
   xdmp.trace("GDS-DEBUG", "geometrySource = " + geometrySource);
   xdmp.trace("GDS-DEBUG", "returnGeometry = " + returnGeometry);
-
 
   whereQuery = updateWhereWithObjectIds(requestQuery, whereQuery, layerModel)
 

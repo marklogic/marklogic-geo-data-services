@@ -69,6 +69,37 @@ The layer can contain any number of additional fields, which will be included wh
 descriptor. For example, while GDS does not make use of an `extent` field, a user will typically want to include that
 when using the MarkLogic Koop provider so that ArcGIS clients can leverage this field.
 
+### Geometry 
+
+The `geometry` field defines how geometry data is represented in a feature (typically a document in MarkLogic, but 
+not restricted to this) so that GDS can query and return this data.  
+
+The value of the field is a JSON object with the following keys:
+
+1. `format` = optional string that defaults to `geojson`; must be one of `geojson`, `gml`, `kml`, `rss`, `mcgm`, 
+   `any`, `cts`, or `custom`. 
+2. `coordinateSystem` = required string; must be one of the values listed for the 
+   [coordinate-system option](https://docs.marklogic.com/geo.geospatialQuery). See
+   [the MarkLogic documentation](https://docs.marklogic.com/guide/search-dev/geospatial#id_98149) for more 
+   information on coordinate systems.
+3. `pointFormat` = only used when `format` is `gml`; string that describes how a point is formatted; must be either 
+   `default` (lat/long) or `long-lat-point` (long/lat)
+4. `xpath` = optional string, but required if geometry must be returned as part of a query for features; XPath 
+   expression that points to the geometry data in a feature. 
+5. `source` = optional JSON object used in place of `xpath`; can have the following fields:
+   1. `format` = required string; must be one of `geojson`, `wkt`, or `cts`.
+   2. `xpath` = optional string; XPath expression that points to the geometry data in a feature.
+   3. `column` = optional string; name of a feature column containing the feature's geometry data. 
+   4. `documentUriColumn` = optional string; name of a feature column, instead of the internal MarkLogic fragment ID 
+      column, used for performing a join when extracting geometry for a feature.
+6. `indexes` = object whose fields are serialized MarkLogic indexes; for use when `format` is `custom`. Supported
+   field names are `element`, `elementChild`, `elementPair`, `elementAttributePair`, and `path. The value of each
+   field is a serialized MarkLogic index of the type identified by the field name.
+
+For most use cases, it should suffice to define the `format`, `coordinateSystem`, and `xpath` fields to describe a path
+to the geometry data in a document, where a document is associated with a single feature. 
+
+
 ### Data sources
 
 When defining a layer, a user has two choices for defining the source of data to be queried in MarkLogic:
