@@ -37,3 +37,8 @@ convenient to
 
 If you have already added GDS to your MarkLogic application and wish to upgrade, simply change the version number
 of the GDS dependency in your build.gradle file. 
+
+Additionally, be sure to read 
+[the release notes](https://github.com/marklogic-community/marklogic-geo-data-services/releases) when you upgrade, 
+particularly to see if any changes should be made to your service descriptors. 
+

@@ -270,7 +270,6 @@ Create the file `./src/main/ml-data/arcgis-hub-service.json` and add the followi
       "schema": "arcgis_hub",
       "view": "mollusks",
       "geometry" : {
-        "type" : "Point",
         "format" : "geojson",
         "coordinateSystem" : "wgs84",
         "xpath" : "//geometry"
