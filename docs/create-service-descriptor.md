@@ -92,12 +92,24 @@ The value of the field is a JSON object with the following keys:
    3. `column` = optional string; name of a feature column containing the feature's geometry data. 
    4. `documentUriColumn` = optional string; name of a feature column, instead of the internal MarkLogic fragment ID 
       column, used for performing a join when extracting geometry for a feature.
-6. `indexes` = object whose fields are serialized MarkLogic indexes; for use when `format` is `custom`. Supported
-   field names are `element`, `elementChild`, `elementPair`, `elementAttributePair`, and `path. The value of each
-   field is a serialized MarkLogic index of the type identified by the field name.
+6. `indexes` = optional JSON object that controls how geometry data is queried and extracted. Supports the following 
+   child keys:
+   1. `regionPath` = optional array of JSON objects for defining a geospatial region query to be used for 
+      constraining all queries on the layer. Each JSON object must have a key of `path` and may also have a key of 
+      `coordinateSystem`. 
+   2. `element` = optional array of JSON objects; for use when `format` is `custom`. Each object must be a 
+      serialized MarkLogic element index.
+   3. `elementChild` = optional array of JSON objects; for use when `format` is `custom`. Each object must be a
+      serialized MarkLogic element child index.
+   4. `elementPair` = optional array of JSON objects; for use when `format` is `custom`. Each object must be a
+      serialized MarkLogic element pair index.
+   5. `elementAttributePair` = optional array of JSON objects; for use when `format` is `custom`. Each object must be a
+      serialized MarkLogic element attribute pair index.
+   6. `path` = optional array of JSON objects; for use when `format` is `custom`. Each object must be a
+      serialized MarkLogic path index.
 
-For most use cases, it should suffice to define the `format`, `coordinateSystem`, and `xpath` fields to describe a path
-to the geometry data in a document, where a document is associated with a single feature. 
+**For most use cases**, it should suffice to define the `format`, `coordinateSystem`, and `xpath` fields to describe 
+a path to the geometry data in a document, where a document is associated with a single feature. 
 
 
 ### Data sources
@@ -119,7 +131,8 @@ joined together. Each object in the array can have the following fields:
    identifies a column in the first data source, while `right` identifies a column in the second data source. The 
    object may optionally have a `joinType` key that defines the type of join; supported values are `inner` (the 
    default), `left outer`, and `full outer`. 
-6. `joinFunction` = TODO Don't know yet. 
+6. `joinFunction` = optional string; one of `joinInner` (default), `joinLeftOuter`, and `joinFullOuter`. Only 
+   applied when at least one other data source exists to be joined to the first data source. 
 7. `fields` = required JSON object when `source` is `sparql`; defines fields to add to each feature. Each key in 
    this object is the name of an additional feature field. Each key is an object itself with a
    `scalarType` key that identifies the type of column.

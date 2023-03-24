@@ -17,10 +17,10 @@ template. It is often easier though to start with an existing template and custo
 as a starting point. 
 
 A requirement for your TDE is that it must either declare a column named "OBJECTID" or it must declare a column with 
-a name that corresponds to the `idField` in the associated layer definition. In either case, the column must contain
-unsigned integers in order to work properly as an ArcGIS Feature Service. Additionally, to support pagination across 
-large result sets, the values do not need to be contiguous but should be fairly even distributed between the minimum 
-and maximum values. 
+a name that corresponds to the `idField` in [a service descriptor](create-service-descriptor.md). In either case, the 
+column must contain unsigned integers in order to work properly as an ArcGIS Feature Service. Additionally, to support 
+pagination across large result sets, the values do not need to be contiguous but should be fairly even distributed 
+between the minimum and maximum values. 
 
 If the rows projected by your TDE do not have a column already that contains unsigned integers, you could use a data
 transformation tool like [CoRB](https://developer.marklogic.com/code/corb/) to add something similar to this to each 
