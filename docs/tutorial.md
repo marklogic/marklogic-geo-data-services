@@ -57,6 +57,29 @@ mlPassword=your admin user's password
 You can choose any app name you want for `mlAppName`. And you can set `mlRestPort` to any available port you want. It 
 will be used to create a new [REST API server in MarkLogic](https://docs.marklogic.com/guide/rest-dev/intro).
 
+This application will make use of a [MarkLogic TDE template](https://docs.marklogic.com/guide/app-dev/TDE), and thus
+the application must have a schemas database. To add one to the project, create the directory 
+`src/main/ml-config/databases` in your project, add a file named `schemas-database.json` to it, and add the following 
+content to that file:
+
+```
+{
+	"database-name": "%%SCHEMAS_DATABASE%%"
+}
+```
+
+Then, create a file in the same directory named `content-database.json` and add the following content to it:
+
+```
+{
+  "database-name": "%%DATABASE%%",
+  "schema-database": "%%SCHEMAS_DATABASE%%"
+}
+```
+
+The above files will produce a schemas database in the MarkLogic application, and the content database - which contains
+all of an application's data - will use the schemas database to power features such as TDE. 
+
 Finally, the project will use [Gradle](https://gradle.org/) to deploy the application. If you do not have Gradle 
 installed, the [Gradle wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) is recommended as an 
 easy way to download a version of Gradle. To do so, copy the following files from the root of this repository to your 
@@ -105,7 +128,7 @@ create the file `./src/main/ml-config/security/users/example-user.json` in your 
 }
 ```
 
-The GDS `geo-data-services-reader` role allows for this user to access the GDS endpoints in MarkLogic, while the 
+The GDS `geo-data-services-writer` role allows for this user to access the GDS endpoints in MarkLogic, while the 
 MarkLogic `rest-extension-user` allows the user to read the modules in our application's modules database. 
 
 To create this user, run (you may also run `./gradlew mlDeploy` to deploy the entire application at any time):
@@ -113,7 +136,7 @@ To create this user, run (you may also run `./gradlew mlDeploy` to deploy the en
     ./gradlew mlDeployUsers
 
 You can verify that the user has access to the GDS endpoints by accessing
-<http://localhost:8065/v1/resources/modelsService> in a web browser, authenticating as the user you just created. The
+<http://localhost:8065/v1/resources/modelService> in a web browser, authenticating as the user you just created. The
 response will show that no service descriptors, or "models", exist yet:
 
     {"$version":"1.4.0", "models":{}}
@@ -154,7 +177,7 @@ This Gradle task, whose task parameters correspond to
 [MLCP import options](https://docs.marklogic.com/guide/mlcp/import#id_23879), will use MLCP to load each of the rows 
 in the downloaded CSV file as a new JSON document in the `arcgis-hub-example-content` database. For this to work, we 
 need to add a module to the project which is used as a transform by the above MLCP task. Create a file named 
-`./src/main/ml-modules/root/mollusks-mlcp-transform.csv` (create those directories as needed) and add the following 
+`./src/main/ml-modules/root/mollusks-mlcp-transform.sjs` (create those directories as needed) and add the following 
 content to it:
 
 ```
@@ -175,7 +198,11 @@ The geospatial point in each row in the CSV is captured by columns named "X" and
 in the JSON document created by MLCP. The above transform copies those values into the `geometry` object that GDS 
 depends on for geospatial queries. 
 
-We can now load this data:
+After creating this transform, load it into your application:
+
+    ./gradlew mlLoadModules
+
+We can now load the data using MLCP and our transform:
 
     ./gradlew loadMollusks
 
