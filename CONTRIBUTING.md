@@ -13,7 +13,8 @@ Use the following steps to install GDS as a standalone project and run the tests
 You can perform manual testing by following the instructions in the `examples/sample-project/README.md` file for 
 deploying an application that depends on marklogic-geo-data-services. 
 
-Before doing so, you'll first need to publish marklogic-geo-data-services locally. To do so, run:
+Before doing so, you'll first need to publish marklogic-geo-data-services locally. To do so, run the following command
+from the root directory in this repository:
 
     ./gradlew publishToMavenLocal
 
