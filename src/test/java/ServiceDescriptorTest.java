@@ -11,7 +11,7 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
     @Test
     public void getServiceDescriptor() {
         postGeoQueryRequest(new GeoQueryRequest("GDeltGKG"))
-            .body("$version", is("1.4-SNAPSHOT"))
+            .body("$version", is("1.4.0"))
             .body("layers[0].metadata.useStandardizedQueries", is(true))
             .body("layers[0].metadata.extent.xmin", is(-180))
             .body("layers[0].metadata.extent.ymin", is(-90))

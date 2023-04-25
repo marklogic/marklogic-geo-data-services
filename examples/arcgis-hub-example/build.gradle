@@ -14,7 +14,7 @@ configurations {
 }
 
 dependencies {
-  mlBundle "com.marklogic:marklogic-geo-data-services:1.4-SNAPSHOT"
+  mlBundle "com.marklogic:marklogic-geo-data-services:1.4.0"
   mlcp "com.marklogic:mlcp:10.0.9.5"
   mlcp files("mlcp-logging")
 }
