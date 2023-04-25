@@ -13,7 +13,7 @@ very similar to how ArcGIS defines a
 the intent is not to conform exactly to the ArcGIS definition. 
 
 The documentation below describes how to load and define service descriptors. For a working example, please see the 
-[example project](https://github.com/marklogic-community/marklogic-geo-data-services/tree/master/examples/sample-project/src/main/ml-data/example/services) 
+[example project](https://github.com/marklogic/marklogic-geo-data-services/tree/master/examples/sample-project/src/main/ml-data/example/services) 
 in this repository.
 
 If you plan on querying data via a MarkLogic TDE template, please read the instructions for 
@@ -165,7 +165,7 @@ clients will use the [MarkLogic Koop provider](https://github.com/koopjs/koop-pr
 that depends on GDS. 
 
 The examples below assume that you have installed the 
-[example project](https://github.com/marklogic-community/marklogic-geo-data-services/tree/master/examples/sample-project) 
+[example project](https://github.com/marklogic/marklogic-geo-data-services/tree/master/examples/sample-project) 
 and thus use port 8095. Change this as needed for your own installation of GDS.
 
 Additionally, it is recommended to authenticate as a [user with the GDS roles](create-user.md) as opposed to an admin 

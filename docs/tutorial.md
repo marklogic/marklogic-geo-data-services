@@ -10,7 +10,7 @@ use this tutorial as a guide for doing so - just ignore any steps that involve s
 files that already exist in your project. 
 
 The finished project can be examined in 
-[this example project](https://github.com/marklogic-community/marklogic-geo-data-services/tree/master/examples/arcgis-hub-example).
+[this example project](https://github.com/marklogic/marklogic-geo-data-services/tree/master/examples/arcgis-hub-example).
 
 ## Create a project
 

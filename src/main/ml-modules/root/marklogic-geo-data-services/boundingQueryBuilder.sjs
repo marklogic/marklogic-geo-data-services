@@ -42,7 +42,7 @@ function buildBoundingQuery(requestQuery, layerModel) {
   }
 
   // alwaysIncludeQuery is an optional feature for a layer definition to ensure that certain data is always included,
-  // which implies usage of an "or" query. See https://github.com/marklogic-community/marklogic-geo-data-services/issues/76
+  // which implies usage of an "or" query. See https://github.com/marklogic/marklogic-geo-data-services/issues/76
   // for the original requirements.
   return layerModel.alwaysIncludeQuery ?
     cts.orQuery([queryDeserializer.query(layerModel.alwaysIncludeQuery), cts.andQuery(boundingQueries)]) :

@@ -7,7 +7,7 @@ heading_anchors: true
 
 # Aux links for the upper right navigation
 aux_links:
-  "marklogic-community/marklogic-geo-data-services":
-    - "https://github.com/marklogic-community/marklogic-geo-data-services"
+  "marklogic/marklogic-geo-data-services":
+    - "https://github.com/marklogic/marklogic-geo-data-services"
 
 enable_copy_code_button: true
