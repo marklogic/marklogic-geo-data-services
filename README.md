@@ -10,5 +10,5 @@ application because you are either using the
 [MarkLogic Koop Provider](https://github.com/koopjs/koop-provider-marklogic) or the 
 [MarkLogic GeoTools Plugin](https://github.com/marklogic-community/marklogic-geotools-plugin). 
 
-Please see [the user guide](https://marklogic-community.github.io/marklogic-geo-data-services/) for 
+Please see [the user guide](https://marklogic.github.io/marklogic-geo-data-services/) for 
 instructions on installing and using GDS. 
