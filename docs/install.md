@@ -4,6 +4,14 @@ title: Install and Upgrade
 nav_order: 2
 ---
 
+## System Requirements
+
+To use GDS, MarkLogic 10 or higher is required, with the latest version of MarkLogic being preferred to take 
+advantage of updates to the Optic engine in MarkLogic.
+
+For deploying your MarkLogic application with GDS bundled inside it, please see 
+[the ml-gradle documentation](https://github.com/marklogic/ml-gradle) on which version of Gradle to use. 
+
 ## Installing GDS
 
 The GDS modules can be added to a MarkLogic application that uses
@@ -36,7 +44,8 @@ convenient to
 ## Upgrading GDS
 
 If you have already added GDS to your MarkLogic application and wish to upgrade, simply change the version number
-of the GDS dependency in your build.gradle file. 
+of the GDS dependency in your build.gradle file. Then run the Gradle `mlDeploy` task to deploy your application with 
+the upgraded version of GDS.
 
 Additionally, be sure to read 
 [the release notes](https://github.com/marklogic/marklogic-geo-data-services/releases) when you upgrade, 
