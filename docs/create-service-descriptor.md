@@ -56,8 +56,8 @@ contain at least the following fields:
 3. `description` = optional string for describing the layer.
 4. `geometryType` = required string for identifying type of geometry of each feature. Supported values are `Point` 
    and `Polygon`.
-5. `idField` = required string for identifying a column in the associated TDE that contains a value for 
-   identifying a feature. 
+5. `idField` = optional string for identifying a column in the associated TDE that contains a value for 
+   identifying a feature; defaults to "OBJECTID". 
 6. `boundingQuery` = optional JSON object that captures a serialized CTS query which will constrain all queries on 
    this layer for features. 
 7. `geometry` = required JSON object that defines the features associated with this layer; defined further below.
