@@ -8,6 +8,33 @@ Use the following steps to install GDS as a standalone project and run the tests
    password
 2. Run `./gradlew -i mlDeploy loadTestData test`
 
+## Inspecting logging of HTTP requests and responses
+
+If you wish to see the HTTP request/response that each test sends/receives, set the following value in your 
+`gradle-local.properties` file:
+
+    logRequestAndResponse=true
+
+Or include it on the command line when running tests:
+
+    ./gradlew -i test -PlogRequestAndResponse=true
+
+This is often helpful when running a single test so that you can see what the input and output is for a particular 
+scenario. To run a single test, such as `PointQueries`, run the following (this adds the property to the command 
+line, but you can also just add it to your `gradle-local.properties` file so you don't need to remember to add it 
+each time):
+
+    ./gradlew -i test --tests PointQueries -PlogRequestAndResponse=true
+
+To run an individual test method, add a period and the method name to the test class name:
+
+    ./gradlew -i test --tests PointQueries.testPointIntersects1 -PlogRequestAndResponse=true
+
+To force tests to be run, include `cleanTest`, which will prevent Gradle from not running a test due to it not 
+having changed:
+
+    ./gradlew -i cleanTest test --tests PointQueries.testPointIntersects1 -PlogRequestAndResponse=true
+
 # Manual testing
 
 You can perform manual testing by following the instructions in the `examples/sample-project/README.md` file for 

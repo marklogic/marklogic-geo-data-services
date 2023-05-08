@@ -1,6 +1,8 @@
 import com.marklogic.gds.GeoQueryRequest;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.LogDetail;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.path.json.config.JsonPathConfig;
@@ -19,6 +21,10 @@ public abstract class AbstractTest {
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = 8096;
         RestAssured.authentication = basic("test-geo-data-services-writer", "test-geo-data-services-writer");
+
+        if ("true".equals(System.getProperty("logRequestAndResponse"))) {
+            RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
+        }
 
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
     }
