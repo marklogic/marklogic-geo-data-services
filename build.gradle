@@ -36,7 +36,8 @@ dependencies {
 }
 
 test {
-    systemProperty "sonar.projectVersion", project.version
+  systemProperty "sonar.projectVersion", project.version
+  systemProperty "logRequestAndResponse", logRequestAndResponse
 }
 
 task loadTestData(dependsOn: [
