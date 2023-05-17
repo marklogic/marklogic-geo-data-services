@@ -17,7 +17,9 @@ The Payload for queries coming into GeoQueryService include a params object:
     "layer" : 0
     "method" : "query"
   },
-  ... 
+  "query" : {
+    ... see definition below ...
+  }  
 }
 ```
 
