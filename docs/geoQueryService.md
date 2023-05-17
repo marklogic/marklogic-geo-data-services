@@ -36,6 +36,8 @@ The query method of the GeoQueryService provides a method to query the data, and
 | returnCountOnly | If `true` this will return the count of objects in the result. |
 | returnGeometry  | If `true` this returns the data as geojson, including a populated geometry property.  If `false` the geometry property will be null. | 
 | outputStatistics | TBD | 
+| extension.geometry | This is an extension point to allow for a single geometry element to constrain a query.  |
+| geometryType | Type of geometry.  If it is `ESRIGeometryEnvelope` (lowercased), it performs some ESRI specific modifications to the lat/lon points in the geometry object. |
 | where | This is either a string of SQL, or an object with a search property at the root.  The SQL passed in must be supported by the Optic/MarkLogic SQL engine. |
 | where.search | The Search object includes a structured query as shown in the example below. |
 | where.search.qtext | The qtext element within a search object is used to support using the MarkLogic Server Search Grammar as part of the query. | 
